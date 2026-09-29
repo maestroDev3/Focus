@@ -1,0 +1,7 @@
+{
+  "@@locale": "en",
+  "appTitle": "Focus",
+  "@appTitle": {
+    "description": "Name of the app, shown as the window title and on the home screen."
+  }
+}
