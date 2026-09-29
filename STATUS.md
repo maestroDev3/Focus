@@ -8,7 +8,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- #5 Start, pause and cancel a session (tasks #36–#39)
+- Nothing – next: #7.
 
 ## Up next
 
@@ -18,7 +18,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 | Epic | Stories (in order) |
 |---|---|
-| #4 Focus timer | #5 Start, pause and cancel a session (`in-progress`) → #6 Timer survives app switch and restart → #7 Configurable durations and breaks (Pomodoro cycle) |
+| #4 Focus timer | ~~#5 Start, pause and cancel a session~~ (done) → #6 Timer survives app switch and restart → #7 Configurable durations and breaks (Pomodoro cycle) |
 | #20 Distraction blocking | #21 Choose apps to block → #22 Block selected apps during a focus session → #23 Hold back notifications of blocked apps |
 | #8 Labels and goals | #9 Labels for sessions → #10 Daily focus goal with progress ring |
 | #11 Statistics | #12 Focus time per day and week → #13 Breakdown by label → #14 Streaks |
@@ -28,11 +28,11 @@ All stories are `backlog` unless marked otherwise.
 
 ## Recently done
 
+- #5 Start, pause and cancel a session (FocusSession, repository, FocusTimer, session screen)
 - #3 Home screen with a big start button – epic #1 Foundation complete
 - #27 Luxury look: Noir & Champagne (fonts, dark/light palettes, pill buttons)
 - #2 Project setup (Clock/dayOf, localization, app shell with light/dark theme, `pumpApp`)
 - Decision: distraction blocking is strict while a session runs, cancelling releases the apps; may use accessibility + notification access
-- New epic #20 Distraction blocking (app blocking during sessions)
 
 ## Open decisions (user only)
 
