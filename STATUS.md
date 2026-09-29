@@ -8,7 +8,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- #27 Luxury look: Noir & Champagne (tasks #28, #29)
+- Nothing – next: #3.
 
 ## Up next
 
@@ -18,7 +18,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 | Epic | Stories (in order) |
 |---|---|
-| #1 Foundation | ~~#2 Project setup~~ (done) → #27 Luxury look: Noir & Champagne (`in-progress`) → #3 Home screen with a big start button |
+| #1 Foundation | ~~#2 Project setup~~ (done) → ~~#27 Luxury look: Noir & Champagne~~ (done) → #3 Home screen with a big start button |
 | #4 Focus timer | #5 Start, pause and cancel a session → #6 Timer survives app switch and restart → #7 Configurable durations and breaks (Pomodoro cycle) |
 | #20 Distraction blocking | #21 Choose apps to block → #22 Block selected apps during a focus session → #23 Hold back notifications of blocked apps |
 | #8 Labels and goals | #9 Labels for sessions → #10 Daily focus goal with progress ring |
@@ -29,11 +29,11 @@ All stories are `backlog` unless marked otherwise.
 
 ## Recently done
 
+- #27 Luxury look: Noir & Champagne (fonts, dark/light palettes, pill buttons)
 - #2 Project setup (Clock/dayOf, localization, app shell with light/dark theme, `pumpApp`)
 - Decision: distraction blocking is strict while a session runs, cancelling releases the apps; may use accessibility + notification access
 - New epic #20 Distraction blocking (app blocking during sessions)
 - Flutter project scaffolded (Scaffold workflow), CI green on `main`
-- Labels, epics and stories created as issues
 
 ## Open decisions (user only)
 
