@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 
+import '../domain/clock.dart';
 import '../l10n/app_localizations.dart';
+import 'home_screen.dart';
 import 'theme.dart';
 
 /// Root widget of Focus: wires theme, localization and the first screen.
 class FocusApp extends StatelessWidget {
-  const FocusApp({super.key});
+  const FocusApp({super.key, this.clock = DateTime.now});
+
+  /// Source of the current time for every screen.
+  final Clock clock;
 
   @override
   Widget build(BuildContext context) {
@@ -16,23 +21,10 @@ class FocusApp extends StatelessWidget {
       themeMode: ThemeMode.system,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: const _PlaceholderHome(),
-    );
-  }
-}
-
-/// Temporary first screen until the real home screen (#3) exists.
-class _PlaceholderHome extends StatelessWidget {
-  const _PlaceholderHome();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Text(
-          AppLocalizations.of(context).appTitle,
-          style: Theme.of(context).textTheme.displaySmall,
-        ),
+      home: HomeScreen(
+        clock: clock,
+        focusDuration: const Duration(minutes: 25),
+        onStart: () {},
       ),
     );
   }
