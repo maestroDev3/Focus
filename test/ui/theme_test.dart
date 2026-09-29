@@ -64,8 +64,8 @@ void main() {
 
     test('bundles both fonts with their licenses', () {
       for (final path in [
-        'assets/fonts/CormorantGaramond[wght].ttf',
-        'assets/fonts/Jost[wght].ttf',
+        'assets/fonts/CormorantGaramond-Variable.ttf',
+        'assets/fonts/Jost-Variable.ttf',
         'assets/fonts/OFL-CormorantGaramond.txt',
         'assets/fonts/OFL-Jost.txt',
       ]) {
