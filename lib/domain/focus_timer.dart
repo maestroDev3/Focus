@@ -7,9 +7,7 @@ import 'session_repository.dart';
 /// Runs one focus session at a time and keeps the repository in sync after
 /// every change, so the UI only displays state and never owns logic.
 class FocusTimer {
-  FocusTimer({required SessionRepository repository, required Clock clock})
-    : _repository = repository,
-      _clock = clock;
+  FocusTimer({required this._repository, required this._clock});
 
   final SessionRepository _repository;
   final Clock _clock;
