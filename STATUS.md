@@ -8,17 +8,17 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- Nothing yet.
+- #2 Project setup (tasks #17, #18, #19)
 
 ## Up next
 
-- #2 Project setup (`ready`, tasks #17, #18, #19)
+- #3 Home screen with a big start button (needs refinement)
 
 ## Backlog by epic
 
 | Epic | Stories (in order) |
 |---|---|
-| #1 Foundation | #2 Project setup (`ready`) → #3 Home screen with a big start button |
+| #1 Foundation | #2 Project setup (`in-progress`) → #3 Home screen with a big start button |
 | #4 Focus timer | #5 Start, pause and cancel a session → #6 Timer survives app switch and restart → #7 Configurable durations and breaks (Pomodoro cycle) |
 | #20 Distraction blocking | #21 Choose apps to block → #22 Block selected apps during a focus session → #23 Hold back notifications of blocked apps |
 | #8 Labels and goals | #9 Labels for sessions → #10 Daily focus goal with progress ring |
