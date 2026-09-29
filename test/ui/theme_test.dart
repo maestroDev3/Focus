@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:focus_timer/ui/theme.dart';
@@ -24,6 +26,51 @@ void main() {
     test('differs only in brightness between light and dark', () {
       expect(focusTheme(Brightness.light).brightness, Brightness.light);
       expect(focusTheme(Brightness.dark).brightness, Brightness.dark);
+    });
+  });
+
+  group('focusTheme typography', () {
+    for (final brightness in Brightness.values) {
+      test('uses Cormorant Garamond for display and headlines ($brightness)', () {
+        final text = focusTheme(brightness).textTheme;
+        final styles = [
+          text.displayLarge,
+          text.displayMedium,
+          text.displaySmall,
+          text.headlineLarge,
+          text.headlineMedium,
+          text.headlineSmall,
+        ];
+
+        for (final style in styles) {
+          expect(style?.fontFamily, 'CormorantGaramond');
+        }
+      });
+
+      test('uses Jost for titles, body and labels ($brightness)', () {
+        final text = focusTheme(brightness).textTheme;
+        final styles = [
+          text.titleLarge,
+          text.bodyLarge,
+          text.bodyMedium,
+          text.labelLarge,
+        ];
+
+        for (final style in styles) {
+          expect(style?.fontFamily, 'Jost');
+        }
+      });
+    }
+
+    test('bundles both fonts with their licenses', () {
+      for (final path in [
+        'assets/fonts/CormorantGaramond-Variable.ttf',
+        'assets/fonts/Jost-Variable.ttf',
+        'assets/fonts/OFL-CormorantGaramond.txt',
+        'assets/fonts/OFL-Jost.txt',
+      ]) {
+        expect(File(path).existsSync(), isTrue, reason: '$path missing');
+      }
     });
   });
 }
