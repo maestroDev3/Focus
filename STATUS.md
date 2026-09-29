@@ -8,25 +8,28 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- Nothing yet – the repo only contains the working rules, skill and CI.
+- Nothing yet.
 
 ## Up next
 
-- “First start” from CLAUDE.md: create labels, epics and stories as issues,
-  run the Scaffold workflow, refine the first story “Project setup”.
+- #2 Project setup (`ready`, tasks #17, #18, #19)
 
-## Planned epics (no issue numbers yet)
+## Backlog by epic
 
 | Epic | Stories (in order) |
 |---|---|
-| Foundation | Project setup (scaffold, green CI, theme, `pumpApp`) → Home screen with a big start button |
-| Focus timer | Start, pause and cancel a session → Timer survives app switch and restart (notification when done) → Configurable durations and breaks (Pomodoro cycle) |
-| Labels and goals | Labels for sessions → Daily focus goal with progress ring |
-| Statistics | Focus time per day and week → Breakdown by label → Streaks (days in a row with goal reached) |
-| Data safety | Backup and export |
+| #1 Foundation | #2 Project setup (`ready`) → #3 Home screen with a big start button |
+| #4 Focus timer | #5 Start, pause and cancel a session → #6 Timer survives app switch and restart → #7 Configurable durations and breaks (Pomodoro cycle) |
+| #8 Labels and goals | #9 Labels for sessions → #10 Daily focus goal with progress ring |
+| #11 Statistics | #12 Focus time per day and week → #13 Breakdown by label → #14 Streaks |
+| #15 Data safety | #16 Backup and export |
+
+All stories are `backlog` unless marked otherwise.
 
 ## Recently done
 
+- Flutter project scaffolded (Scaffold workflow), CI green on `main`
+- Labels, epics and stories created as issues
 - Repo created with CLAUDE.md, STATUS.md, Flutter skill and CI
 
 ## Open decisions (user only)
