@@ -16,8 +16,10 @@ Claude works in this repo **autonomously**. This file is binding.
 
 Focus is a calm, minimal focus timer. Start a session (e.g. 25 minutes), take
 short and long breaks following the Pomodoro rhythm, and optionally tag what you
-worked on. A daily focus goal and simple statistics (per day, week and label,
-plus streaks) show your progress. No gamification, no clutter – just focus.
+worked on. While a session runs, apps you selected (e.g. social media) are
+blocked and their notifications held back until the session ends. A daily
+focus goal and simple statistics (per day, week and label, plus streaks) show
+your progress. No gamification, no clutter – just focus.
 Domain terms:
 
 - **Session** – `FocusSession` – planned duration, start, end, label, outcome (sealed `SessionOutcome`: completed, cancelled)
@@ -134,3 +136,7 @@ commit comment).
 - Does leaving the app during a session count as cancelling, or only the cancel button?
 - Optional ambient sounds (rain, white noise) – yes/no?
 - Android only, or iOS later?
+- Distraction blocking: OK to use the accessibility service and notification
+  access (extra permissions beyond `POST_NOTIFICATIONS`)?
+- Distraction blocking: how strict? Does cancelling the session release the apps
+  immediately, or is there no way out until the timer ends?
