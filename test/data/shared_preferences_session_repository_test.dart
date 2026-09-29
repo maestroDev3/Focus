@@ -46,10 +46,9 @@ void main() {
     });
 
     test('persists data for a new repository instance', () async {
-      await SharedPreferencesSessionRepository(preferences)
-        ..saveActive(runningSample())
-        ..addFinished(completedSample());
-      await Future<void>.delayed(Duration.zero);
+      final first = SharedPreferencesSessionRepository(preferences);
+      await first.saveActive(runningSample());
+      await first.addFinished(completedSample());
 
       final reopened = SharedPreferencesSessionRepository(preferences);
 
