@@ -12,18 +12,27 @@ void main() {
   late FakeSessionRepository repository;
   late FocusTimer timer;
   late int doneCalls;
+  SessionOutcome? lastOutcome;
 
   setUp(() {
     now = DateTime(2026, 9, 29, 10);
     repository = FakeSessionRepository();
     timer = FocusTimer(repository: repository, clock: () => now);
     doneCalls = 0;
+    lastOutcome = null;
   });
 
   Future<void> pumpSession(WidgetTester tester) async {
     await timer.start(const Duration(minutes: 25));
     await tester.pumpApp(
-      SessionScreen(timer: timer, clock: () => now, onDone: () => doneCalls++),
+      SessionScreen(
+        timer: timer,
+        clock: () => now,
+        onDone: (outcome) {
+          doneCalls++;
+          lastOutcome = outcome;
+        },
+      ),
     );
   }
 
@@ -74,6 +83,7 @@ void main() {
       expect(repository.finished.single.outcome, isA<SessionCancelled>());
       expect(timer.current, isNull);
       expect(doneCalls, 1);
+      expect(lastOutcome, isA<SessionCancelled>());
     });
 
     testWidgets('keeps the session when the dialog is dismissed', (
@@ -100,6 +110,7 @@ void main() {
 
       expect(repository.finished.single.outcome, isA<SessionCompleted>());
       expect(doneCalls, 1);
+      expect(lastOutcome, isA<SessionCompleted>());
     });
   });
 }
