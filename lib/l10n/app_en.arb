@@ -3,5 +3,34 @@
   "appTitle": "Focus",
   "@appTitle": {
     "description": "Name of the app, shown as the window title and on the home screen."
+  },
+  "greetingMorning": "Good morning.",
+  "@greetingMorning": {
+    "description": "Home screen greeting between 05:00 and 11:59."
+  },
+  "greetingAfternoon": "Good afternoon.",
+  "@greetingAfternoon": {
+    "description": "Home screen greeting between 12:00 and 17:59."
+  },
+  "greetingEvening": "Good evening.",
+  "@greetingEvening": {
+    "description": "Home screen greeting between 18:00 and 04:59."
+  },
+  "homeSubtitle": "One quiet hour is worth more than a busy day.",
+  "@homeSubtitle": {
+    "description": "Calm line below the greeting on the home screen."
+  },
+  "durationMinutes": "{minutes} min",
+  "@durationMinutes": {
+    "description": "A duration in whole minutes, e.g. the planned focus time.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "beginFocus": "Begin focus",
+  "@beginFocus": {
+    "description": "Main button on the home screen that starts a focus session."
   }
 }

@@ -8,12 +8,11 @@ import '../support/pump_app.dart';
 
 void main() {
   group('FocusApp', () {
-    testWidgets('shows the localized app title on the home screen', (
-      tester,
-    ) async {
-      await tester.pumpWidget(const FocusApp());
+    testWidgets('starts on the home screen', (tester) async {
+      await tester.pumpWidget(FocusApp(clock: () => DateTime(2026, 9, 29, 20)));
 
-      expect(find.text('Focus'), findsOneWidget);
+      expect(find.text('Begin focus'), findsOneWidget);
+      expect(find.text('Good evening.'), findsOneWidget);
     });
 
     testWidgets('uses the light and dark focus themes following the system', (
