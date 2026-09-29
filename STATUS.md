@@ -8,17 +8,17 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- Nothing – next: #3.
+- #3 Home screen with a big start button (tasks #32, #33)
 
 ## Up next
 
-- #3 Home screen with a big start button (needs refinement)
+- #5 Start, pause and cancel a session (needs refinement)
 
 ## Backlog by epic
 
 | Epic | Stories (in order) |
 |---|---|
-| #1 Foundation | ~~#2 Project setup~~ (done) → ~~#27 Luxury look: Noir & Champagne~~ (done) → #3 Home screen with a big start button |
+| #1 Foundation | ~~#2 Project setup~~ (done) → ~~#27 Luxury look: Noir & Champagne~~ (done) → #3 Home screen with a big start button (`in-progress`) |
 | #4 Focus timer | #5 Start, pause and cancel a session → #6 Timer survives app switch and restart → #7 Configurable durations and breaks (Pomodoro cycle) |
 | #20 Distraction blocking | #21 Choose apps to block → #22 Block selected apps during a focus session → #23 Hold back notifications of blocked apps |
 | #8 Labels and goals | #9 Labels for sessions → #10 Daily focus goal with progress ring |
