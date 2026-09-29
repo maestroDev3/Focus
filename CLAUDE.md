@@ -70,6 +70,9 @@ context in a Claude project. It must always match the issues.
 - When closing a story, the update belongs in the story's last PR. Pure status
   changes without a PR: direct commit to `main` (`docs: update status`).
 - Keep it short: number + title, no task details.
+- `CLAUDE.md` and `STATUS.md` are also stored as docs in the Claude project
+  “Focus”. When the session is attached to that project, update the project
+  copy whenever the file changes on `main`.
 
 ## Workflow: Story → sub-issues
 
