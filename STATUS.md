@@ -29,6 +29,7 @@ All stories are `backlog` unless marked otherwise.
 
 ## Recently done
 
+- Decision: distraction blocking is strict (no release before the planned end) and may use accessibility + notification access
 - New epic #20 Distraction blocking (app blocking during sessions)
 - Flutter project scaffolded (Scaffold workflow), CI green on `main`
 - Labels, epics and stories created as issues
@@ -39,7 +40,3 @@ All stories are `backlog` unless marked otherwise.
 - Does leaving the app during a session count as cancelling, or only the cancel button?
 - Optional ambient sounds (rain, white noise) – yes/no?
 - Android only, or iOS later?
-- Distraction blocking (#20): OK to use the accessibility service and notification
-  access (extra permissions, Play Store declaration needed)?
-- Distraction blocking: how strict? Does cancelling the session release the apps
-  immediately, or is there no way out until the timer ends?

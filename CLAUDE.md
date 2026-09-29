@@ -121,7 +121,12 @@ configuration, load and follow the skill `.claude/skills/flutter-dart/SKILL.md`
   directly in logic.
 - Data access only through repository interfaces, so a backend or sync can be
   added later.
-- Permissions: `POST_NOTIFICATIONS` (session finished). No foreground service as long as the timestamp-based approach is enough.
+- Permissions: `POST_NOTIFICATIONS` (session finished); for distraction blocking
+  an `AccessibilityService` (blocked app in foreground) and a
+  `NotificationListenerService` (hold back notifications) – both approved by
+  the user. App list via a launcher-intent `<queries>` entry, not
+  `QUERY_ALL_PACKAGES`. No foreground service as long as the timestamp-based
+  approach is enough.
 - `flutter analyze` must report no issues.
 
 ## Environment note
@@ -136,7 +141,12 @@ commit comment).
 - Does leaving the app during a session count as cancelling, or only the cancel button?
 - Optional ambient sounds (rain, white noise) – yes/no?
 - Android only, or iOS later?
-- Distraction blocking: OK to use the accessibility service and notification
-  access (extra permissions beyond `POST_NOTIFICATIONS`)?
-- Distraction blocking: how strict? Does cancelling the session release the apps
-  immediately, or is there no way out until the timer ends?
+
+## Decisions (made by the user)
+
+- 2026-09-29 – Distraction blocking may use the accessibility service and
+  notification access.
+- 2026-09-29 – Distraction blocking is **strict**: selected apps stay blocked
+  and their notifications held back until the session's planned end time.
+  Cancelling the session does not release them; the block list can't be
+  reduced during a session.
