@@ -8,17 +8,17 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- Nothing – next: #5.
+- #5 Start, pause and cancel a session (tasks #36–#39)
 
 ## Up next
 
-- #5 Start, pause and cancel a session (needs refinement)
+- #7 Configurable durations and breaks (needs refinement; #6 waits for the open decision about leaving the app)
 
 ## Backlog by epic
 
 | Epic | Stories (in order) |
 |---|---|
-| #4 Focus timer | #5 Start, pause and cancel a session → #6 Timer survives app switch and restart → #7 Configurable durations and breaks (Pomodoro cycle) |
+| #4 Focus timer | #5 Start, pause and cancel a session (`in-progress`) → #6 Timer survives app switch and restart → #7 Configurable durations and breaks (Pomodoro cycle) |
 | #20 Distraction blocking | #21 Choose apps to block → #22 Block selected apps during a focus session → #23 Hold back notifications of blocked apps |
 | #8 Labels and goals | #9 Labels for sessions → #10 Daily focus goal with progress ring |
 | #11 Statistics | #12 Focus time per day and week → #13 Breakdown by label → #14 Streaks |
