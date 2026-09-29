@@ -9,8 +9,8 @@ import '../support/fake_session_repository.dart';
 import '../support/pump_app.dart';
 
 void main() {
-  DateTime now = DateTime(2026, 9, 29, 20);
-  FocusApp app() => FocusApp(
+  var now = DateTime(2026, 9, 29, 20);
+  FocusApp buildApp() => FocusApp(
     timer: FocusTimer(repository: FakeSessionRepository(), clock: () => now),
     clock: () => now,
   );
@@ -19,7 +19,7 @@ void main() {
 
   group('FocusApp', () {
     testWidgets('starts on the home screen', (tester) async {
-      await tester.pumpWidget(app());
+      await tester.pumpWidget(buildApp());
 
       expect(find.text('Begin focus'), findsOneWidget);
       expect(find.text('Good evening.'), findsOneWidget);
@@ -28,7 +28,7 @@ void main() {
     testWidgets('uses the light and dark focus themes following the system', (
       tester,
     ) async {
-      await tester.pumpWidget(app());
+      await tester.pumpWidget(buildApp());
 
       final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
       expect(app.theme?.colorScheme, focusTheme(Brightness.light).colorScheme);
@@ -40,7 +40,7 @@ void main() {
     });
 
     testWidgets('no longer contains the counter demo', (tester) async {
-      await tester.pumpWidget(app());
+      await tester.pumpWidget(buildApp());
 
       expect(find.byIcon(Icons.add), findsNothing);
       expect(find.byType(FloatingActionButton), findsNothing);
@@ -49,7 +49,7 @@ void main() {
 
   group('FocusApp navigation', () {
     testWidgets('Begin focus opens the session screen', (tester) async {
-      await tester.pumpWidget(app());
+      await tester.pumpWidget(buildApp());
 
       await tester.tap(find.text('Begin focus'));
       await tester.pump();
@@ -59,7 +59,7 @@ void main() {
     });
 
     testWidgets('ending the session returns home', (tester) async {
-      await tester.pumpWidget(app());
+      await tester.pumpWidget(buildApp());
       await tester.tap(find.text('Begin focus'));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
