@@ -2,7 +2,7 @@
 
 ## GitHub repository
 
-- **Repository name:** `focus`
+- **Repository name:** `Focus`
 - **Description:** Minimal focus timer: Pomodoro sessions, daily goals and honest statistics.
 - **Topics:** `flutter` `dart` `android` `tdd` `focus`
 
@@ -17,7 +17,7 @@ Android app (Flutter): a clean, distraction-free Pomodoro focus timer with daily
 
 ```
 This project belongs to the app “Focus” – Minimal focus timer: Pomodoro sessions, daily goals and honest statistics.
-Repository: github.com/maestroDev3/focus
+Repository: github.com/maestroDev3/Focus
 
 - CLAUDE.md (working rules) and STATUS.md (current state) in the repo are authoritative.
   Read STATUS.md at the start of every conversation.
@@ -38,7 +38,7 @@ Repository: github.com/maestroDev3/focus
 
 ```
 The attached ZIP contains the starter files for Focus. Extract its contents
-into the root of github.com/maestroDev3/focus (create the repo if it does not exist yet,
+into the root of github.com/maestroDev3/Focus (create the repo if it does not exist yet,
 private, default branch main), commit ("chore: add working rules, skill and CI")
 and push to main.
 Then run the "First start" from CLAUDE.md: create labels, create epics and stories
