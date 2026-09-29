@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../domain/clock.dart';
 import '../domain/countdown.dart';
+import '../domain/focus_session.dart';
 import '../domain/focus_timer.dart';
 import '../l10n/app_localizations.dart';
 
@@ -20,8 +21,8 @@ class SessionScreen extends StatefulWidget {
   final FocusTimer timer;
   final Clock clock;
 
-  /// Called once the session was completed or ended.
-  final VoidCallback onDone;
+  /// Called once with the outcome when the session was completed or ended.
+  final ValueChanged<SessionOutcome> onDone;
 
   @override
   State<SessionScreen> createState() => _SessionScreenState();
@@ -47,17 +48,17 @@ class _SessionScreenState extends State<SessionScreen> {
     final completed = await widget.timer.completeIfDue();
     if (!mounted) return;
     if (completed) {
-      _finish();
+      _finish(const SessionCompleted());
     } else {
       setState(() {});
     }
   }
 
-  void _finish() {
+  void _finish(SessionOutcome outcome) {
     if (_done) return;
     _done = true;
     _ticks.cancel();
-    widget.onDone();
+    widget.onDone(outcome);
   }
 
   Future<void> _togglePause() async {
@@ -94,7 +95,7 @@ class _SessionScreenState extends State<SessionScreen> {
     if (confirmed != true || widget.timer.current == null) return;
     await widget.timer.cancel();
     if (!mounted) return;
-    _finish();
+    _finish(const SessionCancelled());
   }
 
   @override

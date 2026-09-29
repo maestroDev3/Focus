@@ -43,6 +43,22 @@ class FocusTimer {
     return true;
   }
 
+  /// Number of sessions completed today; drives the Pomodoro cycle.
+  Future<int> completedToday() async {
+    final today = dayOf(_clock());
+    final finished = await _repository.watchFinished().first;
+    return finished
+        .where(
+          (session) =>
+              session.outcome is SessionCompleted &&
+              switch (session.end) {
+                final end? => dayOf(end) == today,
+                null => false,
+              },
+        )
+        .length;
+  }
+
   FocusSession _requireActive() {
     final session = _current;
     if (session == null) throw StateError('No session is running.');

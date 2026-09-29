@@ -68,5 +68,39 @@
   "keepFocusing": "Keep focusing",
   "@keepFocusing": {
     "description": "Dialog button that keeps the session running."
+  },
+  "breakWellDone": "Well done.",
+  "@breakWellDone": {
+    "description": "Small heading on the break screen before the break starts."
+  },
+  "breakShortTitle": "Short break · {minutes} min",
+  "@breakShortTitle": {
+    "description": "Offer of a short break with its length in minutes.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "breakLongTitle": "Long break · {minutes} min",
+  "@breakLongTitle": {
+    "description": "Offer of a long break with its length in minutes.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "startBreak": "Start break",
+  "@startBreak": {
+    "description": "Button that starts the offered break."
+  },
+  "skipBreak": "Skip",
+  "@skipBreak": {
+    "description": "Button that skips the break and returns home."
+  },
+  "endBreak": "End break",
+  "@endBreak": {
+    "description": "Button that ends a running break early."
   }
 }
