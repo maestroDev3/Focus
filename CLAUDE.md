@@ -146,7 +146,7 @@ commit comment).
 
 - 2026-09-29 – Distraction blocking may use the accessibility service and
   notification access.
-- 2026-09-29 – Distraction blocking is **strict**: selected apps stay blocked
-  and their notifications held back until the session's planned end time.
-  Cancelling the session does not release them; the block list can't be
-  reduced during a session.
+- 2026-09-29 – Distraction blocking is **strict while a session runs**
+  (including pauses): no temporary unlock, the block list can't be reduced.
+  Apps and their notifications are released as soon as the session ends –
+  timer finished or session deliberately cancelled.

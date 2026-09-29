@@ -29,7 +29,7 @@ All stories are `backlog` unless marked otherwise.
 
 ## Recently done
 
-- Decision: distraction blocking is strict (no release before the planned end) and may use accessibility + notification access
+- Decision: distraction blocking is strict while a session runs, cancelling releases the apps; may use accessibility + notification access
 - New epic #20 Distraction blocking (app blocking during sessions)
 - Flutter project scaffolded (Scaffold workflow), CI green on `main`
 - Labels, epics and stories created as issues
