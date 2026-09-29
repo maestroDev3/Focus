@@ -32,5 +32,41 @@
   "beginFocus": "Begin focus",
   "@beginFocus": {
     "description": "Main button on the home screen that starts a focus session."
+  },
+  "sessionFocusing": "Focusing",
+  "@sessionFocusing": {
+    "description": "Small heading on the session screen while a session runs."
+  },
+  "sessionPaused": "Paused",
+  "@sessionPaused": {
+    "description": "Small heading on the session screen while a session is paused."
+  },
+  "sessionRemaining": "remaining",
+  "@sessionRemaining": {
+    "description": "Caption below the countdown on the session screen."
+  },
+  "pause": "Pause",
+  "@pause": {
+    "description": "Button that pauses the running session."
+  },
+  "resume": "Resume",
+  "@resume": {
+    "description": "Button that continues a paused session."
+  },
+  "endSession": "End session",
+  "@endSession": {
+    "description": "Button that ends the session early; also confirms it in the dialog."
+  },
+  "endSessionTitle": "End this session?",
+  "@endSessionTitle": {
+    "description": "Title of the dialog confirming that a session is ended early."
+  },
+  "endSessionMessage": "The time you focused so far is kept.",
+  "@endSessionMessage": {
+    "description": "Message of the dialog confirming that a session is ended early."
+  },
+  "keepFocusing": "Keep focusing",
+  "@keepFocusing": {
+    "description": "Dialog button that keeps the session running."
   }
 }
