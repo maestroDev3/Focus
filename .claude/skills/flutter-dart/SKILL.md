@@ -66,7 +66,7 @@ deviates is written here. On conflict: user > CLAUDE.md > this skill.
 
 - Standard base packages without further justification: `shared_preferences` or `sqflite` (storage), `path_provider`, `flutter_local_notifications` + `timezone` + `flutter_timezone`, `flutter_localizations` + `intl`.
 - Other packages only with justification in the PR; check the version first (`git ls-remote --tags` of the package repo, pub.dev is blocked in Claude's environment).
-- Mark Android changes (manifest, Gradle, plugins with native code) in the commit message with `[apk]` so CI builds the APK on the branch.
+- Mark PRs with Android changes (manifest, Gradle, plugins with native code) with `[apk]` in the PR title so CI builds the APK for the PR.
 - No permission without a purpose; justify every new permission in the PR. No `INTERNET` unless a decision requires it.
 
 ## 7. Definition of done (per task)
