@@ -11,22 +11,62 @@ void main() {
       expect(focusTheme(Brightness.dark).useMaterial3, isTrue);
     });
 
-    test('derives light and dark from the same seed color', () {
-      for (final brightness in Brightness.values) {
-        expect(
-          focusTheme(brightness).colorScheme,
-          ColorScheme.fromSeed(
-            seedColor: focusSeedColor,
-            brightness: brightness,
-          ),
-        );
-      }
-    });
-
     test('differs only in brightness between light and dark', () {
       expect(focusTheme(Brightness.light).brightness, Brightness.light);
       expect(focusTheme(Brightness.dark).brightness, Brightness.dark);
     });
+  });
+
+  group('focusTheme colors', () {
+    test('uses the Noir & Champagne palette in dark mode', () {
+      final colors = focusTheme(Brightness.dark).colorScheme;
+
+      expect(colors.surface, const Color(0xFF0E0D0B));
+      expect(colors.surfaceContainer, const Color(0xFF181613));
+      expect(colors.outline, const Color(0xFF3A342B));
+      expect(colors.onSurface, const Color(0xFFF2EDE4));
+      expect(colors.onSurfaceVariant, const Color(0xFFA89F90));
+      expect(colors.primary, const Color(0xFFC9A96E));
+      expect(colors.onPrimary, const Color(0xFF14110C));
+    });
+
+    test('uses the Ivory palette in light mode', () {
+      final colors = focusTheme(Brightness.light).colorScheme;
+
+      expect(colors.surface, const Color(0xFFF6F1E8));
+      expect(colors.surfaceContainer, const Color(0xFFFFFCF6));
+      expect(colors.outline, const Color(0xFFDDD3C2));
+      expect(colors.onSurface, const Color(0xFF1C1B19));
+      expect(colors.onSurfaceVariant, const Color(0xFF6B645A));
+      expect(colors.primary, const Color(0xFF8A6A32));
+      expect(colors.onPrimary, const Color(0xFFFBF6EE));
+    });
+
+    for (final brightness in Brightness.values) {
+      test('keeps text contrast at least 4.5:1 ($brightness)', () {
+        final colors = focusTheme(brightness).colorScheme;
+
+        expect(contrast(colors.onSurface, colors.surface), greaterThan(4.5));
+        expect(
+          contrast(colors.onSurfaceVariant, colors.surface),
+          greaterThan(4.5),
+        );
+        expect(contrast(colors.onPrimary, colors.primary), greaterThan(4.5));
+      });
+
+      test('shapes buttons as tall pills ($brightness)', () {
+        final theme = focusTheme(brightness);
+        final styles = [
+          theme.filledButtonTheme.style,
+          theme.outlinedButtonTheme.style,
+        ];
+
+        for (final style in styles) {
+          expect(style?.shape?.resolve({}), isA<StadiumBorder>());
+          expect(style?.minimumSize?.resolve({})?.height, 56);
+        }
+      });
+    }
   });
 
   group('focusTheme typography', () {
@@ -73,4 +113,12 @@ void main() {
       }
     });
   });
+}
+
+/// WCAG contrast ratio between two colors.
+double contrast(Color a, Color b) {
+  final la = a.computeLuminance();
+  final lb = b.computeLuminance();
+  final (light, dark) = la > lb ? (la, lb) : (lb, la);
+  return (light + 0.05) / (dark + 0.05);
 }
