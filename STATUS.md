@@ -8,7 +8,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- #2 Project setup (tasks #17, #18, #19)
+- Nothing – next story to be chosen.
 
 ## Up next
 
@@ -18,7 +18,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 | Epic | Stories (in order) |
 |---|---|
-| #1 Foundation | #2 Project setup (`in-progress`) → #3 Home screen with a big start button |
+| #1 Foundation | ~~#2 Project setup~~ (done) → #3 Home screen with a big start button |
 | #4 Focus timer | #5 Start, pause and cancel a session → #6 Timer survives app switch and restart → #7 Configurable durations and breaks (Pomodoro cycle) |
 | #20 Distraction blocking | #21 Choose apps to block → #22 Block selected apps during a focus session → #23 Hold back notifications of blocked apps |
 | #8 Labels and goals | #9 Labels for sessions → #10 Daily focus goal with progress ring |
@@ -29,11 +29,11 @@ All stories are `backlog` unless marked otherwise.
 
 ## Recently done
 
+- #2 Project setup (Clock/dayOf, localization, app shell with light/dark theme, `pumpApp`)
 - Decision: distraction blocking is strict while a session runs, cancelling releases the apps; may use accessibility + notification access
 - New epic #20 Distraction blocking (app blocking during sessions)
 - Flutter project scaffolded (Scaffold workflow), CI green on `main`
 - Labels, epics and stories created as issues
-- Repo created with CLAUDE.md, STATUS.md, Flutter skill and CI
 
 ## Open decisions (user only)
 
