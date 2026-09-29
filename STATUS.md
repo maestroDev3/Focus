@@ -8,7 +8,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- Nothing – next story to be chosen.
+- #27 Luxury look: Noir & Champagne (tasks #28, #29)
 
 ## Up next
 
@@ -18,7 +18,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 | Epic | Stories (in order) |
 |---|---|
-| #1 Foundation | ~~#2 Project setup~~ (done) → #3 Home screen with a big start button |
+| #1 Foundation | ~~#2 Project setup~~ (done) → #27 Luxury look: Noir & Champagne (`in-progress`) → #3 Home screen with a big start button |
 | #4 Focus timer | #5 Start, pause and cancel a session → #6 Timer survives app switch and restart → #7 Configurable durations and breaks (Pomodoro cycle) |
 | #20 Distraction blocking | #21 Choose apps to block → #22 Block selected apps during a focus session → #23 Hold back notifications of blocked apps |
 | #8 Labels and goals | #9 Labels for sessions → #10 Daily focus goal with progress ring |
@@ -37,6 +37,7 @@ All stories are `backlog` unless marked otherwise.
 
 ## Open decisions (user only)
 
+- Design direction: A “Noir & Champagne” is implemented as default; B “Ivory Atelier” and C “Emerald Salon” are alternatives on the design canvas.
 - Does leaving the app during a session count as cancelling, or only the cancel button?
 - Optional ambient sounds (rain, white noise) – yes/no?
 - Android only, or iOS later?
