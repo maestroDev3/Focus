@@ -19,11 +19,25 @@ data class BlockingState(
             packageName in packages &&
             (plannedEndMillis == null || nowMillis < plannedEndMillis)
 
+    /**
+     * How long to snooze a notification of [packageName], or null to show it.
+     * Mirrors  in lib/domain/blocking.dart: at most one minute per
+     * round, so held notifications reappear soon after the session ends.
+     */
+    fun snoozeMillis(packageName: String, nowMillis: Long): Long? {
+        if (!active || packageName !in packages) return null
+        val end = plannedEndMillis ?: return SNOOZE_STEP_MILLIS
+        val left = end - nowMillis
+        if (left <= 0) return null
+        return minOf(left, SNOOZE_STEP_MILLIS)
+    }
+
     /** Milliseconds until the planned end, or null while paused / inactive. */
     fun remainingMillis(nowMillis: Long): Long? =
         plannedEndMillis?.let { (it - nowMillis).coerceAtLeast(0) }
 
     companion object {
+        private const val SNOOZE_STEP_MILLIS = 60_000L
         private const val PREFERENCES = "FlutterSharedPreferences"
         private const val KEY = "flutter.blocking.state.v1"
         private val INACTIVE = BlockingState(false, emptySet(), null)

@@ -27,6 +27,14 @@ class MethodChannelAppBlocker implements AppBlocker {
       channel.invokeMethod<void>('openBlockerSettings');
 
   @override
+  Future<bool> isNotificationGateEnabled() async =>
+      await channel.invokeMethod<bool>('isNotificationGateEnabled') ?? false;
+
+  @override
+  Future<void> openNotificationGateSettings() =>
+      channel.invokeMethod<void>('openNotificationGateSettings');
+
+  @override
   Future<String?> initialBlockedPackage() =>
       channel.invokeMethod<String>('initialBlockedPackage');
 
