@@ -14,6 +14,7 @@ import '../domain/settings_repository.dart';
 import '../l10n/app_localizations.dart';
 import 'break_screen.dart';
 import 'home_screen.dart';
+import 'intro_screen.dart';
 import 'label_sheet.dart';
 import 'labels_screen.dart';
 import 'session_screen.dart';
@@ -30,6 +31,7 @@ class FocusApp extends StatefulWidget {
     required this.labels,
     required this.backupFiles,
     this.clock = DateTime.now,
+    this.showIntro = false,
   });
 
   /// Runs and stores focus sessions.
@@ -47,12 +49,16 @@ class FocusApp extends StatefulWidget {
   /// Source of the current time for every screen.
   final Clock clock;
 
+  /// Whether to show the short intro before home (on cold start).
+  final bool showIntro;
+
   @override
   State<FocusApp> createState() => _FocusAppState();
 }
 
 class _FocusAppState extends State<FocusApp> {
   var _pomodoro = const PomodoroSettings();
+  late var _introDone = !widget.showIntro;
   var _dailyGoal = const DailyGoal();
   var _focusedToday = Duration.zero;
   var _labels = const <FocusLabel>[];
@@ -103,28 +109,33 @@ class _FocusAppState extends State<FocusApp> {
       themeMode: ThemeMode.system,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: Builder(
-        builder: (context) => HomeScreen(
-          clock: widget.clock,
-          focusDuration: _pomodoro.focus,
-          onStart: () => _startSession(context),
-          onOpenSettings: () => _openSettings(context),
-          labelName: _selectedLabel?.name,
-          hasLabels: _labels.isNotEmpty,
-          onChooseLabel: () => _chooseLabel(context),
-          focusedToday: _focusedToday,
-          dailyGoal: _dailyGoal,
-          onOpenStatistics: () => Navigator.of(context).push(
-            MaterialPageRoute<void>(
-              builder: (context) => StatisticsScreen(
-                finishedSessions: widget.timer.watchFinished(),
-                labels: widget.labels.watchLabels(),
-                dailyGoal: _dailyGoal,
-                clock: widget.clock,
+      home: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 600),
+        child: _introDone
+            ? Builder(
+            builder: (context) => HomeScreen(
+              clock: widget.clock,
+              focusDuration: _pomodoro.focus,
+              onStart: () => _startSession(context),
+              onOpenSettings: () => _openSettings(context),
+              labelName: _selectedLabel?.name,
+              hasLabels: _labels.isNotEmpty,
+              onChooseLabel: () => _chooseLabel(context),
+              focusedToday: _focusedToday,
+              dailyGoal: _dailyGoal,
+              onOpenStatistics: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (context) => StatisticsScreen(
+                    finishedSessions: widget.timer.watchFinished(),
+                    labels: widget.labels.watchLabels(),
+                    dailyGoal: _dailyGoal,
+                    clock: widget.clock,
+                  ),
+                ),
               ),
             ),
-          ),
-        ),
+          )
+            : IntroScreen(onDone: () => setState(() => _introDone = true)),
       ),
     );
   }

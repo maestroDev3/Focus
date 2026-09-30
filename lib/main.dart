@@ -19,6 +19,7 @@ Future<void> main() async {
   final timer = FocusTimer(repository: sessions, clock: DateTime.now);
   runApp(
     FocusApp(
+      showIntro: true,
       timer: timer,
       settings: settings,
       labels: labels,

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Noir of the “Noir & Champagne” design; window and splash background. -->
+    <color name="focus_noir">#0E0D0B</color>
+</resources>
