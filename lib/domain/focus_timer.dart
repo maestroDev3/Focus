@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'blocking.dart';
 import 'clock.dart';
 import 'daily_goal.dart';
 import 'focus_session.dart';
@@ -8,10 +9,17 @@ import 'session_repository.dart';
 /// Runs one focus session at a time and keeps the repository in sync after
 /// every change, so the UI only displays state and never owns logic.
 class FocusTimer {
-  FocusTimer({required this._repository, required this._clock});
+  FocusTimer({
+    required this._repository,
+    required this._clock,
+    this._blocking,
+  });
 
   final SessionRepository _repository;
   final Clock _clock;
+
+  /// Keeps the native app blocker informed; optional so tests stay simple.
+  final BlockingSync? _blocking;
   final _changes = StreamController<FocusSession?>.broadcast();
   FocusSession? _current;
 
@@ -20,6 +28,18 @@ class FocusTimer {
 
   /// Emits the active session (or null) after every change.
   Stream<FocusSession?> get changes => _changes.stream;
+
+  /// Continues the session stored as active (e.g. after Focus was killed);
+  /// completes it if its time is already over. Returns the running session.
+  Future<FocusSession?> restore() async {
+    final session = await _repository.loadActive();
+    if (session == null || session.isFinished) return null;
+    _current = session;
+    if (await completeIfDue()) return null;
+    await _blocking?.update(session);
+    _changes.add(session);
+    return session;
+  }
 
   Future<FocusSession> start(Duration planned, {String? labelId}) async {
     if (_current != null) throw StateError('A session is already running.');
@@ -77,9 +97,13 @@ class FocusTimer {
     return session;
   }
 
+  /// Publishes the blocking state again, e.g. after the block list changed.
+  Future<void> refreshBlocking() async => _blocking?.update(_current);
+
   Future<void> _setActive(FocusSession? session) async {
     _current = session;
     await _repository.saveActive(session);
+    await _blocking?.update(session);
     _changes.add(session);
   }
 

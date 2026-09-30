@@ -18,6 +18,12 @@ void main() {
       Duration focusedToday = Duration.zero,
       DailyGoal dailyGoal = const DailyGoal(),
       VoidCallback? onOpenStatistics,
+      int blockedAppCount = 0,
+      VoidCallback? onOpenBlockedApps,
+      bool blockerNeedsPermission = false,
+      VoidCallback? onAllowBlocking,
+      bool notificationsNeedPermission = false,
+      VoidCallback? onAllowNotifications,
     }) {
       return tester.pumpApp(
         HomeScreen(
@@ -31,6 +37,12 @@ void main() {
           focusedToday: focusedToday,
           dailyGoal: dailyGoal,
           onOpenStatistics: onOpenStatistics ?? () {},
+          blockedAppCount: blockedAppCount,
+          onOpenBlockedApps: onOpenBlockedApps ?? () {},
+          blockerNeedsPermission: blockerNeedsPermission,
+          onAllowBlocking: onAllowBlocking ?? () {},
+          notificationsNeedPermission: notificationsNeedPermission,
+          onAllowNotifications: onAllowNotifications ?? () {},
         ),
       );
     }
@@ -162,6 +174,76 @@ void main() {
       await tester.pump();
 
       expect(opened, 1);
+    });
+
+    testWidgets('invites to choose apps when none are paused', (tester) async {
+      await pumpHome(tester, now: DateTime(2026, 9, 29, 20));
+
+      expect(find.text('Choose apps to pause'), findsOneWidget);
+    });
+
+    testWidgets('shows how many apps are paused and opens the list', (
+      tester,
+    ) async {
+      var opened = 0;
+      await pumpHome(
+        tester,
+        now: DateTime(2026, 9, 29, 20),
+        blockedAppCount: 3,
+        onOpenBlockedApps: () => opened++,
+      );
+
+      await tester.tap(find.text('3 apps paused'));
+      await tester.pump();
+
+      expect(opened, 1);
+    });
+
+    testWidgets('asks to allow app blocking when the permission is missing', (
+      tester,
+    ) async {
+      var allowed = 0;
+      await pumpHome(
+        tester,
+        now: DateTime(2026, 9, 29, 20),
+        blockedAppCount: 2,
+        blockerNeedsPermission: true,
+        onAllowBlocking: () => allowed++,
+      );
+
+      await tester.tap(find.text('Allow app blocking'));
+      await tester.pump();
+
+      expect(allowed, 1);
+    });
+
+    testWidgets('shows no permission hint when not needed', (tester) async {
+      await pumpHome(
+        tester,
+        now: DateTime(2026, 9, 29, 20),
+        blockedAppCount: 2,
+      );
+
+      expect(find.text('Allow app blocking'), findsNothing);
+    });
+
+    testWidgets('asks to allow holding notifications when needed', (
+      tester,
+    ) async {
+      var allowed = 0;
+      await pumpHome(
+        tester,
+        now: DateTime(2026, 9, 29, 20),
+        blockedAppCount: 2,
+        notificationsNeedPermission: true,
+        onAllowNotifications: () => allowed++,
+      );
+
+      await tester.tap(find.text('Allow holding notifications'));
+      await tester.pump();
+
+      expect(allowed, 1);
+      expect(find.text('Allow app blocking'), findsNothing);
     });
   });
 }

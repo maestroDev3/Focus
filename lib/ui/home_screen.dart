@@ -17,6 +17,12 @@ class HomeScreen extends StatelessWidget {
     required this.focusDuration,
     required this.onStart,
     required this.onOpenSettings,
+    required this.blockedAppCount,
+    required this.onOpenBlockedApps,
+    required this.blockerNeedsPermission,
+    required this.onAllowBlocking,
+    required this.notificationsNeedPermission,
+    required this.onAllowNotifications,
     required this.labelName,
     required this.hasLabels,
     required this.onChooseLabel,
@@ -29,6 +35,18 @@ class HomeScreen extends StatelessWidget {
   final Duration focusDuration;
   final VoidCallback onStart;
   final VoidCallback onOpenSettings;
+
+  /// Number of apps paused during sessions.
+  final int blockedAppCount;
+  final VoidCallback onOpenBlockedApps;
+
+  /// Apps are paused but the blocker is not allowed yet.
+  final bool blockerNeedsPermission;
+  final VoidCallback onAllowBlocking;
+
+  /// Apps are paused but notification access is not granted yet.
+  final bool notificationsNeedPermission;
+  final VoidCallback onAllowNotifications;
 
   /// Label chosen for the next session, or null.
   final String? labelName;
@@ -135,8 +153,39 @@ class HomeScreen extends StatelessWidget {
                                     (hasLabels ? l10n.noLabel : l10n.addLabel),
                               ),
                             ),
+                            ActionChip(
+                              onPressed: onOpenBlockedApps,
+                              avatar: Icon(
+                                Icons.do_not_disturb_on_outlined,
+                                size: 18,
+                                color: theme.colorScheme.primary,
+                              ),
+                              label: Text(
+                                blockedAppCount == 0
+                                    ? l10n.chooseAppsToPause
+                                    : l10n.appsPaused(blockedAppCount),
+                              ),
+                            ),
                           ],
                         ),
+                        if (blockerNeedsPermission)
+                          Center(
+                            child: TextButton.icon(
+                              onPressed: onAllowBlocking,
+                              icon: const Icon(Icons.warning_amber_outlined),
+                              label: Text(l10n.allowAppBlocking),
+                            ),
+                          ),
+                        if (notificationsNeedPermission)
+                          Center(
+                            child: TextButton.icon(
+                              onPressed: onAllowNotifications,
+                              icon: const Icon(
+                                Icons.notifications_paused_outlined,
+                              ),
+                              label: Text(l10n.allowHoldingNotifications),
+                            ),
+                          ),
                         const Spacer(),
                         FilledButton(
                           onPressed: onStart,

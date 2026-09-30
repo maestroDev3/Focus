@@ -2,21 +2,27 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../domain/app_blocker.dart';
 import '../domain/backup.dart';
+import '../domain/block_list_repository.dart';
 import '../domain/clock.dart';
 import '../domain/daily_goal.dart';
 import '../domain/focus_label.dart';
 import '../domain/focus_session.dart';
 import '../domain/focus_timer.dart';
+import '../domain/installed_apps_source.dart';
 import '../domain/label_repository.dart';
 import '../domain/pomodoro.dart';
 import '../domain/settings_repository.dart';
 import '../l10n/app_localizations.dart';
+import 'blocked_apps_screen.dart';
+import 'blocked_screen.dart';
 import 'break_screen.dart';
 import 'home_screen.dart';
 import 'intro_screen.dart';
 import 'label_sheet.dart';
 import 'labels_screen.dart';
+import 'permission_onboarding_screen.dart';
 import 'session_screen.dart';
 import 'settings_screen.dart';
 import 'statistics_screen.dart';
@@ -30,6 +36,9 @@ class FocusApp extends StatefulWidget {
     required this.settings,
     required this.labels,
     required this.backupFiles,
+    required this.blockList,
+    required this.installedApps,
+    required this.appBlocker,
     this.clock = DateTime.now,
     this.showIntro = false,
   });
@@ -37,7 +46,7 @@ class FocusApp extends StatefulWidget {
   /// Runs and stores focus sessions.
   final FocusTimer timer;
 
-  /// Stores the Pomodoro rhythm.
+  /// Stores the Pomodoro rhythm, daily goal and chosen label.
   final SettingsRepository settings;
 
   /// The user's labels.
@@ -45,6 +54,15 @@ class FocusApp extends StatefulWidget {
 
   /// Exports and restores backups.
   final BackupFiles backupFiles;
+
+  /// The apps paused during sessions.
+  final BlockListRepository blockList;
+
+  /// The apps on the phone that can be paused.
+  final InstalledAppsSource installedApps;
+
+  /// The native app blocker.
+  final AppBlocker appBlocker;
 
   /// Source of the current time for every screen.
   final Clock clock;
@@ -56,53 +74,87 @@ class FocusApp extends StatefulWidget {
   State<FocusApp> createState() => _FocusAppState();
 }
 
-class _FocusAppState extends State<FocusApp> {
+class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
+  final _navigator = GlobalKey<NavigatorState>();
   var _pomodoro = const PomodoroSettings();
   late var _introDone = !widget.showIntro;
   var _dailyGoal = const DailyGoal();
   var _focusedToday = Duration.zero;
   var _labels = const <FocusLabel>[];
   String? _selectedLabelId;
+  var _blockedAppCount = 0;
+  var _blockerEnabled = true;
+  var _notificationGateEnabled = true;
   StreamSubscription<List<FocusLabel>>? _labelChanges;
+  StreamSubscription<String>? _blockedApps;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _labelChanges = widget.labels.watchLabels().listen((labels) {
       if (mounted) setState(() => _labels = labels);
     });
-    _loadSettings();
+    _blockedApps = widget.appBlocker.blockedAppOpened.listen(_showBlocked);
+    _loadState();
+    _restore();
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _labelChanges?.cancel();
+    _blockedApps?.cancel();
     super.dispose();
   }
 
-  Future<void> _loadSettings() async {
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // The user may have granted a permission in the system settings.
+    if (state == AppLifecycleState.resumed) _loadState();
+  }
+
+  Future<void> _loadState() async {
     final pomodoro = await widget.settings.loadPomodoro();
     final selectedLabelId = await widget.settings.loadSelectedLabelId();
     final dailyGoal = await widget.settings.loadDailyGoal();
     final focusedToday = await widget.timer.focusedToday();
+    final blockList = await widget.blockList.loadBlockList();
+    final blockerEnabled = await widget.appBlocker.isBlockerEnabled();
+    final notificationGateEnabled = await widget.appBlocker
+        .isNotificationGateEnabled();
     if (!mounted) return;
     setState(() {
       _pomodoro = pomodoro;
+      _selectedLabelId = selectedLabelId;
       _dailyGoal = dailyGoal;
       _focusedToday = focusedToday;
-      _selectedLabelId = selectedLabelId;
+      _blockedAppCount = blockList.length;
+      _blockerEnabled = blockerEnabled;
+      _notificationGateEnabled = notificationGateEnabled;
     });
   }
 
-  /// The chosen label, if it still exists.
-  FocusLabel? get _selectedLabel => [
+  /// Continues a session that was running when Focus was closed, and shows
+  /// the blocked screen if Focus was launched for a paused app.
+  Future<void> _restore() async {
+    final session = await widget.timer.restore();
+    final blockedPackage = await widget.appBlocker.initialBlockedPackage();
+    if (!mounted || session == null) return;
+    _pushSession();
+    if (blockedPackage != null) await _showBlocked(blockedPackage);
+  }
+
+  /// The label with [id], if it still exists.
+  FocusLabel? _labelWithId(String? id) => [
     for (final label in _labels)
-      if (label.id == _selectedLabelId) label,
+      if (label.id == id) label,
   ].firstOrNull;
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: _navigator,
       onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
       theme: focusTheme(Brightness.light),
       darkTheme: focusTheme(Brightness.dark),
@@ -113,43 +165,93 @@ class _FocusAppState extends State<FocusApp> {
         duration: const Duration(milliseconds: 600),
         child: _introDone
             ? Builder(
-            builder: (context) => HomeScreen(
-              clock: widget.clock,
-              focusDuration: _pomodoro.focus,
-              onStart: () => _startSession(context),
-              onOpenSettings: () => _openSettings(context),
-              labelName: _selectedLabel?.name,
-              hasLabels: _labels.isNotEmpty,
-              onChooseLabel: () => _chooseLabel(context),
-              focusedToday: _focusedToday,
-              dailyGoal: _dailyGoal,
-              onOpenStatistics: () => Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (context) => StatisticsScreen(
-                    finishedSessions: widget.timer.watchFinished(),
-                    labels: widget.labels.watchLabels(),
-                    dailyGoal: _dailyGoal,
-                    clock: widget.clock,
-                  ),
+                builder: (homeContext) => HomeScreen(
+                  clock: widget.clock,
+                  focusDuration: _pomodoro.focus,
+                  onStart: _startSession,
+                  onOpenSettings: _openSettings,
+                  blockedAppCount: _blockedAppCount,
+                  onOpenBlockedApps: _openBlockedApps,
+                  blockerNeedsPermission:
+                      _blockedAppCount > 0 && !_blockerEnabled,
+                  onAllowBlocking: _openBlockerOnboarding,
+                  notificationsNeedPermission:
+                      _blockedAppCount > 0 && !_notificationGateEnabled,
+                  onAllowNotifications: _openNotificationOnboarding,
+                  labelName: _labelWithId(_selectedLabelId)?.name,
+                  hasLabels: _labels.isNotEmpty,
+                  onChooseLabel: () => _chooseLabel(homeContext),
+                  focusedToday: _focusedToday,
+                  dailyGoal: _dailyGoal,
+                  onOpenStatistics: _openStatistics,
                 ),
-              ),
-            ),
-          )
+              )
             : IntroScreen(onDone: () => setState(() => _introDone = true)),
       ),
     );
   }
 
-  Future<void> _openSettings(BuildContext context) async {
-    await Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (context) => SettingsScreen(
-          settings: widget.settings,
-          backupFiles: widget.backupFiles,
-        ),
+  Future<void> _push(WidgetBuilder builder) async {
+    await _navigator.currentState?.push(
+      MaterialPageRoute<void>(builder: builder),
+    );
+  }
+
+  Future<void> _openSettings() async {
+    await _push(
+      (context) => SettingsScreen(
+        settings: widget.settings,
+        backupFiles: widget.backupFiles,
       ),
     );
-    await _loadSettings();
+    await _loadState();
+  }
+
+  Future<void> _openStatistics() async {
+    await _push(
+      (context) => StatisticsScreen(
+        finishedSessions: widget.timer.watchFinished(),
+        labels: widget.labels.watchLabels(),
+        dailyGoal: _dailyGoal,
+        clock: widget.clock,
+      ),
+    );
+  }
+
+  Future<void> _openBlockedApps() async {
+    await _push(
+      (context) => BlockedAppsScreen(
+        apps: widget.installedApps,
+        blockList: widget.blockList,
+        activeSession: widget.timer.current,
+      ),
+    );
+    await widget.timer.refreshBlocking();
+    await _loadState();
+  }
+
+  Future<void> _openBlockerOnboarding() async {
+    await _push((context) {
+      final l10n = AppLocalizations.of(context);
+      return PermissionOnboardingScreen(
+        title: l10n.blockerOnboardingTitle,
+        body: l10n.blockerOnboardingBody,
+        onOpenSettings: widget.appBlocker.openBlockerSettings,
+      );
+    });
+    await _loadState();
+  }
+
+  Future<void> _openNotificationOnboarding() async {
+    await _push((context) {
+      final l10n = AppLocalizations.of(context);
+      return PermissionOnboardingScreen(
+        title: l10n.notificationOnboardingTitle,
+        body: l10n.notificationOnboardingBody,
+        onOpenSettings: widget.appBlocker.openNotificationGateSettings,
+      );
+    });
+    await _loadState();
   }
 
   Future<void> _chooseLabel(BuildContext context) async {
@@ -158,7 +260,7 @@ class _FocusAppState extends State<FocusApp> {
       showDragHandle: true,
       builder: (sheetContext) => LabelSheet(
         labels: _labels,
-        selectedId: _selectedLabel?.id,
+        selectedId: _labelWithId(_selectedLabelId)?.id,
         onSelect: (id) {
           Navigator.of(sheetContext).pop();
           setState(() => _selectedLabelId = id);
@@ -166,31 +268,51 @@ class _FocusAppState extends State<FocusApp> {
         },
         onManage: () {
           Navigator.of(sheetContext).pop();
-          Navigator.of(context).push(
-            MaterialPageRoute<void>(
-              builder: (context) => LabelsScreen(labels: widget.labels),
-            ),
-          );
+          _push((context) => LabelsScreen(labels: widget.labels));
         },
       ),
     );
   }
 
-  Future<void> _startSession(BuildContext context) async {
-    final navigator = Navigator.of(context);
-    final label = _selectedLabel;
-    await widget.timer.start(_pomodoro.focus, labelId: label?.id);
-    await navigator.push(
-      MaterialPageRoute<void>(
-        builder: (context) => SessionScreen(
-          timer: widget.timer,
-          clock: widget.clock,
-          labelName: label?.name,
-          onDone: (outcome) => _afterSession(context, outcome),
-        ),
+  Future<void> _startSession() async {
+    await widget.timer.start(
+      _pomodoro.focus,
+      labelId: _labelWithId(_selectedLabelId)?.id,
+    );
+    await _pushSession();
+  }
+
+  /// Shows the running session; home is refreshed once it is done.
+  Future<void> _pushSession() async {
+    final labelName = _labelWithId(widget.timer.current?.labelId)?.name;
+    await _push(
+      (context) => SessionScreen(
+        timer: widget.timer,
+        clock: widget.clock,
+        labelName: labelName,
+        onDone: (outcome) => _afterSession(context, outcome),
       ),
     );
-    await _loadSettings();
+    await _loadState();
+  }
+
+  /// Shows the calm “resting” screen over the session for a paused app.
+  Future<void> _showBlocked(String packageName) async {
+    final session = widget.timer.current;
+    if (session == null) return;
+    final apps = await widget.installedApps.installedApps();
+    final label = [
+      for (final app in apps)
+        if (app.packageName == packageName) app.label,
+    ].firstOrNull;
+    final now = widget.clock();
+    await _push(
+      (context) => BlockedScreen(
+        appLabel: label ?? packageName,
+        remaining: session.isPaused ? null : session.remaining(now),
+        onReturn: () => Navigator.of(context).pop(),
+      ),
+    );
   }
 
   /// A completed session is followed by the right break; a cancelled one

@@ -132,6 +132,31 @@ void main() {
     });
   });
 
+  group('FocusTimer.restore', () {
+    test('continues the stored active session', () async {
+      repository.active = FocusSession(start: tenOClock, planned: planned);
+      advance(const Duration(minutes: 5));
+
+      final restored = await timer.restore();
+
+      expect(restored, repository.active);
+      expect(timer.current?.remaining(now), const Duration(minutes: 20));
+    });
+
+    test('completes a stored session whose time is over', () async {
+      repository.active = FocusSession(start: tenOClock, planned: planned);
+      advance(const Duration(hours: 1));
+
+      expect(await timer.restore(), isNull);
+      expect(timer.current, isNull);
+      expect(repository.finished.single.outcome, isA<SessionCompleted>());
+    });
+
+    test('returns null without a stored session', () async {
+      expect(await timer.restore(), isNull);
+    });
+  });
+
   group('FocusTimer.start with a label', () {
     test('stores the label on the session', () async {
       await timer.start(planned, labelId: 'study');
