@@ -17,6 +17,7 @@ import 'label_sheet.dart';
 import 'labels_screen.dart';
 import 'session_screen.dart';
 import 'settings_screen.dart';
+import 'statistics_screen.dart';
 import 'theme.dart';
 
 /// Root widget of Focus: wires theme, localization and the screens.
@@ -108,6 +109,14 @@ class _FocusAppState extends State<FocusApp> {
           onChooseLabel: () => _chooseLabel(context),
           focusedToday: _focusedToday,
           dailyGoal: _dailyGoal,
+          onOpenStatistics: () => Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (context) => StatisticsScreen(
+                finishedSessions: widget.timer.watchFinished(),
+                clock: widget.clock,
+              ),
+            ),
+          ),
         ),
       ),
     );

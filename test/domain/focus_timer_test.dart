@@ -150,4 +150,13 @@ void main() {
       expect(await timer.focusedToday(), const Duration(minutes: 10));
     });
   });
+
+  group('FocusTimer.watchFinished', () {
+    test('emits the finished sessions', () async {
+      await timer.start(planned);
+      await timer.cancel();
+
+      expect(await timer.watchFinished().first, repository.finished);
+    });
+  });
 }

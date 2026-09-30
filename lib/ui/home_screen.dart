@@ -21,6 +21,7 @@ class HomeScreen extends StatelessWidget {
     required this.onChooseLabel,
     required this.focusedToday,
     required this.dailyGoal,
+    required this.onOpenStatistics,
   });
 
   final Clock clock;
@@ -38,6 +39,7 @@ class HomeScreen extends StatelessWidget {
   /// Focus time of sessions that ended today.
   final Duration focusedToday;
   final DailyGoal dailyGoal;
+  final VoidCallback onOpenStatistics;
 
   @override
   Widget build(BuildContext context) {
@@ -75,6 +77,12 @@ class HomeScreen extends StatelessWidget {
                                 letterSpacing: 2,
                               ),
                             ),
+                          ),
+                          IconButton(
+                            onPressed: onOpenStatistics,
+                            tooltip: l10n.statistics,
+                            color: theme.colorScheme.onSurfaceVariant,
+                            icon: const Icon(Icons.insights_outlined),
                           ),
                           IconButton(
                             onPressed: onOpenSettings,

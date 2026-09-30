@@ -17,6 +17,7 @@ void main() {
       VoidCallback? onChooseLabel,
       Duration focusedToday = Duration.zero,
       DailyGoal dailyGoal = const DailyGoal(),
+      VoidCallback? onOpenStatistics,
     }) {
       return tester.pumpApp(
         HomeScreen(
@@ -29,6 +30,7 @@ void main() {
           onChooseLabel: onChooseLabel ?? () {},
           focusedToday: focusedToday,
           dailyGoal: dailyGoal,
+          onOpenStatistics: onOpenStatistics ?? () {},
         ),
       );
     }
@@ -144,6 +146,22 @@ void main() {
         find.byType(CircularProgressIndicator),
       );
       expect(ring.value, closeTo(100 / 180, 0.001));
+    });
+
+    testWidgets('opens the statistics from a button with a tooltip', (
+      tester,
+    ) async {
+      var opened = 0;
+      await pumpHome(
+        tester,
+        now: DateTime(2026, 9, 29, 20),
+        onOpenStatistics: () => opened++,
+      );
+
+      await tester.tap(find.byTooltip('Statistics'));
+      await tester.pump();
+
+      expect(opened, 1);
     });
   });
 }

@@ -237,5 +237,13 @@
   "settingsDailyGoal": "Daily goal",
   "@settingsDailyGoal": {
     "description": "Setting for the daily focus goal."
+  },
+  "statistics": "Statistics",
+  "@statistics": {
+    "description": "Title of the statistics screen and tooltip of the button that opens it."
+  },
+  "thisWeek": "This week",
+  "@thisWeek": {
+    "description": "Statistics tile with the focus time of the current week."
   }
 }
