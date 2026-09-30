@@ -20,7 +20,8 @@ void main() {
   var repository = FakeSessionRepository();
   var settings = FakeSettingsRepository();
   var labels = FakeLabelRepository();
-  FocusApp buildApp() => FocusApp(
+  FocusApp buildApp({bool showIntro = false}) => FocusApp(
+    showIntro: showIntro,
     timer: FocusTimer(repository: repository, clock: () => now),
     settings: settings,
     labels: labels,
@@ -288,6 +289,21 @@ void main() {
       await tester.pump(const Duration(milliseconds: 500));
 
       expect(find.text('This week'), findsOneWidget);
+    });
+  });
+
+  group('FocusApp intro', () {
+    testWidgets('shows the intro first and then home', (tester) async {
+      await tester.pumpWidget(buildApp(showIntro: true));
+      await tester.pump();
+      expect(find.text('FOCUS'), findsOneWidget);
+      expect(find.text('Begin focus'), findsNothing);
+
+      await tester.pump(const Duration(milliseconds: 1200));
+      await tester.pump(const Duration(milliseconds: 800));
+
+      expect(find.text('Begin focus'), findsOneWidget);
+      expect(find.text('FOCUS'), findsNothing);
     });
   });
 
