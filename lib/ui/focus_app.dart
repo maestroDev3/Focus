@@ -13,9 +13,9 @@ import '../domain/settings_repository.dart';
 import '../l10n/app_localizations.dart';
 import 'blocked_apps_screen.dart';
 import 'blocked_screen.dart';
-import 'blocker_onboarding_screen.dart';
 import 'break_screen.dart';
 import 'home_screen.dart';
+import 'permission_onboarding_screen.dart';
 import 'session_screen.dart';
 import 'settings_screen.dart';
 import 'theme.dart';
@@ -59,6 +59,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
   var _pomodoro = const PomodoroSettings();
   var _blockedAppCount = 0;
   var _blockerEnabled = true;
+  var _notificationGateEnabled = true;
   StreamSubscription<String>? _blockedApps;
 
   @override
@@ -87,11 +88,14 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
     final pomodoro = await widget.settings.loadPomodoro();
     final blockList = await widget.blockList.loadBlockList();
     final blockerEnabled = await widget.appBlocker.isBlockerEnabled();
+    final notificationGateEnabled = await widget.appBlocker
+        .isNotificationGateEnabled();
     if (!mounted) return;
     setState(() {
       _pomodoro = pomodoro;
       _blockedAppCount = blockList.length;
       _blockerEnabled = blockerEnabled;
+      _notificationGateEnabled = notificationGateEnabled;
     });
   }
 
@@ -124,6 +128,9 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
         onOpenBlockedApps: _openBlockedApps,
         blockerNeedsPermission: _blockedAppCount > 0 && !_blockerEnabled,
         onAllowBlocking: _openBlockerOnboarding,
+        notificationsNeedPermission:
+            _blockedAppCount > 0 && !_notificationGateEnabled,
+        onAllowNotifications: _openNotificationOnboarding,
       ),
     );
   }
@@ -152,11 +159,26 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
   }
 
   Future<void> _openBlockerOnboarding() async {
-    await _push(
-      (context) => BlockerOnboardingScreen(
+    await _push((context) {
+      final l10n = AppLocalizations.of(context);
+      return PermissionOnboardingScreen(
+        title: l10n.blockerOnboardingTitle,
+        body: l10n.blockerOnboardingBody,
         onOpenSettings: widget.appBlocker.openBlockerSettings,
-      ),
-    );
+      );
+    });
+    await _loadState();
+  }
+
+  Future<void> _openNotificationOnboarding() async {
+    await _push((context) {
+      final l10n = AppLocalizations.of(context);
+      return PermissionOnboardingScreen(
+        title: l10n.notificationOnboardingTitle,
+        body: l10n.notificationOnboardingBody,
+        onOpenSettings: widget.appBlocker.openNotificationGateSettings,
+      );
+    });
     await _loadState();
   }
 
