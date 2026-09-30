@@ -143,9 +143,7 @@ commit comment).
 
 ## Open decisions (only the user decides)
 
-- Does leaving the app during a session count as cancelling, or only the cancel button?
 - Optional ambient sounds (rain, white noise) – yes/no?
-- Android only, or iOS later?
 
 ## Decisions (made by the user)
 
@@ -155,3 +153,7 @@ commit comment).
   (including pauses): no temporary unlock, the block list can't be reduced.
   Apps and their notifications are released as soon as the session ends –
   timer finished or session deliberately cancelled.
+- 2026-09-30 – Leaving the app does **not** cancel a session; only the
+  cancel button (“End session”) does.
+- 2026-09-30 – Android first. iOS comes later, once the Android app is
+  complete; until then no iOS-specific work.
