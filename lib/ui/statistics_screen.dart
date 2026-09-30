@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../domain/clock.dart';
+import '../domain/daily_goal.dart';
 import '../domain/focus_label.dart';
 import '../domain/focus_session.dart';
 import '../domain/statistics.dart';
+import '../domain/streak.dart';
 import '../l10n/app_localizations.dart';
 import 'focus_time_text.dart';
 
@@ -17,11 +19,15 @@ class StatisticsScreen extends StatefulWidget {
     super.key,
     required this.finishedSessions,
     required this.labels,
+    required this.dailyGoal,
     required this.clock,
   });
 
   final Stream<List<FocusSession>> finishedSessions;
   final Stream<List<FocusLabel>> labels;
+
+  /// Goal a day must reach to count for the streak.
+  final DailyGoal dailyGoal;
   final Clock clock;
 
   @override
@@ -87,7 +93,16 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
+                    _StreakCard(
+                      current: currentStreak(
+                        sessions,
+                        widget.dailyGoal,
+                        today: now,
+                      ),
+                      best: bestStreak(sessions, widget.dailyGoal),
+                    ),
+                    const SizedBox(height: 12),
                     _WeekBars(
                       week: week,
                       monday: weekStart(now),
@@ -115,6 +130,41 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 );
               },
             ),
+      ),
+    );
+  }
+}
+
+/// The streak, stated calmly – no badges, no celebration.
+class _StreakCard extends StatelessWidget {
+  const _StreakCard({required this.current, required this.best});
+
+  final int current;
+  final int best;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                l10n.currentStreak(current),
+                style: theme.textTheme.titleMedium,
+              ),
+            ),
+            Text(
+              l10n.bestStreak(best),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
