@@ -37,7 +37,7 @@
 
          In particular, this is used by the Flutter engine in io.flutter.plugin.text.ProcessTextPlugin. -->
     <queries>
-        <!-- Lets Focus list launcher apps for the block list (no QUERY_ALL_PACKAGES). -->
+        <!-- Lets Focus list launcher apps for the block list (instead of the broad all-packages permission). -->
         <intent>
             <action android:name="android.intent.action.MAIN"/>
             <category android:name="android.intent.category.LAUNCHER"/>

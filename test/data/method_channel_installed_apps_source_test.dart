@@ -1,4 +1,3 @@
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:focus_timer/data/method_channel_installed_apps_source.dart';
 import 'package:focus_timer/domain/blocking.dart';
