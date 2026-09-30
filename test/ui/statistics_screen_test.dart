@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:focus_timer/domain/focus_label.dart';
 import 'package:focus_timer/domain/focus_session.dart';
 import 'package:focus_timer/ui/statistics_screen.dart';
 
@@ -7,10 +8,16 @@ import '../support/pump_app.dart';
 
 void main() {
   final now = DateTime(2026, 9, 30, 20);
-  FocusSession completed(DateTime start, int minutes) => FocusSession(
-    start: start,
-    planned: Duration(minutes: minutes),
-  ).complete();
+  FocusSession completed(DateTime start, int minutes, [String? labelId]) =>
+      FocusSession(
+        start: start,
+        planned: Duration(minutes: minutes),
+        labelId: labelId,
+      ).complete();
+  final labels = [
+    FocusLabel(id: 'study', name: 'Study'),
+    FocusLabel(id: 'work', name: 'Work'),
+  ];
 
   Future<void> pumpStatistics(
     WidgetTester tester,
@@ -19,6 +26,7 @@ void main() {
     await tester.pumpApp(
       StatisticsScreen(
         finishedSessions: Stream.value(sessions),
+        labels: Stream.value(labels),
         clock: () => now,
       ),
     );
@@ -53,6 +61,46 @@ void main() {
       await pumpStatistics(tester, []);
 
       expect(find.text('0 min'), findsNWidgets(2));
+    });
+
+    testWidgets('breaks this week down by label, largest first', (
+      tester,
+    ) async {
+      await pumpStatistics(tester, [
+        completed(DateTime(2026, 9, 28, 9), 25, 'study'),
+        completed(DateTime(2026, 9, 29, 9), 50, 'study'),
+        completed(DateTime(2026, 9, 29, 14), 40, 'work'),
+      ]);
+
+      expect(find.text('By label'), findsOneWidget);
+      expect(find.text('1h 15'), findsOneWidget);
+      expect(find.text('40 min'), findsOneWidget);
+      expect(
+        tester.getTopLeft(find.text('Study')).dy,
+        lessThan(tester.getTopLeft(find.text('Work')).dy),
+      );
+    });
+
+    testWidgets('includes earlier sessions of the month on Month', (
+      tester,
+    ) async {
+      await pumpStatistics(tester, [
+        completed(DateTime(2026, 9, 3, 9), 25, 'study'),
+        completed(DateTime(2026, 9, 29, 9), 40, 'work'),
+      ]);
+      expect(find.text('Study'), findsNothing);
+
+      await tester.tap(find.text('Month'));
+      await tester.pump();
+
+      expect(find.text('Study'), findsOneWidget);
+      expect(find.text('Work'), findsOneWidget);
+    });
+
+    testWidgets('shows sessions without label as Unlabeled', (tester) async {
+      await pumpStatistics(tester, [completed(DateTime(2026, 9, 29, 9), 35)]);
+
+      expect(find.text('Unlabeled'), findsOneWidget);
     });
   });
 }
