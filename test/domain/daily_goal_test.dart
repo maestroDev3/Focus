@@ -68,4 +68,13 @@ void main() {
       expect(goalProgress(const Duration(hours: 5), const DailyGoal()), 1.0);
     });
   });
+
+  group('DailyGoal.step', () {
+    test('changes the goal in 10 minute steps within the limits', () {
+      expect(const DailyGoal().step(up: true).minutes, 130);
+      expect(const DailyGoal().step(up: false).minutes, 110);
+      expect(DailyGoal.validated(10).step(up: false).minutes, 10);
+      expect(DailyGoal.validated(720).step(up: true).minutes, 720);
+    });
+  });
 }

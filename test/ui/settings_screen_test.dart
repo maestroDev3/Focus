@@ -64,5 +64,16 @@ void main() {
       expect(find.byTooltip('Increase Focus'), findsOneWidget);
       expect(find.byTooltip('Decrease Long break after'), findsOneWidget);
     });
+
+    testWidgets('changes the daily goal in 10 minute steps', (tester) async {
+      final repository = await pumpSettings(tester);
+      expect(find.text('2h'), findsOneWidget);
+
+      await tester.tap(find.byKey(const Key('dailyGoal-increase')));
+      await tester.pump();
+
+      expect(find.text('2h 10'), findsOneWidget);
+      expect(repository.dailyGoal.minutes, 130);
+    });
   });
 }
