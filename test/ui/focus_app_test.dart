@@ -2,24 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:focus_timer/domain/focus_session.dart';
 import 'package:focus_timer/domain/focus_timer.dart';
+import 'package:focus_timer/domain/pomodoro.dart';
 import 'package:focus_timer/l10n/app_localizations.dart';
 import 'package:focus_timer/ui/focus_app.dart';
 import 'package:focus_timer/ui/theme.dart';
 
 import '../support/fake_session_repository.dart';
+import '../support/fake_settings_repository.dart';
 import '../support/pump_app.dart';
 
 void main() {
   var now = DateTime(2026, 9, 29, 20);
   var repository = FakeSessionRepository();
+  var settings = FakeSettingsRepository();
   FocusApp buildApp() => FocusApp(
     timer: FocusTimer(repository: repository, clock: () => now),
+    settings: settings,
     clock: () => now,
   );
 
   setUp(() {
     now = DateTime(2026, 9, 29, 20);
     repository = FakeSessionRepository();
+    settings = FakeSettingsRepository();
   });
 
   Future<void> elapse(WidgetTester tester, Duration duration) async {
@@ -134,6 +139,54 @@ void main() {
       await tester.pump(const Duration(milliseconds: 500));
 
       expect(find.text('Begin focus'), findsOneWidget);
+    });
+  });
+
+  group('FocusApp settings', () {
+    testWidgets('uses the configured focus duration', (tester) async {
+      settings.pomodoro = const PomodoroSettings(
+        focus: Duration(minutes: 50),
+      );
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+
+      expect(find.text('50 min'), findsOneWidget);
+
+      await beginFocus(tester);
+      expect(find.text('50:00'), findsOneWidget);
+    });
+
+    testWidgets('uses the configured break duration', (tester) async {
+      settings.pomodoro = const PomodoroSettings(
+        shortBreak: Duration(minutes: 10),
+      );
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+      await beginFocus(tester);
+
+      await elapse(tester, const Duration(minutes: 25));
+
+      expect(find.text('Short break · 10 min'), findsOneWidget);
+    });
+
+    testWidgets('opens the settings and shows changes on home', (
+      tester,
+    ) async {
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+
+      await tester.tap(find.byTooltip('Settings'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(find.text('Long break after'), findsOneWidget);
+
+      await tester.tap(find.byKey(const Key('focus-increase')));
+      await tester.pump();
+      await tester.pageBack();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(find.text('30 min'), findsOneWidget);
     });
   });
 

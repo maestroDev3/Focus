@@ -10,12 +10,14 @@ void main() {
       WidgetTester tester, {
       required DateTime now,
       VoidCallback? onStart,
+      VoidCallback? onOpenSettings,
     }) {
       return tester.pumpApp(
         HomeScreen(
           clock: () => now,
           focusDuration: const Duration(minutes: 25),
           onStart: onStart ?? () {},
+          onOpenSettings: onOpenSettings ?? () {},
         ),
       );
     }
@@ -65,6 +67,22 @@ void main() {
       final button = find.widgetWithText(FilledButton, 'Begin focus');
       expect(button, findsOneWidget);
       expect(tester.getSize(button).height, greaterThanOrEqualTo(56));
+    });
+
+    testWidgets('opens the settings from a button with a tooltip', (
+      tester,
+    ) async {
+      var opened = 0;
+      await pumpHome(
+        tester,
+        now: DateTime(2026, 9, 29, 20),
+        onOpenSettings: () => opened++,
+      );
+
+      await tester.tap(find.byTooltip('Settings'));
+      await tester.pump();
+
+      expect(opened, 1);
     });
   });
 }
