@@ -13,6 +13,9 @@ abstract interface class LabelRepository {
 
   /// Deletes a label. Sessions keep its id and count as unlabeled later.
   Future<void> deleteLabel(String id);
+
+  /// Replaces all labels (keeping their ids), e.g. when restoring a backup.
+  Future<void> replaceAll(List<FocusLabel> labels);
 }
 
 /// Throws [ArgumentError] if another label (not [exceptId]) already has
