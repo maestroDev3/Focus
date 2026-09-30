@@ -13,6 +13,8 @@ void main() {
       VoidCallback? onOpenSettings,
       int blockedAppCount = 0,
       VoidCallback? onOpenBlockedApps,
+      bool blockerNeedsPermission = false,
+      VoidCallback? onAllowBlocking,
     }) {
       return tester.pumpApp(
         HomeScreen(
@@ -22,6 +24,8 @@ void main() {
           onOpenSettings: onOpenSettings ?? () {},
           blockedAppCount: blockedAppCount,
           onOpenBlockedApps: onOpenBlockedApps ?? () {},
+          blockerNeedsPermission: blockerNeedsPermission,
+          onAllowBlocking: onAllowBlocking ?? () {},
         ),
       );
     }
@@ -110,6 +114,34 @@ void main() {
       await tester.pump();
 
       expect(opened, 1);
+    });
+
+    testWidgets('asks to allow app blocking when the permission is missing', (
+      tester,
+    ) async {
+      var allowed = 0;
+      await pumpHome(
+        tester,
+        now: DateTime(2026, 9, 29, 20),
+        blockedAppCount: 2,
+        blockerNeedsPermission: true,
+        onAllowBlocking: () => allowed++,
+      );
+
+      await tester.tap(find.text('Allow app blocking'));
+      await tester.pump();
+
+      expect(allowed, 1);
+    });
+
+    testWidgets('shows no permission hint when not needed', (tester) async {
+      await pumpHome(
+        tester,
+        now: DateTime(2026, 9, 29, 20),
+        blockedAppCount: 2,
+      );
+
+      expect(find.text('Allow app blocking'), findsNothing);
     });
   });
 }
