@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../domain/daily_goal.dart';
 import '../domain/pomodoro.dart';
 import '../domain/settings_repository.dart';
 
@@ -11,6 +12,7 @@ class SharedPreferencesSettingsRepository implements SettingsRepository {
 
   static const pomodoroKey = 'settings.pomodoro.v1';
   static const selectedLabelKey = 'settings.selectedLabel.v1';
+  static const dailyGoalKey = 'settings.goal.v1';
   static const _version = 1;
 
   final SharedPreferences _preferences;
@@ -63,5 +65,25 @@ class SharedPreferencesSettingsRepository implements SettingsRepository {
     } else {
       await _preferences.setString(selectedLabelKey, id);
     }
+  }
+
+  @override
+  Future<DailyGoal> loadDailyGoal() async {
+    final stored = _preferences.getString(dailyGoalKey);
+    if (stored == null) return const DailyGoal();
+    return switch (jsonDecode(stored)) {
+      {'v': _version, 'minutes': final int minutes} => DailyGoal.validated(
+        minutes,
+      ),
+      _ => throw FormatException('Unknown daily goal: $stored'),
+    };
+  }
+
+  @override
+  Future<void> saveDailyGoal(DailyGoal goal) async {
+    await _preferences.setString(
+      dailyGoalKey,
+      jsonEncode({'v': _version, 'minutes': goal.minutes}),
+    );
   }
 }

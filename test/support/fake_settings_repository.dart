@@ -1,3 +1,4 @@
+import 'package:focus_timer/domain/daily_goal.dart';
 import 'package:focus_timer/domain/pomodoro.dart';
 import 'package:focus_timer/domain/settings_repository.dart';
 
@@ -7,6 +8,7 @@ class FakeSettingsRepository implements SettingsRepository {
 
   PomodoroSettings pomodoro;
   String? selectedLabelId;
+  DailyGoal dailyGoal = const DailyGoal();
 
   @override
   Future<PomodoroSettings> loadPomodoro() async => pomodoro;
@@ -20,4 +22,10 @@ class FakeSettingsRepository implements SettingsRepository {
 
   @override
   Future<void> saveSelectedLabelId(String? id) async => selectedLabelId = id;
+
+  @override
+  Future<DailyGoal> loadDailyGoal() async => dailyGoal;
+
+  @override
+  Future<void> saveDailyGoal(DailyGoal goal) async => dailyGoal = goal;
 }
