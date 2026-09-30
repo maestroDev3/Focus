@@ -18,6 +18,8 @@ class HomeScreen extends StatelessWidget {
     required this.onOpenBlockedApps,
     required this.blockerNeedsPermission,
     required this.onAllowBlocking,
+    required this.notificationsNeedPermission,
+    required this.onAllowNotifications,
   });
 
   final Clock clock;
@@ -32,6 +34,10 @@ class HomeScreen extends StatelessWidget {
   /// Apps are paused but the blocker is not allowed yet.
   final bool blockerNeedsPermission;
   final VoidCallback onAllowBlocking;
+
+  /// Apps are paused but notification access is not granted yet.
+  final bool notificationsNeedPermission;
+  final VoidCallback onAllowNotifications;
 
   @override
   Widget build(BuildContext context) {
@@ -112,6 +118,16 @@ class HomeScreen extends StatelessWidget {
                             onPressed: onAllowBlocking,
                             icon: const Icon(Icons.warning_amber_outlined),
                             label: Text(l10n.allowAppBlocking),
+                          ),
+                        ),
+                      if (notificationsNeedPermission)
+                        Center(
+                          child: TextButton.icon(
+                            onPressed: onAllowNotifications,
+                            icon: const Icon(
+                              Icons.notifications_paused_outlined,
+                            ),
+                            label: Text(l10n.allowHoldingNotifications),
                           ),
                         ),
                       const Spacer(),

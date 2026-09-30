@@ -2,11 +2,18 @@ import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
 
-/// Explains why Focus needs the accessibility permission before sending the
-/// user to the system settings.
-class BlockerOnboardingScreen extends StatelessWidget {
-  const BlockerOnboardingScreen({super.key, required this.onOpenSettings});
+/// Explains why Focus needs an Android permission before sending the user
+/// to the system settings where it is granted.
+class PermissionOnboardingScreen extends StatelessWidget {
+  const PermissionOnboardingScreen({
+    super.key,
+    required this.title,
+    required this.body,
+    required this.onOpenSettings,
+  });
 
+  final String title;
+  final String body;
   final VoidCallback onOpenSettings;
 
   @override
@@ -21,13 +28,10 @@ class BlockerOnboardingScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
-                l10n.blockerOnboardingTitle,
-                style: theme.textTheme.displaySmall,
-              ),
+              Text(title, style: theme.textTheme.displaySmall),
               const SizedBox(height: 16),
               Text(
-                l10n.blockerOnboardingBody,
+                body,
                 style: theme.textTheme.bodyLarge?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
