@@ -82,4 +82,60 @@ void main() {
       );
     });
   });
+
+  group('PomodoroSettings.step', () {
+    test('changes the focus duration in 5 minute steps', () {
+      expect(
+        defaults.step(PomodoroField.focus, up: true).focus,
+        const Duration(minutes: 30),
+      );
+      expect(
+        defaults.step(PomodoroField.focus, up: false).focus,
+        const Duration(minutes: 20),
+      );
+    });
+
+    test('changes breaks by one minute and sessions by one', () {
+      expect(
+        defaults.step(PomodoroField.shortBreak, up: true).shortBreak,
+        const Duration(minutes: 6),
+      );
+      expect(
+        defaults.step(PomodoroField.longBreak, up: false).longBreak,
+        const Duration(minutes: 14),
+      );
+      expect(
+        defaults
+            .step(PomodoroField.sessionsBeforeLongBreak, up: true)
+            .sessionsBeforeLongBreak,
+        5,
+      );
+    });
+
+    test('stays within the limits', () {
+      final minimum = defaults.copyWith(
+        focus: const Duration(minutes: 5),
+        shortBreak: const Duration(minutes: 1),
+        sessionsBeforeLongBreak: 2,
+      );
+      final maximum = defaults.copyWith(
+        focus: const Duration(minutes: 180),
+        longBreak: const Duration(minutes: 60),
+        sessionsBeforeLongBreak: 8,
+      );
+
+      expect(minimum.step(PomodoroField.focus, up: false), minimum);
+      expect(minimum.step(PomodoroField.shortBreak, up: false), minimum);
+      expect(
+        minimum.step(PomodoroField.sessionsBeforeLongBreak, up: false),
+        minimum,
+      );
+      expect(maximum.step(PomodoroField.focus, up: true), maximum);
+      expect(maximum.step(PomodoroField.longBreak, up: true), maximum);
+      expect(
+        maximum.step(PomodoroField.sessionsBeforeLongBreak, up: true),
+        maximum,
+      );
+    });
+  });
 }

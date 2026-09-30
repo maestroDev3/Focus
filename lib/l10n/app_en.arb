@@ -102,5 +102,52 @@
   "endBreak": "End break",
   "@endBreak": {
     "description": "Button that ends a running break early."
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": "Title of the settings screen and tooltip of the button that opens it."
+  },
+  "settingsFocus": "Focus",
+  "@settingsFocus": {
+    "description": "Setting for the length of a focus session."
+  },
+  "settingsShortBreak": "Short break",
+  "@settingsShortBreak": {
+    "description": "Setting for the length of a short break."
+  },
+  "settingsLongBreak": "Long break",
+  "@settingsLongBreak": {
+    "description": "Setting for the length of a long break."
+  },
+  "settingsLongBreakAfter": "Long break after",
+  "@settingsLongBreakAfter": {
+    "description": "Setting for how many sessions come before a long break."
+  },
+  "sessionsCount": "{count, plural, =1{1 session} other{{count} sessions}}",
+  "@sessionsCount": {
+    "description": "A number of focus sessions.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "increaseSetting": "Increase {setting}",
+  "@increaseSetting": {
+    "description": "Tooltip of the + button next to a setting.",
+    "placeholders": {
+      "setting": {
+        "type": "String"
+      }
+    }
+  },
+  "decreaseSetting": "Decrease {setting}",
+  "@decreaseSetting": {
+    "description": "Tooltip of the − button next to a setting.",
+    "placeholders": {
+      "setting": {
+        "type": "String"
+      }
+    }
   }
 }
