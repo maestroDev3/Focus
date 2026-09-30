@@ -48,6 +48,9 @@ class FocusTimer {
     return true;
   }
 
+  /// All completed and cancelled sessions, now and after every change.
+  Stream<List<FocusSession>> watchFinished() => _repository.watchFinished();
+
   /// Focus time of all sessions that ended today.
   Future<Duration> focusedToday() async =>
       focusedOn(_clock(), await _repository.watchFinished().first);
