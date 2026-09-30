@@ -1,23 +1,65 @@
 package de.maestrodev.focus_timer
 
+import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.os.Build
+import android.provider.Settings
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : FlutterActivity() {
+    private var blockingChannel: MethodChannel? = null
+    private var pendingBlockedPackage: String? = null
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, APPS_CHANNEL)
-            .setMethodCallHandler { call, result ->
+        val messenger = flutterEngine.dartExecutor.binaryMessenger
+        MethodChannel(messenger, APPS_CHANNEL).setMethodCallHandler { call, result ->
+            when (call.method) {
+                "installedApps" -> result.success(installedApps())
+                else -> result.notImplemented()
+            }
+        }
+        pendingBlockedPackage = intent?.getStringExtra(EXTRA_BLOCKED_PACKAGE)
+        blockingChannel = MethodChannel(messenger, BLOCKING_CHANNEL).apply {
+            setMethodCallHandler { call, result ->
                 when (call.method) {
-                    "installedApps" -> result.success(installedApps())
+                    "isBlockerEnabled" -> result.success(isBlockerEnabled())
+                    "openBlockerSettings" -> {
+                        startActivity(
+                            Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                        )
+                        result.success(null)
+                    }
+                    "initialBlockedPackage" -> {
+                        result.success(pendingBlockedPackage)
+                        pendingBlockedPackage = null
+                    }
                     else -> result.notImplemented()
                 }
             }
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        intent.getStringExtra(EXTRA_BLOCKED_PACKAGE)?.let { app ->
+            blockingChannel?.invokeMethod("blockedAppOpened", app)
+        }
+    }
+
+    private fun isBlockerEnabled(): Boolean {
+        val enabled = Settings.Secure.getString(
+            contentResolver,
+            Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES,
+        ) ?: return false
+        val blocker = ComponentName(this, FocusBlockerService::class.java).flattenToString()
+        return enabled.split(':').any { it.equals(blocker, ignoreCase = true) }
     }
 
     /** Apps with a launcher entry (visible via the <queries> entry in the manifest). */
@@ -42,6 +84,8 @@ class MainActivity : FlutterActivity() {
     }
 
     companion object {
+        const val EXTRA_BLOCKED_PACKAGE = "blockedPackage"
         private const val APPS_CHANNEL = "de.maestrodev.focus_timer/apps"
+        private const val BLOCKING_CHANNEL = "de.maestrodev.focus_timer/blocking"
     }
 }
