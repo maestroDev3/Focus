@@ -114,6 +114,7 @@ class _FocusAppState extends State<FocusApp> {
               builder: (context) => StatisticsScreen(
                 finishedSessions: widget.timer.watchFinished(),
                 labels: widget.labels.watchLabels(),
+                dailyGoal: _dailyGoal,
                 clock: widget.clock,
               ),
             ),

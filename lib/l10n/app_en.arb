@@ -265,5 +265,23 @@
   "noFocusYet": "No focus time yet.",
   "@noFocusYet": {
     "description": "Shown in the label breakdown when the period has no sessions."
+  },
+  "currentStreak": "Current streak · {count, plural, =1{1 day} other{{count} days}}",
+  "@currentStreak": {
+    "description": "Days in a row with the daily goal reached, up to today.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "bestStreak": "Best · {count, plural, =1{1 day} other{{count} days}}",
+  "@bestStreak": {
+    "description": "The longest streak so far.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }
