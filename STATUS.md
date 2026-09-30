@@ -25,11 +25,11 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## Recently done
 
+- #112 App icons in the paused apps list
 - Epic #20 Distraction blocking merged into `main` (PR #82, on your request before a dedicated phone test)
 - #97 Brand: Ring app icon, noir splash with FOCUS intro, champagne glow background
 - Decision: design Noir & Champagne with the Ring icon, splash and glow background as designed
 - Decisions: leaving the app never cancels a session; Android first, iOS later
-- #16 Backup and export – epic #15 Data safety complete
 
 ## Open decisions (user only)
 
