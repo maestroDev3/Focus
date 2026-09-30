@@ -8,7 +8,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- #22 Block selected apps during a focus session (on `epic/distraction-blocking`)
+- #23 Hold back notifications of blocked apps (on `epic/distraction-blocking`)
 
 ## Up next
 
@@ -20,18 +20,18 @@ The GitHub issues are authoritative; this file is the summary.
 | Epic | Stories (in order) |
 |---|---|
 | #4 Focus timer | #6 Timer survives app switch and restart (`backlog`, waits for a decision) → ~~#7 Configurable durations and breaks~~ (done) |
-| #20 Distraction blocking | ~~#21 Choose apps to block~~ (done on epic branch) → #22 Block selected apps during a focus session (`in-progress`) → #23 Hold back notifications of blocked apps (`ready`) |
+| #20 Distraction blocking | ~~#21 Choose apps to block~~ (done on epic branch) → ~~#22 Block selected apps during a focus session~~ (done on epic branch) → #23 Hold back notifications of blocked apps (`in-progress`) |
 | #8 Labels and goals | #9 Labels for sessions (`ready`) → #10 Daily focus goal with progress ring (`ready`) |
 | #11 Statistics | #12 Focus time per day and week (`ready`) → #13 Breakdown by label (`ready`) → #14 Streaks (`ready`) |
 | #15 Data safety | #16 Backup and export (`ready`) |
 
 ## Recently done
 
+- #22 Block selected apps during a focus session (on `epic/distraction-blocking`)
 - #21 Choose apps to block (on `epic/distraction-blocking`)
 - #7 Configurable durations and breaks (Pomodoro settings, breaks, settings screen)
 - Decision: repository is public (free GitHub Actions minutes)
 - #5 Start, pause and cancel a session (FocusSession, repository, FocusTimer, session screen)
-- #3 Home screen with a big start button – epic #1 Foundation complete
 
 ## Open decisions (user only)
 
