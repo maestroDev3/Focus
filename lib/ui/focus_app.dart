@@ -19,6 +19,7 @@ import 'blocked_apps_screen.dart';
 import 'blocked_screen.dart';
 import 'break_screen.dart';
 import 'home_screen.dart';
+import 'intro_screen.dart';
 import 'label_sheet.dart';
 import 'labels_screen.dart';
 import 'permission_onboarding_screen.dart';
@@ -39,6 +40,7 @@ class FocusApp extends StatefulWidget {
     required this.installedApps,
     required this.appBlocker,
     this.clock = DateTime.now,
+    this.showIntro = false,
   });
 
   /// Runs and stores focus sessions.
@@ -65,6 +67,9 @@ class FocusApp extends StatefulWidget {
   /// Source of the current time for every screen.
   final Clock clock;
 
+  /// Whether to show the short intro before home (on cold start).
+  final bool showIntro;
+
   @override
   State<FocusApp> createState() => _FocusAppState();
 }
@@ -72,6 +77,7 @@ class FocusApp extends StatefulWidget {
 class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
   final _navigator = GlobalKey<NavigatorState>();
   var _pomodoro = const PomodoroSettings();
+  late var _introDone = !widget.showIntro;
   var _dailyGoal = const DailyGoal();
   var _focusedToday = Duration.zero;
   var _labels = const <FocusLabel>[];
@@ -155,26 +161,31 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
       themeMode: ThemeMode.system,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: Builder(
-        builder: (homeContext) => HomeScreen(
-          clock: widget.clock,
-          focusDuration: _pomodoro.focus,
-          onStart: _startSession,
-          onOpenSettings: _openSettings,
-          blockedAppCount: _blockedAppCount,
-          onOpenBlockedApps: _openBlockedApps,
-          blockerNeedsPermission: _blockedAppCount > 0 && !_blockerEnabled,
-          onAllowBlocking: _openBlockerOnboarding,
-          notificationsNeedPermission:
-              _blockedAppCount > 0 && !_notificationGateEnabled,
-          onAllowNotifications: _openNotificationOnboarding,
-          labelName: _labelWithId(_selectedLabelId)?.name,
-          hasLabels: _labels.isNotEmpty,
-          onChooseLabel: () => _chooseLabel(homeContext),
-          focusedToday: _focusedToday,
-          dailyGoal: _dailyGoal,
-          onOpenStatistics: _openStatistics,
-        ),
+      home: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 600),
+        child: _introDone
+            ? Builder(
+            builder: (homeContext) => HomeScreen(
+              clock: widget.clock,
+              focusDuration: _pomodoro.focus,
+              onStart: _startSession,
+              onOpenSettings: _openSettings,
+              blockedAppCount: _blockedAppCount,
+              onOpenBlockedApps: _openBlockedApps,
+              blockerNeedsPermission: _blockedAppCount > 0 && !_blockerEnabled,
+              onAllowBlocking: _openBlockerOnboarding,
+              notificationsNeedPermission:
+                  _blockedAppCount > 0 && !_notificationGateEnabled,
+              onAllowNotifications: _openNotificationOnboarding,
+              labelName: _labelWithId(_selectedLabelId)?.name,
+              hasLabels: _labels.isNotEmpty,
+              onChooseLabel: () => _chooseLabel(homeContext),
+              focusedToday: _focusedToday,
+              dailyGoal: _dailyGoal,
+              onOpenStatistics: _openStatistics,
+            )
+            : IntroScreen(onDone: () => setState(() => _introDone = true)),
+      ),
       ),
     );
   }

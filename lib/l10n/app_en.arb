@@ -393,5 +393,9 @@
   "notificationOnboardingBody": "Focus can keep notifications of paused apps back during a session and deliver them as soon as it ends – nothing gets lost. In the next screen, switch on “Focus notification hold”.",
   "@notificationOnboardingBody": {
     "description": "Explanation of notification access before opening the system settings."
+  },
+  "introTagline": "One quiet hour at a time.",
+  "@introTagline": {
+    "description": "Tagline below the wordmark on the intro shown at app start."
   }
 }

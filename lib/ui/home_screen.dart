@@ -5,6 +5,7 @@ import '../domain/clock.dart';
 import '../domain/daily_goal.dart';
 import '../domain/day_part.dart';
 import '../l10n/app_localizations.dart';
+import 'widgets/focus_background.dart';
 import 'focus_time_text.dart';
 
 /// The calm first screen: date, a greeting and one big button to start
@@ -71,127 +72,130 @@ class HomeScreen extends StatelessWidget {
       DayPart.evening => l10n.greetingEvening,
     };
 
-    return Scaffold(
-      body: SafeArea(
-        // Scrolls instead of overflowing on small screens or large fonts;
-        // on normal screens the spacers still center the content.
-        child: LayoutBuilder(
-          builder: (context, constraints) => SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(minHeight: constraints.maxHeight),
-              child: IntrinsicHeight(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(28, 32, 28, 32),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              DateFormat.MMMMEEEEd(locale).format(now),
-                              style: theme.textTheme.labelLarge?.copyWith(
-                                color: theme.colorScheme.onSurfaceVariant,
-                                letterSpacing: 2,
+    return FocusBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
+          // Scrolls instead of overflowing on small screens or large fonts;
+          // on normal screens the spacers still center the content.
+          child: LayoutBuilder(
+            builder: (context, constraints) => SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: IntrinsicHeight(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(28, 32, 28, 32),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                DateFormat.MMMMEEEEd(locale).format(now),
+                                style: theme.textTheme.labelLarge?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                  letterSpacing: 2,
+                                ),
                               ),
                             ),
-                          ),
-                          IconButton(
-                            onPressed: onOpenStatistics,
-                            tooltip: l10n.statistics,
+                            IconButton(
+                              onPressed: onOpenStatistics,
+                              tooltip: l10n.statistics,
+                              color: theme.colorScheme.onSurfaceVariant,
+                              icon: const Icon(Icons.insights_outlined),
+                            ),
+                            IconButton(
+                              onPressed: onOpenSettings,
+                              tooltip: l10n.settings,
+                              color: theme.colorScheme.onSurfaceVariant,
+                              icon: const Icon(Icons.tune),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+                        Text(greeting, style: theme.textTheme.displaySmall),
+                        const SizedBox(height: 8),
+                        Text(
+                          l10n.homeSubtitle,
+                          style: theme.textTheme.bodyLarge?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant,
-                            icon: const Icon(Icons.insights_outlined),
-                          ),
-                          IconButton(
-                            onPressed: onOpenSettings,
-                            tooltip: l10n.settings,
-                            color: theme.colorScheme.onSurfaceVariant,
-                            icon: const Icon(Icons.tune),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 24),
-                      Text(greeting, style: theme.textTheme.displaySmall),
-                      const SizedBox(height: 8),
-                      Text(
-                        l10n.homeSubtitle,
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                          fontWeight: FontWeight.w300,
-                        ),
-                      ),
-                      const Spacer(),
-                      _GoalRing(focused: focusedToday, goal: dailyGoal),
-                      const SizedBox(height: 28),
-                      Wrap(
-                        alignment: WrapAlignment.center,
-                        spacing: 10,
-                        runSpacing: 10,
-                        children: [
-                          Chip(
-                            avatar: Icon(
-                              Icons.timer_outlined,
-                              size: 18,
-                              color: theme.colorScheme.primary,
-                            ),
-                            label: Text(
-                              l10n.durationMinutes(focusDuration.inMinutes),
-                            ),
-                          ),
-                          ActionChip(
-                            onPressed: onChooseLabel,
-                            avatar: Icon(
-                              Icons.label_outline,
-                              size: 18,
-                              color: theme.colorScheme.primary,
-                            ),
-                            label: Text(
-                              labelName ??
-                                  (hasLabels ? l10n.noLabel : l10n.addLabel),
-                            ),
-                          ),
-                          ActionChip(
-                            onPressed: onOpenBlockedApps,
-                            avatar: Icon(
-                              Icons.do_not_disturb_on_outlined,
-                              size: 18,
-                              color: theme.colorScheme.primary,
-                            ),
-                            label: Text(
-                              blockedAppCount == 0
-                                  ? l10n.chooseAppsToPause
-                                  : l10n.appsPaused(blockedAppCount),
-                            ),
-                          ),
-                        ],
-                      ),
-                      if (blockerNeedsPermission)
-                        Center(
-                          child: TextButton.icon(
-                            onPressed: onAllowBlocking,
-                            icon: const Icon(Icons.warning_amber_outlined),
-                            label: Text(l10n.allowAppBlocking),
+                            fontWeight: FontWeight.w300,
                           ),
                         ),
-                      if (notificationsNeedPermission)
-                        Center(
-                          child: TextButton.icon(
-                            onPressed: onAllowNotifications,
-                            icon: const Icon(
-                              Icons.notifications_paused_outlined,
+                        const Spacer(),
+                        _GoalRing(focused: focusedToday, goal: dailyGoal),
+                        const SizedBox(height: 28),
+                        Wrap(
+                          alignment: WrapAlignment.center,
+                          spacing: 10,
+                          runSpacing: 10,
+                          children: [
+                            Chip(
+                              avatar: Icon(
+                                Icons.timer_outlined,
+                                size: 18,
+                                color: theme.colorScheme.primary,
+                              ),
+                              label: Text(
+                                l10n.durationMinutes(focusDuration.inMinutes),
+                              ),
                             ),
-                            label: Text(l10n.allowHoldingNotifications),
+                            ActionChip(
+                              onPressed: onChooseLabel,
+                              avatar: Icon(
+                                Icons.label_outline,
+                                size: 18,
+                                color: theme.colorScheme.primary,
+                              ),
+                              label: Text(
+                                labelName ??
+                                    (hasLabels ? l10n.noLabel : l10n.addLabel),
+                              ),
+                            ),
+                            ActionChip(
+                              onPressed: onOpenBlockedApps,
+                              avatar: Icon(
+                                Icons.do_not_disturb_on_outlined,
+                                size: 18,
+                                color: theme.colorScheme.primary,
+                              ),
+                              label: Text(
+                                blockedAppCount == 0
+                                    ? l10n.chooseAppsToPause
+                                    : l10n.appsPaused(blockedAppCount),
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (blockerNeedsPermission)
+                          Center(
+                            child: TextButton.icon(
+                              onPressed: onAllowBlocking,
+                              icon: const Icon(Icons.warning_amber_outlined),
+                              label: Text(l10n.allowAppBlocking),
+                            ),
                           ),
+                        if (notificationsNeedPermission)
+                          Center(
+                            child: TextButton.icon(
+                              onPressed: onAllowNotifications,
+                              icon: const Icon(
+                                Icons.notifications_paused_outlined,
+                              ),
+                              label: Text(l10n.allowHoldingNotifications),
+                            ),
+                          ),
+                        const Spacer(),
+                        FilledButton(
+                          onPressed: onStart,
+                          style: FilledButton.styleFrom(
+                            minimumSize: const Size.fromHeight(64),
+                          ),
+                          child: Text(l10n.beginFocus),
                         ),
-                      const Spacer(),
-                      FilledButton(
-                        onPressed: onStart,
-                        style: FilledButton.styleFrom(
-                          minimumSize: const Size.fromHeight(64),
-                        ),
-                        child: Text(l10n.beginFocus),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),

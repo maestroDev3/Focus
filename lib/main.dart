@@ -33,6 +33,7 @@ Future<void> main() async {
   );
   runApp(
     FocusApp(
+      showIntro: true,
       timer: timer,
       settings: settings,
       labels: labels,

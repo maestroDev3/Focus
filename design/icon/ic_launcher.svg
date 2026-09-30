@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="108" height="108" viewBox="0 0 108 108">
+  <!-- Master design of the Focus “Ring” icon (legacy PNGs are rendered from it). -->
+  <defs>
+    <radialGradient id="light" cx="32" cy="24" r="92" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2A241B"/>
+      <stop offset="0.55" stop-color="#0E0D0B"/>
+      <stop offset="1" stop-color="#0E0D0B"/>
+    </radialGradient>
+  </defs>
+  <rect width="108" height="108" rx="26" fill="url(#light)"/>
+  <circle cx="54" cy="54" r="22" fill="none" stroke="#C9A96E" stroke-opacity="0.22" stroke-width="3.2"/>
+  <path d="M54 32 A22 22 0 1 1 34.95 43" fill="none" stroke="#C9A96E" stroke-width="3.2" stroke-linecap="round"/>
+  <circle cx="34.95" cy="43" r="3" fill="#C9A96E"/>
+</svg>
