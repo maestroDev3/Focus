@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
+import '../domain/backup.dart';
 import '../domain/daily_goal.dart';
 import '../domain/pomodoro.dart';
 import '../domain/settings_repository.dart';
@@ -8,9 +10,16 @@ import 'focus_time_text.dart';
 
 /// Lets the user tune the Pomodoro rhythm; every change is saved at once.
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({super.key, required this.settings});
+  const SettingsScreen({
+    super.key,
+    required this.settings,
+    required this.backupFiles,
+  });
 
   final SettingsRepository settings;
+
+  /// Exports and restores backups.
+  final BackupFiles backupFiles;
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -50,6 +59,55 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (next == _dailyGoal) return;
     setState(() => _dailyGoal = next);
     await widget.settings.saveDailyGoal(next);
+  }
+
+  Future<void> _export() async {
+    final messenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context);
+    if (await widget.backupFiles.export()) {
+      messenger.showSnackBar(SnackBar(content: Text(l10n.backupSaved)));
+    }
+  }
+
+  Future<void> _restore() async {
+    final messenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context);
+    final locale = Localizations.localeOf(context).toLanguageTag();
+    final Backup? picked;
+    try {
+      picked = await widget.backupFiles.pick();
+    } on FormatException {
+      messenger.showSnackBar(SnackBar(content: Text(l10n.notABackup)));
+      return;
+    }
+    if (picked == null || !mounted) return;
+    final backup = picked;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.restoreBackup),
+        content: Text(
+          l10n.restoreBackupQuestion(
+            backup.sessions.length,
+            DateFormat.yMMMd(locale).format(backup.createdAt),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(l10n.replace),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    await widget.backupFiles.restore(backup);
+    await _load();
+    messenger.showSnackBar(SnackBar(content: Text(l10n.backupRestored)));
   }
 
   @override
@@ -97,6 +155,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   name: l10n.settingsDailyGoal,
                   value: focusTimeText(l10n, _dailyGoal.duration),
                   onStep: _stepGoal,
+                ),
+                const Divider(height: 32),
+                ListTile(
+                  leading: const Icon(Icons.upload_file_outlined),
+                  title: Text(l10n.exportBackup),
+                  onTap: _export,
+                ),
+                ListTile(
+                  leading: const Icon(Icons.restore_outlined),
+                  title: Text(l10n.restoreBackup),
+                  onTap: _restore,
                 ),
               ],
             ),

@@ -8,6 +8,8 @@ import 'package:focus_timer/l10n/app_localizations.dart';
 import 'package:focus_timer/ui/focus_app.dart';
 import 'package:focus_timer/ui/theme.dart';
 
+import '../support/backup_files_for_tests.dart';
+import '../support/fake_document_store.dart';
 import '../support/fake_label_repository.dart';
 import '../support/fake_session_repository.dart';
 import '../support/fake_settings_repository.dart';
@@ -22,6 +24,12 @@ void main() {
     timer: FocusTimer(repository: repository, clock: () => now),
     settings: settings,
     labels: labels,
+    backupFiles: backupFilesForTests(
+      sessions: repository,
+      labels: labels,
+      settings: settings,
+      documents: FakeDocumentStore(),
+    ),
     clock: () => now,
   );
 
