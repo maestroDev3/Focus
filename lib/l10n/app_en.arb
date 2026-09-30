@@ -319,5 +319,9 @@
   "notABackup": "This file is not a Focus backup.",
   "@notABackup": {
     "description": "Shown when the picked file can't be read as a backup."
+  },
+  "introTagline": "One quiet hour at a time.",
+  "@introTagline": {
+    "description": "Tagline below the wordmark on the intro shown at app start."
   }
 }
