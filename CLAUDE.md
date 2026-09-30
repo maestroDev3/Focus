@@ -143,7 +143,7 @@ commit comment).
 
 ## Open decisions (only the user decides)
 
-- Optional ambient sounds (rain, white noise) – yes/no?
+- None at the moment.
 
 ## Decisions (made by the user)
 
@@ -160,3 +160,5 @@ commit comment).
 - 2026-09-30 – Design: “Noir & Champagne” (dark, champagne accent; ivory in
   light mode) with the **Ring** app icon, noir splash with “FOCUS” intro and a
   subtle champagne glow behind the main screens.
+- 2026-09-30 – Ambient sounds: yes (bundled sounds, no internet) – story #122
+  in epic #115 “Final features”.
