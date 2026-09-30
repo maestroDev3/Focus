@@ -161,4 +161,4 @@ commit comment).
   light mode) with the **Ring** app icon, noir splash with “FOCUS” intro and a
   subtle champagne glow behind the main screens.
 - 2026-09-30 – Ambient sounds: yes (bundled sounds, no internet) – story #122
-  in epic #115 “Final features”.
+  in epic #123 “Final features”.
