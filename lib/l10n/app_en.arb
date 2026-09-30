@@ -245,5 +245,25 @@
   "thisWeek": "This week",
   "@thisWeek": {
     "description": "Statistics tile with the focus time of the current week."
+  },
+  "byLabel": "By label",
+  "@byLabel": {
+    "description": "Heading of the label breakdown on the statistics screen."
+  },
+  "periodWeek": "Week",
+  "@periodWeek": {
+    "description": "Segment that shows the label breakdown for the current week."
+  },
+  "periodMonth": "Month",
+  "@periodMonth": {
+    "description": "Segment that shows the label breakdown for the current month."
+  },
+  "unlabeled": "Unlabeled",
+  "@unlabeled": {
+    "description": "Group of sessions without (or with a deleted) label in statistics."
+  },
+  "noFocusYet": "No focus time yet.",
+  "@noFocusYet": {
+    "description": "Shown in the label breakdown when the period has no sessions."
   }
 }

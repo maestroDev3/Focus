@@ -113,6 +113,7 @@ class _FocusAppState extends State<FocusApp> {
             MaterialPageRoute<void>(
               builder: (context) => StatisticsScreen(
                 finishedSessions: widget.timer.watchFinished(),
+                labels: widget.labels.watchLabels(),
                 clock: widget.clock,
               ),
             ),
