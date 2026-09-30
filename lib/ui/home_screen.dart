@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../domain/clock.dart';
+import '../domain/daily_goal.dart';
 import '../domain/day_part.dart';
 import '../l10n/app_localizations.dart';
+import 'focus_time_text.dart';
 
 /// The calm first screen: date, a greeting and one big button to start
 /// focusing without any friction.
@@ -17,6 +19,8 @@ class HomeScreen extends StatelessWidget {
     required this.labelName,
     required this.hasLabels,
     required this.onChooseLabel,
+    required this.focusedToday,
+    required this.dailyGoal,
   });
 
   final Clock clock;
@@ -30,6 +34,10 @@ class HomeScreen extends StatelessWidget {
   /// Whether any labels exist yet.
   final bool hasLabels;
   final VoidCallback onChooseLabel;
+
+  /// Focus time of sessions that ended today.
+  final Duration focusedToday;
+  final DailyGoal dailyGoal;
 
   @override
   Widget build(BuildContext context) {
@@ -87,20 +95,36 @@ class HomeScreen extends StatelessWidget {
                         ),
                       ),
                       const Spacer(),
-                      _PlannedDuration(minutes: focusDuration.inMinutes),
+                      _GoalRing(focused: focusedToday, goal: dailyGoal),
                       const SizedBox(height: 28),
-                      Center(
-                        child: ActionChip(
-                          onPressed: onChooseLabel,
-                          avatar: Icon(
-                            Icons.label_outline,
-                            size: 18,
-                            color: theme.colorScheme.primary,
+                      Wrap(
+                        alignment: WrapAlignment.center,
+                        spacing: 10,
+                        runSpacing: 10,
+                        children: [
+                          Chip(
+                            avatar: Icon(
+                              Icons.timer_outlined,
+                              size: 18,
+                              color: theme.colorScheme.primary,
+                            ),
+                            label: Text(
+                              l10n.durationMinutes(focusDuration.inMinutes),
+                            ),
                           ),
-                          label: Text(
-                            labelName ?? (hasLabels ? l10n.noLabel : l10n.addLabel),
+                          ActionChip(
+                            onPressed: onChooseLabel,
+                            avatar: Icon(
+                              Icons.label_outline,
+                              size: 18,
+                              color: theme.colorScheme.primary,
+                            ),
+                            label: Text(
+                              labelName ??
+                                  (hasLabels ? l10n.noLabel : l10n.addLabel),
+                            ),
                           ),
-                        ),
+                        ],
                       ),
                       const Spacer(),
                       FilledButton(
@@ -122,27 +146,55 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-/// The planned session length inside a thin champagne ring.
-class _PlannedDuration extends StatelessWidget {
-  const _PlannedDuration({required this.minutes});
+/// Today's focus time inside a thin champagne ring that fills up towards the
+/// daily goal.
+class _GoalRing extends StatelessWidget {
+  const _GoalRing({required this.focused, required this.goal});
 
-  final int minutes;
+  final Duration focused;
+  final DailyGoal goal;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     return Center(
-      child: Container(
-        width: 236,
-        height: 236,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(color: theme.colorScheme.primary, width: 1.5),
-        ),
-        child: Text(
-          AppLocalizations.of(context).durationMinutes(minutes),
-          style: theme.textTheme.displayMedium,
+      child: SizedBox.square(
+        dimension: 236,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            CircularProgressIndicator(
+              value: goalProgress(focused, goal),
+              strokeWidth: 2,
+              color: theme.colorScheme.primary,
+              backgroundColor: theme.colorScheme.outline,
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  l10n.today,
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    letterSpacing: 3,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  focusTimeText(l10n, focused),
+                  style: theme.textTheme.displayMedium,
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  l10n.dailyGoalOf(focusTimeText(l10n, goal.duration)),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

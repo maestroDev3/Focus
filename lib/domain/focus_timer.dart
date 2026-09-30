@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'clock.dart';
+import 'daily_goal.dart';
 import 'focus_session.dart';
 import 'session_repository.dart';
 
@@ -46,6 +47,10 @@ class FocusTimer {
     await _finish(session.complete());
     return true;
   }
+
+  /// Focus time of all sessions that ended today.
+  Future<Duration> focusedToday() async =>
+      focusedOn(_clock(), await _repository.watchFinished().first);
 
   /// Number of sessions completed today; drives the Pomodoro cycle.
   Future<int> completedToday() async {

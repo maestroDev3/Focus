@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../domain/clock.dart';
+import '../domain/daily_goal.dart';
 import '../domain/focus_label.dart';
 import '../domain/focus_session.dart';
 import '../domain/focus_timer.dart';
@@ -46,6 +47,8 @@ class FocusApp extends StatefulWidget {
 
 class _FocusAppState extends State<FocusApp> {
   var _pomodoro = const PomodoroSettings();
+  var _dailyGoal = const DailyGoal();
+  var _focusedToday = Duration.zero;
   var _labels = const <FocusLabel>[];
   String? _selectedLabelId;
   StreamSubscription<List<FocusLabel>>? _labelChanges;
@@ -68,9 +71,13 @@ class _FocusAppState extends State<FocusApp> {
   Future<void> _loadSettings() async {
     final pomodoro = await widget.settings.loadPomodoro();
     final selectedLabelId = await widget.settings.loadSelectedLabelId();
+    final dailyGoal = await widget.settings.loadDailyGoal();
+    final focusedToday = await widget.timer.focusedToday();
     if (!mounted) return;
     setState(() {
       _pomodoro = pomodoro;
+      _dailyGoal = dailyGoal;
+      _focusedToday = focusedToday;
       _selectedLabelId = selectedLabelId;
     });
   }
@@ -99,6 +106,8 @@ class _FocusAppState extends State<FocusApp> {
           labelName: _selectedLabel?.name,
           hasLabels: _labels.isNotEmpty,
           onChooseLabel: () => _chooseLabel(context),
+          focusedToday: _focusedToday,
+          dailyGoal: _dailyGoal,
         ),
       ),
     );
@@ -151,6 +160,7 @@ class _FocusAppState extends State<FocusApp> {
         ),
       ),
     );
+    await _loadSettings();
   }
 
   /// A completed session is followed by the right break; a cancelled one
