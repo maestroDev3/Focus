@@ -112,4 +112,23 @@ void main() {
       expect(emitted[3], isNull);
     });
   });
+
+  group('FocusTimer.completedToday', () {
+    test('counts only sessions completed today', () async {
+      final yesterday = tenOClock.subtract(const Duration(days: 1));
+      repository.finished.addAll([
+        FocusSession(start: yesterday, planned: planned).complete(),
+        FocusSession(
+          start: tenOClock.subtract(const Duration(hours: 2)),
+          planned: planned,
+        ).complete(),
+        FocusSession(
+          start: tenOClock.subtract(const Duration(hours: 1)),
+          planned: planned,
+        ).cancel(tenOClock.subtract(const Duration(minutes: 50))),
+      ]);
+
+      expect(await timer.completedToday(), 1);
+    });
+  });
 }
