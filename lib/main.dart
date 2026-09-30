@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'data/method_channel_app_blocker.dart';
 import 'data/method_channel_installed_apps_source.dart';
 import 'data/shared_preferences_block_list_repository.dart';
 import 'data/shared_preferences_blocking_state_writer.dart';
@@ -29,6 +30,7 @@ Future<void> main() async {
       settings: SharedPreferencesSettingsRepository(preferences),
       blockList: blockList,
       installedApps: const MethodChannelInstalledAppsSource(),
+      appBlocker: MethodChannelAppBlocker(),
     ),
   );
 }

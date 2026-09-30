@@ -28,6 +28,18 @@ class FocusTimer {
   /// Emits the active session (or null) after every change.
   Stream<FocusSession?> get changes => _changes.stream;
 
+  /// Continues the session stored as active (e.g. after Focus was killed);
+  /// completes it if its time is already over. Returns the running session.
+  Future<FocusSession?> restore() async {
+    final session = await _repository.loadActive();
+    if (session == null || session.isFinished) return null;
+    _current = session;
+    if (await completeIfDue()) return null;
+    await _blocking?.update(session);
+    _changes.add(session);
+    return session;
+  }
+
   Future<FocusSession> start(Duration planned) async {
     if (_current != null) throw StateError('A session is already running.');
     final session = FocusSession(start: _clock(), planned: planned);
