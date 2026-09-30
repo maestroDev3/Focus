@@ -21,7 +21,7 @@ data class BlockingState(
 
     /**
      * How long to snooze a notification of [packageName], or null to show it.
-     * Mirrors  in lib/domain/blocking.dart: at most one minute per
+     * Mirrors `snoozeFor` in lib/domain/blocking.dart: at most one minute per
      * round, so held notifications reappear soon after the session ends.
      */
     fun snoozeMillis(packageName: String, nowMillis: Long): Long? {

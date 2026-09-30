@@ -147,7 +147,7 @@ class BlockingSync {
 const notificationSnoozeStep = Duration(minutes: 1);
 
 /// How long to hold back a notification of [packageName] at [now], or null
-/// if it may be shown. Mirrored in Kotlin ().
+/// if it may be shown. Mirrored in Kotlin (`BlockingState.snoozeMillis`).
 Duration? snoozeFor({
   required BlockingState state,
   required String packageName,
