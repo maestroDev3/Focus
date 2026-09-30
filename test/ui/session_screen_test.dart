@@ -112,5 +112,19 @@ void main() {
       expect(doneCalls, 1);
       expect(lastOutcome, isA<SessionCompleted>());
     });
+
+    testWidgets('shows the label of the session', (tester) async {
+      await timer.start(const Duration(minutes: 25));
+      await tester.pumpApp(
+        SessionScreen(
+          timer: timer,
+          clock: () => now,
+          labelName: 'Study',
+          onDone: (_) {},
+        ),
+      );
+
+      expect(find.text('Focusing · Study'), findsOneWidget);
+    });
   });
 }

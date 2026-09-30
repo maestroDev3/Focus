@@ -42,5 +42,23 @@ void main() {
 
       expect(repository.loadPomodoro(), throwsFormatException);
     });
+
+    test('remembers the selected label for a new instance', () async {
+      SharedPreferences.setMockInitialValues({});
+      final preferences = await SharedPreferences.getInstance();
+      final repository = SharedPreferencesSettingsRepository(preferences);
+
+      expect(await repository.loadSelectedLabelId(), isNull);
+      await repository.saveSelectedLabelId('label-1');
+      expect(
+        await SharedPreferencesSettingsRepository(
+          preferences,
+        ).loadSelectedLabelId(),
+        'label-1',
+      );
+
+      await repository.saveSelectedLabelId(null);
+      expect(await repository.loadSelectedLabelId(), isNull);
+    });
   });
 }
