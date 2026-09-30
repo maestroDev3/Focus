@@ -131,4 +131,13 @@ void main() {
       expect(await timer.completedToday(), 1);
     });
   });
+
+  group('FocusTimer.start with a label', () {
+    test('stores the label on the session', () async {
+      await timer.start(planned, labelId: 'study');
+
+      expect(timer.current?.labelId, 'study');
+      expect(repository.active?.labelId, 'study');
+    });
+  });
 }

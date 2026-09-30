@@ -105,4 +105,31 @@ void main() {
       );
     });
   });
+
+  group('FocusSession label', () {
+    test('keeps the label through pause, resume, cancel and complete', () {
+      final labelled = FocusSession(
+        start: tenOClock,
+        planned: const Duration(minutes: 25),
+        labelId: 'study',
+      );
+
+      expect(labelled.pause(at(1)).resume(at(2)).labelId, 'study');
+      expect(labelled.cancel(at(3)).labelId, 'study');
+      expect(labelled.complete().labelId, 'study');
+    });
+
+    test('is part of equality', () {
+      expect(
+        FocusSession(start: tenOClock, planned: const Duration(minutes: 25)),
+        isNot(
+          FocusSession(
+            start: tenOClock,
+            planned: const Duration(minutes: 25),
+            labelId: 'study',
+          ),
+        ),
+      );
+    });
+  });
 }
