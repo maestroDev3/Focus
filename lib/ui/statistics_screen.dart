@@ -2,65 +2,184 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../domain/clock.dart';
+import '../domain/focus_label.dart';
 import '../domain/focus_session.dart';
 import '../domain/statistics.dart';
 import '../l10n/app_localizations.dart';
 import 'focus_time_text.dart';
 
+/// Period of the label breakdown.
+enum StatisticsPeriod { week, month }
+
 /// Honest, calm statistics derived from the stored sessions.
-class StatisticsScreen extends StatelessWidget {
+class StatisticsScreen extends StatefulWidget {
   const StatisticsScreen({
     super.key,
     required this.finishedSessions,
+    required this.labels,
     required this.clock,
   });
 
   final Stream<List<FocusSession>> finishedSessions;
+  final Stream<List<FocusLabel>> labels;
   final Clock clock;
+
+  @override
+  State<StatisticsScreen> createState() => _StatisticsScreenState();
+}
+
+class _StatisticsScreenState extends State<StatisticsScreen> {
+  var _period = StatisticsPeriod.week;
+  late final Stream<List<FocusSession>> _sessions = widget.finishedSessions;
+  late final Stream<List<FocusLabel>> _labels = widget.labels;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(title: Text(l10n.statistics)),
-      body: StreamBuilder<List<FocusSession>>(
-        stream: finishedSessions,
-        builder: (context, snapshot) {
-          final sessions = snapshot.data ?? const <FocusSession>[];
-          final now = clock();
-          final week = weekFocus(sessions, today: now);
-          final today = week[now.weekday - DateTime.monday];
-          final weekTotal = week.fold(Duration.zero, (sum, day) => sum + day);
+      body: StreamBuilder<List<FocusLabel>>(
+        stream: _labels,
+        builder: (context, labelSnapshot) =>
+            StreamBuilder<List<FocusSession>>(
+              stream: _sessions,
+              builder: (context, snapshot) {
+                final labels = labelSnapshot.data ?? const <FocusLabel>[];
+                final sessions = snapshot.data ?? const <FocusSession>[];
+                final now = widget.clock();
+                final (from, to) = switch (_period) {
+                  StatisticsPeriod.week => (
+                    weekStart(now),
+                    weekStart(now).add(const Duration(days: 6)),
+                  ),
+                  StatisticsPeriod.month => (
+                    DateTime(now.year, now.month),
+                    DateTime(now.year, now.month + 1, 0),
+                  ),
+                };
+                final byLabel = focusByLabel(
+                  sessions,
+                  from: from,
+                  to: to,
+                  labelIds: {for (final label in labels) label.id},
+                );
+                final week = weekFocus(sessions, today: now);
+                final today = week[now.weekday - DateTime.monday];
+                final weekTotal = week.fold(Duration.zero, (sum, day) => sum + day);
 
-          return ListView(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
-            children: [
+                return ListView(
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _StatTile(
+                            title: l10n.today,
+                            value: focusTimeText(l10n, today),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _StatTile(
+                            title: l10n.thisWeek,
+                            value: focusTimeText(l10n, weekTotal),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    _WeekBars(
+                      week: week,
+                      monday: weekStart(now),
+                      todayIndex: now.weekday - DateTime.monday,
+                    ),
+                    const SizedBox(height: 24),
+                    SegmentedButton<StatisticsPeriod>(
+                      segments: [
+                        ButtonSegment(
+                          value: StatisticsPeriod.week,
+                          label: Text(l10n.periodWeek),
+                        ),
+                        ButtonSegment(
+                          value: StatisticsPeriod.month,
+                          label: Text(l10n.periodMonth),
+                        ),
+                      ],
+                      selected: {_period},
+                      onSelectionChanged: (selection) =>
+                          setState(() => _period = selection.first),
+                    ),
+                    const SizedBox(height: 12),
+                    _LabelBreakdown(byLabel: byLabel, labels: labels),
+                  ],
+                );
+              },
+            ),
+      ),
+    );
+  }
+}
+
+/// Focus time per label with a thin proportional bar.
+class _LabelBreakdown extends StatelessWidget {
+  const _LabelBreakdown({required this.byLabel, required this.labels});
+
+  final List<LabelFocus> byLabel;
+  final List<FocusLabel> labels;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final total = byLabel.fold(
+      Duration.zero,
+      (sum, entry) => sum + entry.focused,
+    );
+    String nameOf(String? id) => [
+      for (final label in labels)
+        if (label.id == id) label.name,
+    ].firstOrNull ?? l10n.unlabeled;
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              l10n.byLabel,
+              style: theme.textTheme.labelLarge?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+                letterSpacing: 2,
+              ),
+            ),
+            const SizedBox(height: 12),
+            if (byLabel.isEmpty)
+              Text(
+                l10n.noFocusYet,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            for (final entry in byLabel) ...[
               Row(
                 children: [
-                  Expanded(
-                    child: _StatTile(
-                      title: l10n.today,
-                      value: focusTimeText(l10n, today),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _StatTile(
-                      title: l10n.thisWeek,
-                      value: focusTimeText(l10n, weekTotal),
-                    ),
-                  ),
+                  Expanded(child: Text(nameOf(entry.labelId))),
+                  Text(focusTimeText(l10n, entry.focused)),
                 ],
               ),
-              const SizedBox(height: 16),
-              _WeekBars(
-                week: week,
-                monday: weekStart(now),
-                todayIndex: now.weekday - DateTime.monday,
+              const SizedBox(height: 6),
+              LinearProgressIndicator(
+                value: entry.focused.inSeconds / total.inSeconds,
+                minHeight: 3,
+                color: theme.colorScheme.primary,
+                backgroundColor: theme.colorScheme.outline,
+                borderRadius: BorderRadius.circular(2),
               ),
+              const SizedBox(height: 14),
             ],
-          );
-        },
+          ],
+        ),
       ),
     );
   }
