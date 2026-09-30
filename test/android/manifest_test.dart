@@ -50,5 +50,20 @@ void main() {
       expect(config, contains('android:canRetrieveWindowContent="false"'));
       expect(config, contains('@string/blocker_service_description'));
     });
+
+    test('declares the notification listener that holds notifications', () {
+      final service = RegExp(
+        r'<service[^>]*FocusNotificationGate[\s\S]*?</service>',
+      ).firstMatch(manifest)?.group(0);
+
+      expect(
+        service,
+        contains('android.permission.BIND_NOTIFICATION_LISTENER_SERVICE'),
+      );
+      expect(
+        service,
+        contains('android.service.notification.NotificationListenerService'),
+      );
+    });
   });
 }

@@ -35,6 +35,14 @@ class MainActivity : FlutterActivity() {
                         )
                         result.success(null)
                     }
+                    "isNotificationGateEnabled" -> result.success(isNotificationGateEnabled())
+                    "openNotificationGateSettings" -> {
+                        startActivity(
+                            Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
+                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                        )
+                        result.success(null)
+                    }
                     "initialBlockedPackage" -> {
                         result.success(pendingBlockedPackage)
                         pendingBlockedPackage = null
@@ -60,6 +68,15 @@ class MainActivity : FlutterActivity() {
         ) ?: return false
         val blocker = ComponentName(this, FocusBlockerService::class.java).flattenToString()
         return enabled.split(':').any { it.equals(blocker, ignoreCase = true) }
+    }
+
+    private fun isNotificationGateEnabled(): Boolean {
+        val enabled = Settings.Secure.getString(
+            contentResolver,
+            "enabled_notification_listeners",
+        ) ?: return false
+        val gate = ComponentName(this, FocusNotificationGate::class.java).flattenToString()
+        return enabled.split(':').any { it.equals(gate, ignoreCase = true) }
     }
 
     /** Apps with a launcher entry (visible via the <queries> entry in the manifest). */

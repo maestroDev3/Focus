@@ -39,6 +39,17 @@
                 android:name="android.accessibilityservice"
                 android:resource="@xml/focus_blocker_service"/>
         </service>
+        <!-- Holds back notifications of paused apps during a session and lets
+             them reappear afterwards (user-approved, see CLAUDE.md decisions). -->
+        <service
+            android:name=".FocusNotificationGate"
+            android:exported="true"
+            android:label="@string/notification_gate_label"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService"/>
+            </intent-filter>
+        </service>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

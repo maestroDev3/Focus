@@ -140,3 +140,23 @@ class BlockingSync {
     );
   }
 }
+
+/// Longest snooze per round: notifications of paused apps are snoozed in
+/// short rounds, so they reappear within a minute once the session ends –
+/// also when it ends early.
+const notificationSnoozeStep = Duration(minutes: 1);
+
+/// How long to hold back a notification of [packageName] at [now], or null
+/// if it may be shown. Mirrored in Kotlin (`BlockingState.snoozeMillis`).
+Duration? snoozeFor({
+  required BlockingState state,
+  required String packageName,
+  required DateTime now,
+}) {
+  if (!state.active || !state.packageNames.contains(packageName)) return null;
+  final end = state.plannedEnd;
+  if (end == null) return notificationSnoozeStep;
+  final left = end.difference(now);
+  if (left <= Duration.zero) return null;
+  return left < notificationSnoozeStep ? left : notificationSnoozeStep;
+}
