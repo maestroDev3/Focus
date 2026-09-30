@@ -165,27 +165,28 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
         duration: const Duration(milliseconds: 600),
         child: _introDone
             ? Builder(
-            builder: (homeContext) => HomeScreen(
-              clock: widget.clock,
-              focusDuration: _pomodoro.focus,
-              onStart: _startSession,
-              onOpenSettings: _openSettings,
-              blockedAppCount: _blockedAppCount,
-              onOpenBlockedApps: _openBlockedApps,
-              blockerNeedsPermission: _blockedAppCount > 0 && !_blockerEnabled,
-              onAllowBlocking: _openBlockerOnboarding,
-              notificationsNeedPermission:
-                  _blockedAppCount > 0 && !_notificationGateEnabled,
-              onAllowNotifications: _openNotificationOnboarding,
-              labelName: _labelWithId(_selectedLabelId)?.name,
-              hasLabels: _labels.isNotEmpty,
-              onChooseLabel: () => _chooseLabel(homeContext),
-              focusedToday: _focusedToday,
-              dailyGoal: _dailyGoal,
-              onOpenStatistics: _openStatistics,
-            )
+                builder: (homeContext) => HomeScreen(
+                  clock: widget.clock,
+                  focusDuration: _pomodoro.focus,
+                  onStart: _startSession,
+                  onOpenSettings: _openSettings,
+                  blockedAppCount: _blockedAppCount,
+                  onOpenBlockedApps: _openBlockedApps,
+                  blockerNeedsPermission:
+                      _blockedAppCount > 0 && !_blockerEnabled,
+                  onAllowBlocking: _openBlockerOnboarding,
+                  notificationsNeedPermission:
+                      _blockedAppCount > 0 && !_notificationGateEnabled,
+                  onAllowNotifications: _openNotificationOnboarding,
+                  labelName: _labelWithId(_selectedLabelId)?.name,
+                  hasLabels: _labels.isNotEmpty,
+                  onChooseLabel: () => _chooseLabel(homeContext),
+                  focusedToday: _focusedToday,
+                  dailyGoal: _dailyGoal,
+                  onOpenStatistics: _openStatistics,
+                ),
+              )
             : IntroScreen(onDone: () => setState(() => _introDone = true)),
-      ),
       ),
     );
   }

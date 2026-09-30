@@ -62,6 +62,12 @@ void main() {
           focusedToday: Duration.zero,
           dailyGoal: const DailyGoal(),
           onOpenStatistics: () {},
+          blockedAppCount: 0,
+          onOpenBlockedApps: () {},
+          blockerNeedsPermission: false,
+          onAllowBlocking: () {},
+          notificationsNeedPermission: false,
+          onAllowNotifications: () {},
         ),
       );
 

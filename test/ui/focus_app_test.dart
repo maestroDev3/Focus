@@ -408,6 +408,9 @@ void main() {
 
       expect(find.text('Allow app blocking'), findsNothing);
       expect(find.text('Allow holding notifications'), findsNothing);
+    });
+  });
+
   group('FocusApp intro', () {
     testWidgets('shows the intro first and then home', (tester) async {
       await tester.pumpWidget(buildApp(showIntro: true));
