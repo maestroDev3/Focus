@@ -157,3 +157,6 @@ commit comment).
   cancel button (“End session”) does.
 - 2026-09-30 – Android first. iOS comes later, once the Android app is
   complete; until then no iOS-specific work.
+- 2026-09-30 – Design: “Noir & Champagne” (dark, champagne accent; ivory in
+  light mode) with the **Ring** app icon, noir splash with “FOCUS” intro and a
+  subtle champagne glow behind the main screens.

@@ -8,7 +8,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- Nothing. All stories without an open decision are done.
+- #97 Brand: app icon, splash screen and in-app background (tasks #98–#100)
 - **Waiting for your phone test:** PR #82 – epic #20 Distraction blocking, already merged with the latest `main`, so its APK (Actions artifact `focus_timer-apk` of the PR) contains the complete app. Test steps in the PR.
 
 ## Up next
@@ -21,18 +21,18 @@ The GitHub issues are authoritative; this file is the summary.
 
 | Epic | Stories (in order) |
 |---|---|
+| #1 Foundation | #97 Brand: app icon, splash screen and in-app background (`in-progress`) |
 | #4 Focus timer | #6 Timer survives app switch and restart (`backlog`) → ~~#7 Configurable durations and breaks~~ (done) |
 | #20 Distraction blocking | #21 → #22 → #23 done on `epic/distraction-blocking`, PR #82 waits for the phone test → #96 Include paused apps in backups (`backlog`) |
 
 ## Recently done
 
+- Decision: design Noir & Champagne with the Ring icon, splash and glow background as designed
 - Decisions: leaving the app never cancels a session; Android first, iOS later
 - #16 Backup and export – epic #15 Data safety complete
 - #14 Streaks – epic #11 Statistics complete
 - #13 Breakdown by label (week / month)
-- #12 Focus time per day and week (statistics screen)
 
 ## Open decisions (user only)
 
-- Design direction: A “Noir & Champagne” is implemented as default; B “Ivory Atelier” and C “Emerald Salon” are alternatives on the design canvas.
 - Optional ambient sounds (rain, white noise) – yes/no?
