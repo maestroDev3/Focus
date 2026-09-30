@@ -7,6 +7,7 @@ import '../domain/countdown.dart';
 import '../domain/focus_session.dart';
 import '../domain/focus_timer.dart';
 import '../l10n/app_localizations.dart';
+import 'widgets/focus_background.dart';
 
 /// Shows the running session: a calm countdown in a thin ring, pause/resume
 /// and a deliberate way to end the session.
@@ -118,51 +119,56 @@ class _SessionScreenState extends State<SessionScreen> {
 
     return PopScope(
       canPop: false,
-      child: Scaffold(
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(28, 24, 28, 32),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  switch ((paused, widget.labelName)) {
-                    (true, _) => l10n.sessionPaused,
-                    (false, final label?) => l10n.sessionFocusingWithLabel(label),
-                    (false, null) => l10n.sessionFocusing,
-                  },
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                    letterSpacing: 3,
-                  ),
-                ),
-                Expanded(
-                  child: Center(
-                    child: _CountdownRing(
-                      progress: progress,
-                      countdown: formatCountdown(remaining),
-                      caption: l10n.sessionRemaining,
+      child: FocusBackground(
+        glowCenter: const Alignment(0, -0.1),
+        glowRadius: 0.8,
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          body: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(28, 24, 28, 32),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    switch ((paused, widget.labelName)) {
+                      (true, _) => l10n.sessionPaused,
+                      (false, final label?) => l10n.sessionFocusingWithLabel(label),
+                      (false, null) => l10n.sessionFocusing,
+                    },
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                      letterSpacing: 3,
                     ),
                   ),
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: _togglePause,
-                        child: Text(paused ? l10n.resume : l10n.pause),
+                  Expanded(
+                    child: Center(
+                      child: _CountdownRing(
+                        progress: progress,
+                        countdown: formatCountdown(remaining),
+                        caption: l10n.sessionRemaining,
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: _confirmEnd,
-                        child: Text(l10n.endSession),
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: _togglePause,
+                          child: Text(paused ? l10n.resume : l10n.pause),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: _confirmEnd,
+                          child: Text(l10n.endSession),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

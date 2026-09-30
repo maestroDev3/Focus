@@ -7,6 +7,7 @@ import '../domain/clock.dart';
 import '../domain/countdown.dart';
 import '../domain/pomodoro.dart';
 import '../l10n/app_localizations.dart';
+import 'widgets/focus_background.dart';
 
 /// Offers the break that follows a completed session and counts it down.
 class BreakScreen extends StatefulWidget {
@@ -79,68 +80,73 @@ class _BreakScreenState extends State<BreakScreen> {
 
     return PopScope(
       canPop: false,
-      child: Scaffold(
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(28, 24, 28, 32),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  running == null ? l10n.breakWellDone : title,
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                    letterSpacing: 3,
-                  ),
-                ),
-                Expanded(
-                  child: Center(
-                    child: running == null
-                        ? Text(
-                            title,
-                            textAlign: TextAlign.center,
-                            style: theme.textTheme.displaySmall,
-                          )
-                        : Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                formatCountdown(
-                                  running.remaining(widget.clock()),
-                                ),
-                                style: theme.textTheme.displayLarge,
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                l10n.sessionRemaining,
-                                style: theme.textTheme.labelLarge?.copyWith(
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                  letterSpacing: 2,
-                                ),
-                              ),
-                            ],
-                          ),
-                  ),
-                ),
-                if (running == null) ...[
-                  FilledButton(
-                    onPressed: _start,
-                    style: FilledButton.styleFrom(
-                      minimumSize: const Size.fromHeight(64),
+      child: FocusBackground(
+        glowCenter: Alignment.center,
+        glowRadius: 0.8,
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          body: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(28, 24, 28, 32),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    running == null ? l10n.breakWellDone : title,
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                      letterSpacing: 3,
                     ),
-                    child: Text(l10n.startBreak),
                   ),
-                  const SizedBox(height: 12),
-                  OutlinedButton(
-                    onPressed: _finish,
-                    child: Text(l10n.skipBreak),
+                  Expanded(
+                    child: Center(
+                      child: running == null
+                          ? Text(
+                              title,
+                              textAlign: TextAlign.center,
+                              style: theme.textTheme.displaySmall,
+                            )
+                          : Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  formatCountdown(
+                                    running.remaining(widget.clock()),
+                                  ),
+                                  style: theme.textTheme.displayLarge,
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  l10n.sessionRemaining,
+                                  style: theme.textTheme.labelLarge?.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                    letterSpacing: 2,
+                                  ),
+                                ),
+                              ],
+                            ),
+                    ),
                   ),
-                ] else
-                  OutlinedButton(
-                    onPressed: _finish,
-                    child: Text(l10n.endBreak),
-                  ),
-              ],
+                  if (running == null) ...[
+                    FilledButton(
+                      onPressed: _start,
+                      style: FilledButton.styleFrom(
+                        minimumSize: const Size.fromHeight(64),
+                      ),
+                      child: Text(l10n.startBreak),
+                    ),
+                    const SizedBox(height: 12),
+                    OutlinedButton(
+                      onPressed: _finish,
+                      child: Text(l10n.skipBreak),
+                    ),
+                  ] else
+                    OutlinedButton(
+                      onPressed: _finish,
+                      child: Text(l10n.endBreak),
+                    ),
+                ],
+              ),
             ),
           ),
         ),
