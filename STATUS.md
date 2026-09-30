@@ -8,7 +8,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- Nothing. All stories without an open decision are done.
+- #107 Updates install over the previous version – fix merged (#108); waiting for the GitHub secret `FOCUS_KEYSTORE_PASSWORD`, then one reinstall and an update test.
 
 ## Up next
 
@@ -19,6 +19,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 | Epic | Stories (in order) |
 |---|---|
+| #1 Foundation | #107 Updates install over the previous version (`in-progress`) |
 | #4 Focus timer | #6 Timer survives app switch and restart (`backlog`) → #105 Live countdown in the notification bar (`backlog`) |
 | #20 Distraction blocking | #96 Include paused apps in backups (`backlog`) |
 
