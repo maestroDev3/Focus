@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:focus_timer/domain/daily_goal.dart';
 import 'package:focus_timer/domain/focus_timer.dart';
 import 'package:focus_timer/domain/pomodoro.dart';
+import 'package:focus_timer/ui/blocked_screen.dart';
 import 'package:focus_timer/ui/break_screen.dart';
 import 'package:focus_timer/ui/home_screen.dart';
 import 'package:focus_timer/ui/session_screen.dart';
@@ -96,6 +97,21 @@ void main() {
           duration: const Duration(minutes: 5),
           clock: () => now,
           onDone: () {},
+        ),
+      );
+
+      expect(find.byType(FocusBackground), findsOneWidget);
+      expectTransparentScaffold(tester);
+    });
+
+    testWidgets('the blocked screen is drawn on the background', (
+      tester,
+    ) async {
+      await tester.pumpApp(
+        BlockedScreen(
+          appLabel: 'Telegram',
+          remaining: const Duration(minutes: 18),
+          onReturn: () {},
         ),
       );
 
