@@ -40,4 +40,12 @@ class FakeLabelRepository implements LabelRepository {
     labels.removeWhere((label) => label.id == id);
     _changes.add(List.of(labels));
   }
+
+  @override
+  Future<void> replaceAll(List<FocusLabel> replacement) async {
+    labels
+      ..clear()
+      ..addAll(replacement);
+    _changes.add(List.of(labels));
+  }
 }

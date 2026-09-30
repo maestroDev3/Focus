@@ -87,5 +87,22 @@ void main() {
 
       expect(broken.watchLabels().first, throwsFormatException);
     });
+
+    test('replaces all labels and keeps ids unique afterwards', () async {
+      await repository.addLabel('Old');
+
+      await repository.replaceAll([
+        FocusLabel(id: 'label-7', name: 'Study'),
+        FocusLabel(id: 'label-3', name: 'Work'),
+      ]);
+      final added = await repository.addLabel('Reading');
+
+      expect(names(await repository.watchLabels().first), [
+        'Study',
+        'Work',
+        'Reading',
+      ]);
+      expect(added.id, 'label-8');
+    });
   });
 }

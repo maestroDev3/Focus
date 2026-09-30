@@ -47,6 +47,15 @@ class SharedPreferencesSessionRepository implements SessionRepository {
   }
 
   @override
+  Future<void> replaceFinished(List<FocusSession> sessions) async {
+    await _preferences.setString(
+      finishedKey,
+      jsonEncode([for (final item in sessions) encodeSession(item)]),
+    );
+    _finishedChanges.add(List.of(sessions));
+  }
+
+  @override
   Stream<List<FocusSession>> watchFinished() async* {
     yield _loadFinished();
     yield* _finishedChanges.stream;

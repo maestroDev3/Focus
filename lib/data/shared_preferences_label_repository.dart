@@ -51,6 +51,17 @@ class SharedPreferencesLabelRepository implements LabelRepository {
     ], nextId);
   }
 
+  @override
+  Future<void> replaceAll(List<FocusLabel> labels) async {
+    // Continue after the highest restored id so new ids never collide.
+    var nextId = 1;
+    for (final label in labels) {
+      final number = int.tryParse(label.id.replaceFirst('label-', ''));
+      if (number != null && number >= nextId) nextId = number + 1;
+    }
+    await _save(List.of(labels), nextId);
+  }
+
   ({List<FocusLabel> labels, int nextId}) _load() {
     final stored = _preferences.getString(key);
     if (stored == null) return (labels: const [], nextId: 1);
