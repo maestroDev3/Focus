@@ -59,6 +59,7 @@ class FocusSession {
     this.pauses = const [],
     this.end,
     this.outcome,
+    this.labelId,
   }) {
     if (planned <= Duration.zero) {
       throw ArgumentError.value(planned, 'planned', 'must be positive');
@@ -70,6 +71,9 @@ class FocusSession {
   final List<SessionPause> pauses;
   final DateTime? end;
   final SessionOutcome? outcome;
+
+  /// Id of the [FocusLabel] the session was about, if any.
+  final String? labelId;
 
   bool get isFinished => outcome != null;
 
@@ -149,6 +153,7 @@ class FocusSession {
       pauses: pauses ?? this.pauses,
       end: end ?? this.end,
       outcome: outcome ?? this.outcome,
+      labelId: labelId,
     );
   }
 
@@ -159,11 +164,19 @@ class FocusSession {
       other.planned == planned &&
       _listEquals(other.pauses, pauses) &&
       other.end == end &&
-      other.outcome == outcome;
+      other.outcome == outcome &&
+      other.labelId == labelId;
 
   @override
   int get hashCode =>
-      Object.hash(start, planned, Object.hashAll(pauses), end, outcome);
+      Object.hash(
+        start,
+        planned,
+        Object.hashAll(pauses),
+        end,
+        outcome,
+        labelId,
+      );
 }
 
 bool _listEquals<T>(List<T> a, List<T> b) {
