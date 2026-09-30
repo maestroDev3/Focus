@@ -114,4 +114,63 @@ void main() {
       expect(writer.last, const BlockingState.inactive());
     });
   });
+
+  group('snoozeFor', () {
+    final now = start.add(const Duration(minutes: 5));
+    final running = BlockingState(
+      active: true,
+      packageNames: const {telegram},
+      plannedEnd: start.add(const Duration(minutes: 25)),
+    );
+
+    test('is null for apps that are not paused or without a session', () {
+      expect(snoozeFor(state: running, packageName: youtube, now: now), isNull);
+      expect(
+        snoozeFor(
+          state: const BlockingState.inactive(),
+          packageName: telegram,
+          now: now,
+        ),
+        isNull,
+      );
+    });
+
+    test('is at most one minute while the session runs', () {
+      expect(
+        snoozeFor(state: running, packageName: telegram, now: now),
+        const Duration(minutes: 1),
+      );
+    });
+
+    test('is the remaining time just before the end', () {
+      expect(
+        snoozeFor(
+          state: running,
+          packageName: telegram,
+          now: start.add(const Duration(minutes: 24, seconds: 30)),
+        ),
+        const Duration(seconds: 30),
+      );
+    });
+
+    test('is null after the planned end', () {
+      expect(
+        snoozeFor(
+          state: running,
+          packageName: telegram,
+          now: start.add(const Duration(minutes: 26)),
+        ),
+        isNull,
+      );
+    });
+
+    test('is one minute while paused', () {
+      const paused = BlockingState(active: true, packageNames: {telegram});
+
+      expect(
+        snoozeFor(state: paused, packageName: telegram, now: now),
+        const Duration(minutes: 1),
+      );
+    });
+  });
 }

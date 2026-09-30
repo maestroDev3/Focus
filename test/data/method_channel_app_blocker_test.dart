@@ -15,6 +15,7 @@ void main() {
       calls.add(call);
       return switch (call.method) {
         'isBlockerEnabled' => true,
+        'isNotificationGateEnabled' => false,
         'initialBlockedPackage' => 'org.telegram.messenger',
         _ => null,
       };
@@ -32,6 +33,19 @@ void main() {
       await MethodChannelAppBlocker().openBlockerSettings();
 
       expect(calls.single.method, 'openBlockerSettings');
+    });
+
+    test('reports whether notification access is granted', () async {
+      expect(
+        await MethodChannelAppBlocker().isNotificationGateEnabled(),
+        isFalse,
+      );
+    });
+
+    test('opens the notification access settings', () async {
+      await MethodChannelAppBlocker().openNotificationGateSettings();
+
+      expect(calls.single.method, 'openNotificationGateSettings');
     });
 
     test('reports the blocked app Focus was launched for', () async {

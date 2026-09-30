@@ -4,9 +4,15 @@ import 'package:focus_timer/domain/app_blocker.dart';
 
 /// Controllable [AppBlocker] for tests.
 class FakeAppBlocker implements AppBlocker {
-  FakeAppBlocker({this.enabled = true, this.initial});
+  FakeAppBlocker({
+    this.enabled = true,
+    this.notificationGateEnabled = true,
+    this.initial,
+  });
 
   bool enabled;
+  bool notificationGateEnabled;
+  var openedNotificationSettings = 0;
   String? initial;
   var openedSettings = 0;
   final _opened = StreamController<String>.broadcast();
@@ -19,6 +25,13 @@ class FakeAppBlocker implements AppBlocker {
 
   @override
   Future<void> openBlockerSettings() async => openedSettings++;
+
+  @override
+  Future<bool> isNotificationGateEnabled() async => notificationGateEnabled;
+
+  @override
+  Future<void> openNotificationGateSettings() async =>
+      openedNotificationSettings++;
 
   @override
   Future<String?> initialBlockedPackage() async {
