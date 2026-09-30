@@ -8,12 +8,13 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- #107 Updates install over the previous version – release key created from your secret, build 188 signed and published; waiting for your one-time reinstall and the next update test.
+- #107 Updates install over the previous version – release key created from your secret, signed releases since build 188; waiting for your update test with build 193.
 
 ## Up next
 
 1. #96 Include paused apps in backups (`backlog`).
 2. #6 Timer survives app switch and restart → #105 Live countdown in the notification bar.
+3. New epic #115 Focus times: #116 → #117 → #118 (recommended next feature, waiting for your go).
 
 ## Backlog by epic
 
@@ -22,6 +23,7 @@ The GitHub issues are authoritative; this file is the summary.
 | #1 Foundation | #107 Updates install over the previous version (`in-progress`) |
 | #4 Focus timer | #6 Timer survives app switch and restart (`backlog`) → #105 Live countdown in the notification bar (`backlog`) |
 | #20 Distraction blocking | #96 Include paused apps in backups (`backlog`) |
+| #115 Focus times (scheduled blocking) | #116 Plan recurring focus times → #117 Block paused apps during focus times → #118 Reminder when a focus time starts (all `backlog`) |
 
 ## Recently done
 
