@@ -15,6 +15,8 @@ void main() {
       VoidCallback? onOpenBlockedApps,
       bool blockerNeedsPermission = false,
       VoidCallback? onAllowBlocking,
+      bool notificationsNeedPermission = false,
+      VoidCallback? onAllowNotifications,
     }) {
       return tester.pumpApp(
         HomeScreen(
@@ -26,6 +28,8 @@ void main() {
           onOpenBlockedApps: onOpenBlockedApps ?? () {},
           blockerNeedsPermission: blockerNeedsPermission,
           onAllowBlocking: onAllowBlocking ?? () {},
+          notificationsNeedPermission: notificationsNeedPermission,
+          onAllowNotifications: onAllowNotifications ?? () {},
         ),
       );
     }
@@ -141,6 +145,25 @@ void main() {
         blockedAppCount: 2,
       );
 
+      expect(find.text('Allow app blocking'), findsNothing);
+    });
+
+    testWidgets('asks to allow holding notifications when needed', (
+      tester,
+    ) async {
+      var allowed = 0;
+      await pumpHome(
+        tester,
+        now: DateTime(2026, 9, 29, 20),
+        blockedAppCount: 2,
+        notificationsNeedPermission: true,
+        onAllowNotifications: () => allowed++,
+      );
+
+      await tester.tap(find.text('Allow holding notifications'));
+      await tester.pump();
+
+      expect(allowed, 1);
       expect(find.text('Allow app blocking'), findsNothing);
     });
   });

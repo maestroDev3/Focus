@@ -281,12 +281,31 @@ void main() {
       expect(blocker.openedSettings, 1);
     });
 
+    testWidgets('guides to notification access when it is missing', (
+      tester,
+    ) async {
+      blockList.blockList = const BlockList().add('org.telegram.messenger');
+      blocker.notificationGateEnabled = false;
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+
+      await tester.tap(find.text('Allow holding notifications'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(find.text('Hold notifications while you focus'), findsOneWidget);
+      await tester.tap(find.text('Open settings'));
+      await tester.pump();
+
+      expect(blocker.openedNotificationSettings, 1);
+    });
+
     testWidgets('shows no hint when blocking is allowed', (tester) async {
       blockList.blockList = const BlockList().add('org.telegram.messenger');
       await tester.pumpWidget(buildApp());
       await tester.pump();
 
       expect(find.text('Allow app blocking'), findsNothing);
+      expect(find.text('Allow holding notifications'), findsNothing);
     });
   });
 
