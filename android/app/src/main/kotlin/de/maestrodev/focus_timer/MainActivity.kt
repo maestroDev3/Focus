@@ -3,9 +3,12 @@ package de.maestrodev.focus_timer
 import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.content.pm.ResolveInfo
 import android.os.Build
 import android.provider.Settings
+import java.io.ByteArrayOutputStream
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -22,6 +25,7 @@ class MainActivity : FlutterActivity() {
         MethodChannel(messenger, APPS_CHANNEL).setMethodCallHandler { call, result ->
             when (call.method) {
                 "installedApps" -> result.success(installedApps())
+                "appIcon" -> result.success(appIcon(call.arguments as? String))
                 else -> result.notImplemented()
             }
         }
@@ -88,6 +92,23 @@ class MainActivity : FlutterActivity() {
         return enabled.split(':').any { it.equals(gate, ignoreCase = true) }
     }
 
+    /** The launcher icon of [app] as a 96×96 PNG, or null if it is unknown. */
+    private fun appIcon(app: String?): ByteArray? {
+        if (app == null) return null
+        return try {
+            val icon = packageManager.getApplicationIcon(app)
+            val bitmap = Bitmap.createBitmap(ICON_SIZE, ICON_SIZE, Bitmap.Config.ARGB_8888)
+            icon.setBounds(0, 0, ICON_SIZE, ICON_SIZE)
+            icon.draw(Canvas(bitmap))
+            ByteArrayOutputStream().use { out ->
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+                out.toByteArray()
+            }
+        } catch (error: PackageManager.NameNotFoundException) {
+            null
+        }
+    }
+
     /** Apps with a launcher entry (visible via the <queries> entry in the manifest). */
     private fun installedApps(): List<Map<String, String>> {
         val launcher = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)
@@ -111,6 +132,7 @@ class MainActivity : FlutterActivity() {
 
     companion object {
         const val EXTRA_BLOCKED_PACKAGE = "blockedPackage"
+        private const val ICON_SIZE = 96
         private const val APPS_CHANNEL = "de.maestrodev.focus_timer/apps"
         private const val BLOCKING_CHANNEL = "de.maestrodev.focus_timer/blocking"
     }
