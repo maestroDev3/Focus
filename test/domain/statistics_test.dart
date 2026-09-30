@@ -86,4 +86,63 @@ void main() {
       expect(weekStart(DateTime(2026, 9, 28)), monday);
     });
   });
+
+  group('focusByLabel', () {
+    FocusSession labelled(DateTime start, int minutes, String? labelId) =>
+        FocusSession(
+          start: start,
+          planned: Duration(minutes: minutes),
+          labelId: labelId,
+        ).complete();
+    final from = DateTime(2026, 9, 28);
+    final to = DateTime(2026, 10, 4);
+
+    test('sums per label, sorted by focus time', () {
+      final sessions = [
+        labelled(DateTime(2026, 9, 28, 9), 25, 'study'),
+        labelled(DateTime(2026, 9, 29, 9), 50, 'work'),
+        labelled(DateTime(2026, 9, 30, 9), 50, 'study'),
+        labelled(DateTime(2026, 9, 30, 11), 30, null),
+      ];
+
+      expect(
+        focusByLabel(
+          sessions,
+          from: from,
+          to: to,
+          labelIds: {'study', 'work'},
+        ),
+        [
+          (labelId: 'study', focused: const Duration(minutes: 75)),
+          (labelId: 'work', focused: const Duration(minutes: 50)),
+          (labelId: null, focused: const Duration(minutes: 30)),
+        ],
+      );
+    });
+
+    test('counts sessions of deleted labels as unlabeled', () {
+      final sessions = [
+        labelled(DateTime(2026, 9, 28, 9), 25, 'deleted'),
+        labelled(DateTime(2026, 9, 28, 11), 25, null),
+      ];
+
+      expect(
+        focusByLabel(sessions, from: from, to: to, labelIds: {'study'}),
+        [(labelId: null, focused: const Duration(minutes: 50))],
+      );
+    });
+
+    test('only counts sessions that ended in the period', () {
+      final sessions = [
+        labelled(DateTime(2026, 9, 27, 9), 25, 'study'),
+        labelled(DateTime(2026, 10, 5, 9), 25, 'study'),
+        labelled(DateTime(2026, 10, 4, 9), 25, 'study'),
+      ];
+
+      expect(
+        focusByLabel(sessions, from: from, to: to, labelIds: {'study'}),
+        [(labelId: 'study', focused: const Duration(minutes: 25))],
+      );
+    });
+  });
 }
