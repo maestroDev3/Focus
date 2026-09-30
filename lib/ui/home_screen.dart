@@ -5,6 +5,7 @@ import '../domain/clock.dart';
 import '../domain/daily_goal.dart';
 import '../domain/day_part.dart';
 import '../l10n/app_localizations.dart';
+import 'widgets/focus_background.dart';
 import 'focus_time_text.dart';
 
 /// The calm first screen: date, a greeting and one big button to start
@@ -53,96 +54,99 @@ class HomeScreen extends StatelessWidget {
       DayPart.evening => l10n.greetingEvening,
     };
 
-    return Scaffold(
-      body: SafeArea(
-        // Scrolls instead of overflowing on small screens or large fonts;
-        // on normal screens the spacers still center the content.
-        child: LayoutBuilder(
-          builder: (context, constraints) => SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(minHeight: constraints.maxHeight),
-              child: IntrinsicHeight(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(28, 32, 28, 32),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              DateFormat.MMMMEEEEd(locale).format(now),
-                              style: theme.textTheme.labelLarge?.copyWith(
-                                color: theme.colorScheme.onSurfaceVariant,
-                                letterSpacing: 2,
+    return FocusBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
+          // Scrolls instead of overflowing on small screens or large fonts;
+          // on normal screens the spacers still center the content.
+          child: LayoutBuilder(
+            builder: (context, constraints) => SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: IntrinsicHeight(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(28, 32, 28, 32),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                DateFormat.MMMMEEEEd(locale).format(now),
+                                style: theme.textTheme.labelLarge?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                  letterSpacing: 2,
+                                ),
                               ),
                             ),
-                          ),
-                          IconButton(
-                            onPressed: onOpenStatistics,
-                            tooltip: l10n.statistics,
-                            color: theme.colorScheme.onSurfaceVariant,
-                            icon: const Icon(Icons.insights_outlined),
-                          ),
-                          IconButton(
-                            onPressed: onOpenSettings,
-                            tooltip: l10n.settings,
-                            color: theme.colorScheme.onSurfaceVariant,
-                            icon: const Icon(Icons.tune),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 24),
-                      Text(greeting, style: theme.textTheme.displaySmall),
-                      const SizedBox(height: 8),
-                      Text(
-                        l10n.homeSubtitle,
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                          fontWeight: FontWeight.w300,
+                            IconButton(
+                              onPressed: onOpenStatistics,
+                              tooltip: l10n.statistics,
+                              color: theme.colorScheme.onSurfaceVariant,
+                              icon: const Icon(Icons.insights_outlined),
+                            ),
+                            IconButton(
+                              onPressed: onOpenSettings,
+                              tooltip: l10n.settings,
+                              color: theme.colorScheme.onSurfaceVariant,
+                              icon: const Icon(Icons.tune),
+                            ),
+                          ],
                         ),
-                      ),
-                      const Spacer(),
-                      _GoalRing(focused: focusedToday, goal: dailyGoal),
-                      const SizedBox(height: 28),
-                      Wrap(
-                        alignment: WrapAlignment.center,
-                        spacing: 10,
-                        runSpacing: 10,
-                        children: [
-                          Chip(
-                            avatar: Icon(
-                              Icons.timer_outlined,
-                              size: 18,
-                              color: theme.colorScheme.primary,
-                            ),
-                            label: Text(
-                              l10n.durationMinutes(focusDuration.inMinutes),
-                            ),
+                        const SizedBox(height: 24),
+                        Text(greeting, style: theme.textTheme.displaySmall),
+                        const SizedBox(height: 8),
+                        Text(
+                          l10n.homeSubtitle,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                            fontWeight: FontWeight.w300,
                           ),
-                          ActionChip(
-                            onPressed: onChooseLabel,
-                            avatar: Icon(
-                              Icons.label_outline,
-                              size: 18,
-                              color: theme.colorScheme.primary,
-                            ),
-                            label: Text(
-                              labelName ??
-                                  (hasLabels ? l10n.noLabel : l10n.addLabel),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const Spacer(),
-                      FilledButton(
-                        onPressed: onStart,
-                        style: FilledButton.styleFrom(
-                          minimumSize: const Size.fromHeight(64),
                         ),
-                        child: Text(l10n.beginFocus),
-                      ),
-                    ],
+                        const Spacer(),
+                        _GoalRing(focused: focusedToday, goal: dailyGoal),
+                        const SizedBox(height: 28),
+                        Wrap(
+                          alignment: WrapAlignment.center,
+                          spacing: 10,
+                          runSpacing: 10,
+                          children: [
+                            Chip(
+                              avatar: Icon(
+                                Icons.timer_outlined,
+                                size: 18,
+                                color: theme.colorScheme.primary,
+                              ),
+                              label: Text(
+                                l10n.durationMinutes(focusDuration.inMinutes),
+                              ),
+                            ),
+                            ActionChip(
+                              onPressed: onChooseLabel,
+                              avatar: Icon(
+                                Icons.label_outline,
+                                size: 18,
+                                color: theme.colorScheme.primary,
+                              ),
+                              label: Text(
+                                labelName ??
+                                    (hasLabels ? l10n.noLabel : l10n.addLabel),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const Spacer(),
+                        FilledButton(
+                          onPressed: onStart,
+                          style: FilledButton.styleFrom(
+                            minimumSize: const Size.fromHeight(64),
+                          ),
+                          child: Text(l10n.beginFocus),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
