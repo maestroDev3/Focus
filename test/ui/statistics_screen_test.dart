@@ -36,10 +36,10 @@ void main() {
   group('StatisticsScreen', () {
     testWidgets('shows today and this week', (tester) async {
       await pumpStatistics(tester, [
-        completed(DateTime(2026, 9, 30, 9), 30),
-        completed(DateTime(2026, 9, 30, 11), 30),
-        completed(DateTime(2026, 9, 28, 9), 140),
-        completed(DateTime(2026, 9, 21, 9), 45),
+        completed(DateTime(2026, 9, 30, 9), 30, 'study'),
+        completed(DateTime(2026, 9, 30, 11), 30, 'work'),
+        completed(DateTime(2026, 9, 28, 9), 140, 'study'),
+        completed(DateTime(2026, 9, 21, 9), 45, 'study'),
       ]);
 
       expect(find.text('Today'), findsOneWidget);
