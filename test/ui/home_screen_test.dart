@@ -11,6 +11,8 @@ void main() {
       required DateTime now,
       VoidCallback? onStart,
       VoidCallback? onOpenSettings,
+      int blockedAppCount = 0,
+      VoidCallback? onOpenBlockedApps,
     }) {
       return tester.pumpApp(
         HomeScreen(
@@ -18,6 +20,8 @@ void main() {
           focusDuration: const Duration(minutes: 25),
           onStart: onStart ?? () {},
           onOpenSettings: onOpenSettings ?? () {},
+          blockedAppCount: blockedAppCount,
+          onOpenBlockedApps: onOpenBlockedApps ?? () {},
         ),
       );
     }
@@ -80,6 +84,29 @@ void main() {
       );
 
       await tester.tap(find.byTooltip('Settings'));
+      await tester.pump();
+
+      expect(opened, 1);
+    });
+
+    testWidgets('invites to choose apps when none are paused', (tester) async {
+      await pumpHome(tester, now: DateTime(2026, 9, 29, 20));
+
+      expect(find.text('Choose apps to pause'), findsOneWidget);
+    });
+
+    testWidgets('shows how many apps are paused and opens the list', (
+      tester,
+    ) async {
+      var opened = 0;
+      await pumpHome(
+        tester,
+        now: DateTime(2026, 9, 29, 20),
+        blockedAppCount: 3,
+        onOpenBlockedApps: () => opened++,
+      );
+
+      await tester.tap(find.text('3 apps paused'));
       await tester.pump();
 
       expect(opened, 1);
