@@ -8,7 +8,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- #107 Updates install over the previous version – fix merged (#108); waiting for the GitHub secret `FOCUS_KEYSTORE_PASSWORD`, then one reinstall and an update test.
+- #107 Updates install over the previous version – release key created from your secret, build 188 signed and published; waiting for your one-time reinstall and the next update test.
 
 ## Up next
 
