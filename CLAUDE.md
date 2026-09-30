@@ -90,14 +90,15 @@ context in a Claude project. It must always match the issues.
 
 1. Branch `task/<issue-nr>-<short-name>` from the current `main`.
 2. **Red:** First write tests for the acceptance criteria, commit
-   (`test: … (#nr)`), push and open a **draft PR** right away (CI runs only
-   on pull requests and `main`). CI must fail because of these tests; wait
+   (`test: … (#nr)`), push and open the PR right away with “(WIP)” in the
+   title (CI runs only on pull requests and `main`; no draft PRs – Claude's
+   environment can't mark them ready). CI must fail because of these tests; wait
    for the red run to finish before pushing the next commit (a newer push
    cancels it).
 3. **Green:** Write the minimal code until `flutter test` passes (`feat: … (#nr)`).
 4. **Refactor:** Clean up, tests stay green (`refactor: … (#nr)`).
-5. Mark the PR ready, with `Closes #nr` in the body. Description: what, why,
-   which tests.
+5. Finish the PR: final title without “(WIP)”, `Closes #nr` in the body.
+   Description: what, why, which tests.
 
 ## Merging
 
