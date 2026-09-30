@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:focus_timer/domain/daily_goal.dart';
 import 'package:focus_timer/ui/home_screen.dart';
 
 import '../support/pump_app.dart';
@@ -14,6 +15,8 @@ void main() {
       String? labelName,
       bool hasLabels = false,
       VoidCallback? onChooseLabel,
+      Duration focusedToday = Duration.zero,
+      DailyGoal dailyGoal = const DailyGoal(),
     }) {
       return tester.pumpApp(
         HomeScreen(
@@ -24,6 +27,8 @@ void main() {
           labelName: labelName,
           hasLabels: hasLabels,
           onChooseLabel: onChooseLabel ?? () {},
+          focusedToday: focusedToday,
+          dailyGoal: dailyGoal,
         ),
       );
     }
@@ -121,6 +126,24 @@ void main() {
       await pumpHome(tester, now: DateTime(2026, 9, 29, 20), hasLabels: true);
 
       expect(find.text('No label'), findsOneWidget);
+    });
+
+    testWidgets('shows today\'s progress towards the daily goal', (
+      tester,
+    ) async {
+      await pumpHome(
+        tester,
+        now: DateTime(2026, 9, 29, 20),
+        focusedToday: const Duration(minutes: 100),
+        dailyGoal: DailyGoal.validated(180),
+      );
+
+      expect(find.text('1h 40'), findsOneWidget);
+      expect(find.text('of 3h daily goal'), findsOneWidget);
+      final ring = tester.widget<CircularProgressIndicator>(
+        find.byType(CircularProgressIndicator),
+      );
+      expect(ring.value, closeTo(100 / 180, 0.001));
     });
   });
 }

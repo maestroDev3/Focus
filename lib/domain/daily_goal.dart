@@ -24,6 +24,10 @@ class DailyGoal {
 
   Duration get duration => Duration(minutes: minutes);
 
+  /// The goal 10 minutes higher or lower, within the limits.
+  DailyGoal step({required bool up}) =>
+      DailyGoal((minutes + (up ? 10 : -10)).clamp(minMinutes, maxMinutes));
+
   @override
   bool operator ==(Object other) =>
       other is DailyGoal && other.minutes == minutes;

@@ -248,6 +248,28 @@ void main() {
     });
   });
 
+  group('FocusApp daily goal', () {
+    testWidgets('updates the progress after a cancelled session', (
+      tester,
+    ) async {
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+      expect(find.text('0 min'), findsOneWidget);
+
+      await beginFocus(tester);
+      await elapse(tester, const Duration(minutes: 10));
+      await tester.tap(find.widgetWithText(OutlinedButton, 'End session'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      await tester.tap(find.widgetWithText(TextButton, 'End session'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(find.text('10 min'), findsOneWidget);
+      expect(find.text('of 2h daily goal'), findsOneWidget);
+    });
+  });
+
   group('pumpApp', () {
     testWidgets('provides localizations to the pumped widget', (tester) async {
       await tester.pumpApp(

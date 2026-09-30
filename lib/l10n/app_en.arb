@@ -199,5 +199,43 @@
   "save": "Save",
   "@save": {
     "description": "Generic save button."
+  },
+  "durationHours": "{hours}h",
+  "@durationHours": {
+    "description": "A duration in whole hours, e.g. 3h.",
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "durationHoursMinutes": "{hours}h {minutes}",
+  "@durationHoursMinutes": {
+    "description": "A duration in hours and two-digit minutes, e.g. 1h 40.",
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "today": "Today",
+  "@today": {
+    "description": "Small heading inside the progress ring on the home screen."
+  },
+  "dailyGoalOf": "of {goal} daily goal",
+  "@dailyGoalOf": {
+    "description": "Caption below today's focus time, e.g. “of 3h daily goal”.",
+    "placeholders": {
+      "goal": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsDailyGoal": "Daily goal",
+  "@settingsDailyGoal": {
+    "description": "Setting for the daily focus goal."
   }
 }

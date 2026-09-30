@@ -140,4 +140,14 @@ void main() {
       expect(repository.active?.labelId, 'study');
     });
   });
+
+  group('FocusTimer.focusedToday', () {
+    test('sums the focused time of sessions that ended today', () async {
+      await timer.start(planned);
+      advance(const Duration(minutes: 10));
+      await timer.cancel();
+
+      expect(await timer.focusedToday(), const Duration(minutes: 10));
+    });
+  });
 }
