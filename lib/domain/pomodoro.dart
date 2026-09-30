@@ -50,6 +50,28 @@ class PomodoroSettings {
     ).validate();
   }
 
+  /// Moves [field] one step up or down within its limits: focus 5–180 min
+  /// in 5 min steps, breaks 1–60 min, 2–8 sessions before a long break.
+  PomodoroSettings step(PomodoroField field, {required bool up}) {
+    int next(int value, int step, int min, int max) =>
+        (value + (up ? step : -step)).clamp(min, max);
+    Duration minutes(Duration value, int step, int min, int max) =>
+        Duration(minutes: next(value.inMinutes, step, min, max));
+
+    return switch (field) {
+      PomodoroField.focus => copyWith(focus: minutes(focus, 5, 5, 180)),
+      PomodoroField.shortBreak => copyWith(
+        shortBreak: minutes(shortBreak, 1, 1, 60),
+      ),
+      PomodoroField.longBreak => copyWith(
+        longBreak: minutes(longBreak, 1, 1, 60),
+      ),
+      PomodoroField.sessionsBeforeLongBreak => copyWith(
+        sessionsBeforeLongBreak: next(sessionsBeforeLongBreak, 1, 2, 8),
+      ),
+    };
+  }
+
   @override
   bool operator ==(Object other) =>
       other is PomodoroSettings &&
@@ -62,6 +84,9 @@ class PomodoroSettings {
   int get hashCode =>
       Object.hash(focus, shortBreak, longBreak, sessionsBeforeLongBreak);
 }
+
+/// A setting the user can change in steps.
+enum PomodoroField { focus, shortBreak, longBreak, sessionsBeforeLongBreak }
 
 /// Kind of break following a completed focus session.
 enum BreakKind { short, long }

@@ -13,11 +13,13 @@ class HomeScreen extends StatelessWidget {
     required this.clock,
     required this.focusDuration,
     required this.onStart,
+    required this.onOpenSettings,
   });
 
   final Clock clock;
   final Duration focusDuration;
   final VoidCallback onStart;
+  final VoidCallback onOpenSettings;
 
   @override
   Widget build(BuildContext context) {
@@ -38,12 +40,24 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
-                DateFormat.MMMMEEEEd(locale).format(now),
-                style: theme.textTheme.labelLarge?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                  letterSpacing: 2,
-                ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      DateFormat.MMMMEEEEd(locale).format(now),
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                        letterSpacing: 2,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: onOpenSettings,
+                    tooltip: l10n.settings,
+                    color: theme.colorScheme.onSurfaceVariant,
+                    icon: const Icon(Icons.tune),
+                  ),
+                ],
               ),
               const SizedBox(height: 24),
               Text(greeting, style: theme.textTheme.displaySmall),
