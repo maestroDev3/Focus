@@ -270,6 +270,19 @@ void main() {
     });
   });
 
+  group('FocusApp statistics', () {
+    testWidgets('opens the statistics screen', (tester) async {
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+
+      await tester.tap(find.byTooltip('Statistics'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(find.text('This week'), findsOneWidget);
+    });
+  });
+
   group('pumpApp', () {
     testWidgets('provides localizations to the pumped widget', (tester) async {
       await tester.pumpApp(
