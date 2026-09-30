@@ -149,5 +149,30 @@
         "type": "String"
       }
     }
+  },
+  "blockedAppsTitle": "Paused apps",
+  "@blockedAppsTitle": {
+    "description": "Title of the screen where the user chooses apps to pause during sessions."
+  },
+  "searchApps": "Search apps",
+  "@searchApps": {
+    "description": "Hint of the search field on the paused apps screen."
+  },
+  "blockedAppsStrictNote": "While you focus, apps can be added but not removed.",
+  "@blockedAppsStrictNote": {
+    "description": "Note on the paused apps screen while a session is active."
+  },
+  "chooseAppsToPause": "Choose apps to pause",
+  "@chooseAppsToPause": {
+    "description": "Home chip when no apps are paused yet."
+  },
+  "appsPaused": "{count, plural, =1{1 app paused} other{{count} apps paused}}",
+  "@appsPaused": {
+    "description": "Home chip with the number of apps paused during sessions.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }
