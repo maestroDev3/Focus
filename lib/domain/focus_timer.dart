@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'blocking.dart';
 import 'clock.dart';
 import 'focus_session.dart';
 import 'session_repository.dart';
@@ -7,10 +8,17 @@ import 'session_repository.dart';
 /// Runs one focus session at a time and keeps the repository in sync after
 /// every change, so the UI only displays state and never owns logic.
 class FocusTimer {
-  FocusTimer({required this._repository, required this._clock});
+  FocusTimer({
+    required this._repository,
+    required this._clock,
+    this._blocking,
+  });
 
   final SessionRepository _repository;
   final Clock _clock;
+
+  /// Keeps the native app blocker informed; optional so tests stay simple.
+  final BlockingSync? _blocking;
   final _changes = StreamController<FocusSession?>.broadcast();
   FocusSession? _current;
 
@@ -65,9 +73,13 @@ class FocusTimer {
     return session;
   }
 
+  /// Publishes the blocking state again, e.g. after the block list changed.
+  Future<void> refreshBlocking() async => _blocking?.update(_current);
+
   Future<void> _setActive(FocusSession? session) async {
     _current = session;
     await _repository.saveActive(session);
+    await _blocking?.update(session);
     _changes.add(session);
   }
 
