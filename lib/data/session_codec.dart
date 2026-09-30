@@ -1,9 +1,10 @@
 import '../domain/focus_session.dart';
 
-/// Current storage format of a session.
-const sessionFormatVersion = 1;
+/// Current storage format of a session. Version 2 added `labelId`;
+/// version 1 data still loads (without label).
+const sessionFormatVersion = 2;
 
-/// Converts [session] into JSON-compatible data (format version 1).
+/// Converts [session] into JSON-compatible data (current format version).
 Map<String, Object?> encodeSession(FocusSession session) => {
   'v': sessionFormatVersion,
   'start': session.start.microsecondsSinceEpoch,
@@ -21,12 +22,14 @@ Map<String, Object?> encodeSession(FocusSession session) => {
     SessionCancelled() => 'cancelled',
     null => null,
   },
+  'labelId': session.labelId,
 };
 
 /// Reads a session written by [encodeSession]; throws [FormatException] for
 /// unknown versions or malformed data instead of silently dropping it.
 FocusSession decodeSession(Map<String, Object?> json) {
-  if (json['v'] != sessionFormatVersion) {
+  final version = json['v'];
+  if (version != 1 && version != sessionFormatVersion) {
     throw FormatException('Unknown session format version: ${json['v']}');
   }
   try {
@@ -53,6 +56,7 @@ FocusSession decodeSession(Map<String, Object?> json) {
         null => null,
         final other => throw FormatException('Unknown outcome: $other'),
       },
+      labelId: version == 1 ? null : json['labelId'] as String?,
     );
   } on TypeError catch (error) {
     throw FormatException('Malformed session: $error');

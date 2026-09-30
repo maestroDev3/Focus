@@ -150,6 +150,176 @@
       }
     }
   },
+  "sessionFocusingWithLabel": "Focusing · {label}",
+  "@sessionFocusingWithLabel": {
+    "description": "Heading on the session screen with the session's label.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "addLabel": "Add label",
+  "@addLabel": {
+    "description": "Home chip when no labels exist, and button that adds a label."
+  },
+  "noLabel": "No label",
+  "@noLabel": {
+    "description": "Home chip and sheet entry when no label is chosen."
+  },
+  "manageLabels": "Manage labels",
+  "@manageLabels": {
+    "description": "Entry in the label sheet that opens the labels screen."
+  },
+  "labelsTitle": "Labels",
+  "@labelsTitle": {
+    "description": "Title of the screen where labels are managed."
+  },
+  "labelName": "Label name",
+  "@labelName": {
+    "description": "Title of the dialog to enter a label name."
+  },
+  "deleteLabel": "Delete {label}",
+  "@deleteLabel": {
+    "description": "Tooltip of the delete button next to a label.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "labelNameInvalid": "Please use a new name with 1–30 characters.",
+  "@labelNameInvalid": {
+    "description": "Shown when a label name is empty, too long or already used."
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Generic cancel button."
+  },
+  "save": "Save",
+  "@save": {
+    "description": "Generic save button."
+  },
+  "durationHours": "{hours}h",
+  "@durationHours": {
+    "description": "A duration in whole hours, e.g. 3h.",
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "durationHoursMinutes": "{hours}h {minutes}",
+  "@durationHoursMinutes": {
+    "description": "A duration in hours and two-digit minutes, e.g. 1h 40.",
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "today": "Today",
+  "@today": {
+    "description": "Small heading inside the progress ring on the home screen."
+  },
+  "dailyGoalOf": "of {goal} daily goal",
+  "@dailyGoalOf": {
+    "description": "Caption below today's focus time, e.g. “of 3h daily goal”.",
+    "placeholders": {
+      "goal": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsDailyGoal": "Daily goal",
+  "@settingsDailyGoal": {
+    "description": "Setting for the daily focus goal."
+  },
+  "statistics": "Statistics",
+  "@statistics": {
+    "description": "Title of the statistics screen and tooltip of the button that opens it."
+  },
+  "thisWeek": "This week",
+  "@thisWeek": {
+    "description": "Statistics tile with the focus time of the current week."
+  },
+  "byLabel": "By label",
+  "@byLabel": {
+    "description": "Heading of the label breakdown on the statistics screen."
+  },
+  "periodWeek": "Week",
+  "@periodWeek": {
+    "description": "Segment that shows the label breakdown for the current week."
+  },
+  "periodMonth": "Month",
+  "@periodMonth": {
+    "description": "Segment that shows the label breakdown for the current month."
+  },
+  "unlabeled": "Unlabeled",
+  "@unlabeled": {
+    "description": "Group of sessions without (or with a deleted) label in statistics."
+  },
+  "noFocusYet": "No focus time yet.",
+  "@noFocusYet": {
+    "description": "Shown in the label breakdown when the period has no sessions."
+  },
+  "currentStreak": "Current streak · {count, plural, =1{1 day} other{{count} days}}",
+  "@currentStreak": {
+    "description": "Days in a row with the daily goal reached, up to today.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "bestStreak": "Best · {count, plural, =1{1 day} other{{count} days}}",
+  "@bestStreak": {
+    "description": "The longest streak so far.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exportBackup": "Export backup",
+  "@exportBackup": {
+    "description": "Settings entry that saves a backup file."
+  },
+  "restoreBackup": "Restore backup",
+  "@restoreBackup": {
+    "description": "Settings entry that restores a backup file; also the dialog title."
+  },
+  "restoreBackupQuestion": "Replace your data with {count, plural, =1{1 session} other{{count} sessions}} from {date}?",
+  "@restoreBackupQuestion": {
+    "description": "Confirmation before a backup replaces all data.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "replace": "Replace",
+  "@replace": {
+    "description": "Dialog button that confirms restoring a backup."
+  },
+  "backupSaved": "Backup saved.",
+  "@backupSaved": {
+    "description": "Shown after a backup file was saved."
+  },
+  "backupRestored": "Backup restored.",
+  "@backupRestored": {
+    "description": "Shown after a backup was restored."
+  },
+  "notABackup": "This file is not a Focus backup.",
+  "@notABackup": {
+    "description": "Shown when the picked file can't be read as a backup."
+  },
   "blockedAppsTitle": "Paused apps",
   "@blockedAppsTitle": {
     "description": "Title of the screen where the user chooses apps to pause during sessions."

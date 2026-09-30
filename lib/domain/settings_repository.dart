@@ -1,3 +1,4 @@
+import 'daily_goal.dart';
 import 'pomodoro.dart';
 
 /// Stores the user's settings.
@@ -6,4 +7,14 @@ abstract interface class SettingsRepository {
   Future<PomodoroSettings> loadPomodoro();
 
   Future<void> savePomodoro(PomodoroSettings settings);
+
+  /// Id of the label chosen for the next session, or null.
+  Future<String?> loadSelectedLabelId();
+
+  Future<void> saveSelectedLabelId(String? id);
+
+  /// The saved daily focus goal, or the default of 120 minutes.
+  Future<DailyGoal> loadDailyGoal();
+
+  Future<void> saveDailyGoal(DailyGoal goal);
 }

@@ -12,11 +12,13 @@ import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : FlutterActivity() {
     private var blockingChannel: MethodChannel? = null
+    private var documents: DocumentChannel? = null
     private var pendingBlockedPackage: String? = null
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         val messenger = flutterEngine.dartExecutor.binaryMessenger
+        documents = DocumentChannel(this, messenger)
         MethodChannel(messenger, APPS_CHANNEL).setMethodCallHandler { call, result ->
             when (call.method) {
                 "installedApps" -> result.success(installedApps())
@@ -50,6 +52,13 @@ class MainActivity : FlutterActivity() {
                     else -> result.notImplemented()
                 }
             }
+        }
+    }
+
+    @Suppress("OVERRIDE_DEPRECATION", "DEPRECATION")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (documents?.onActivityResult(requestCode, resultCode, data) != true) {
+            super.onActivityResult(requestCode, resultCode, data)
         }
     }
 

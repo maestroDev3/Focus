@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:focus_timer/domain/daily_goal.dart';
 import 'package:focus_timer/ui/home_screen.dart';
 
 import '../support/pump_app.dart';
@@ -11,6 +12,12 @@ void main() {
       required DateTime now,
       VoidCallback? onStart,
       VoidCallback? onOpenSettings,
+      String? labelName,
+      bool hasLabels = false,
+      VoidCallback? onChooseLabel,
+      Duration focusedToday = Duration.zero,
+      DailyGoal dailyGoal = const DailyGoal(),
+      VoidCallback? onOpenStatistics,
       int blockedAppCount = 0,
       VoidCallback? onOpenBlockedApps,
       bool blockerNeedsPermission = false,
@@ -24,6 +31,12 @@ void main() {
           focusDuration: const Duration(minutes: 25),
           onStart: onStart ?? () {},
           onOpenSettings: onOpenSettings ?? () {},
+          labelName: labelName,
+          hasLabels: hasLabels,
+          onChooseLabel: onChooseLabel ?? () {},
+          focusedToday: focusedToday,
+          dailyGoal: dailyGoal,
+          onOpenStatistics: onOpenStatistics ?? () {},
           blockedAppCount: blockedAppCount,
           onOpenBlockedApps: onOpenBlockedApps ?? () {},
           blockerNeedsPermission: blockerNeedsPermission,
@@ -92,6 +105,72 @@ void main() {
       );
 
       await tester.tap(find.byTooltip('Settings'));
+      await tester.pump();
+
+      expect(opened, 1);
+    });
+
+    testWidgets('invites to add a label when there are none', (tester) async {
+      await pumpHome(tester, now: DateTime(2026, 9, 29, 20));
+
+      expect(find.text('Add label'), findsOneWidget);
+    });
+
+    testWidgets('shows the chosen label and opens the label choice', (
+      tester,
+    ) async {
+      var chosen = 0;
+      await pumpHome(
+        tester,
+        now: DateTime(2026, 9, 29, 20),
+        labelName: 'Study',
+        hasLabels: true,
+        onChooseLabel: () => chosen++,
+      );
+
+      await tester.tap(find.text('Study'));
+      await tester.pump();
+
+      expect(chosen, 1);
+    });
+
+    testWidgets('shows No label when labels exist but none is chosen', (
+      tester,
+    ) async {
+      await pumpHome(tester, now: DateTime(2026, 9, 29, 20), hasLabels: true);
+
+      expect(find.text('No label'), findsOneWidget);
+    });
+
+    testWidgets('shows today\'s progress towards the daily goal', (
+      tester,
+    ) async {
+      await pumpHome(
+        tester,
+        now: DateTime(2026, 9, 29, 20),
+        focusedToday: const Duration(minutes: 100),
+        dailyGoal: DailyGoal.validated(180),
+      );
+
+      expect(find.text('1h 40'), findsOneWidget);
+      expect(find.text('of 3h daily goal'), findsOneWidget);
+      final ring = tester.widget<CircularProgressIndicator>(
+        find.byType(CircularProgressIndicator),
+      );
+      expect(ring.value, closeTo(100 / 180, 0.001));
+    });
+
+    testWidgets('opens the statistics from a button with a tooltip', (
+      tester,
+    ) async {
+      var opened = 0;
+      await pumpHome(
+        tester,
+        now: DateTime(2026, 9, 29, 20),
+        onOpenStatistics: () => opened++,
+      );
+
+      await tester.tap(find.byTooltip('Statistics'));
       await tester.pump();
 
       expect(opened, 1);

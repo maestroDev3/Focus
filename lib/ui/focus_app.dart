@@ -3,11 +3,15 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../domain/app_blocker.dart';
+import '../domain/backup.dart';
 import '../domain/block_list_repository.dart';
 import '../domain/clock.dart';
+import '../domain/daily_goal.dart';
+import '../domain/focus_label.dart';
 import '../domain/focus_session.dart';
 import '../domain/focus_timer.dart';
 import '../domain/installed_apps_source.dart';
+import '../domain/label_repository.dart';
 import '../domain/pomodoro.dart';
 import '../domain/settings_repository.dart';
 import '../l10n/app_localizations.dart';
@@ -15,9 +19,12 @@ import 'blocked_apps_screen.dart';
 import 'blocked_screen.dart';
 import 'break_screen.dart';
 import 'home_screen.dart';
+import 'label_sheet.dart';
+import 'labels_screen.dart';
 import 'permission_onboarding_screen.dart';
 import 'session_screen.dart';
 import 'settings_screen.dart';
+import 'statistics_screen.dart';
 import 'theme.dart';
 
 /// Root widget of Focus: wires theme, localization and the screens.
@@ -26,6 +33,8 @@ class FocusApp extends StatefulWidget {
     super.key,
     required this.timer,
     required this.settings,
+    required this.labels,
+    required this.backupFiles,
     required this.blockList,
     required this.installedApps,
     required this.appBlocker,
@@ -35,8 +44,14 @@ class FocusApp extends StatefulWidget {
   /// Runs and stores focus sessions.
   final FocusTimer timer;
 
-  /// Stores the Pomodoro rhythm.
+  /// Stores the Pomodoro rhythm, daily goal and chosen label.
   final SettingsRepository settings;
+
+  /// The user's labels.
+  final LabelRepository labels;
+
+  /// Exports and restores backups.
+  final BackupFiles backupFiles;
 
   /// The apps paused during sessions.
   final BlockListRepository blockList;
@@ -57,15 +72,23 @@ class FocusApp extends StatefulWidget {
 class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
   final _navigator = GlobalKey<NavigatorState>();
   var _pomodoro = const PomodoroSettings();
+  var _dailyGoal = const DailyGoal();
+  var _focusedToday = Duration.zero;
+  var _labels = const <FocusLabel>[];
+  String? _selectedLabelId;
   var _blockedAppCount = 0;
   var _blockerEnabled = true;
   var _notificationGateEnabled = true;
+  StreamSubscription<List<FocusLabel>>? _labelChanges;
   StreamSubscription<String>? _blockedApps;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _labelChanges = widget.labels.watchLabels().listen((labels) {
+      if (mounted) setState(() => _labels = labels);
+    });
     _blockedApps = widget.appBlocker.blockedAppOpened.listen(_showBlocked);
     _loadState();
     _restore();
@@ -74,18 +97,22 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _labelChanges?.cancel();
     _blockedApps?.cancel();
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    // The user may have enabled the blocker in the system settings.
+    // The user may have granted a permission in the system settings.
     if (state == AppLifecycleState.resumed) _loadState();
   }
 
   Future<void> _loadState() async {
     final pomodoro = await widget.settings.loadPomodoro();
+    final selectedLabelId = await widget.settings.loadSelectedLabelId();
+    final dailyGoal = await widget.settings.loadDailyGoal();
+    final focusedToday = await widget.timer.focusedToday();
     final blockList = await widget.blockList.loadBlockList();
     final blockerEnabled = await widget.appBlocker.isBlockerEnabled();
     final notificationGateEnabled = await widget.appBlocker
@@ -93,6 +120,9 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
     if (!mounted) return;
     setState(() {
       _pomodoro = pomodoro;
+      _selectedLabelId = selectedLabelId;
+      _dailyGoal = dailyGoal;
+      _focusedToday = focusedToday;
       _blockedAppCount = blockList.length;
       _blockerEnabled = blockerEnabled;
       _notificationGateEnabled = notificationGateEnabled;
@@ -109,6 +139,12 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
     if (blockedPackage != null) await _showBlocked(blockedPackage);
   }
 
+  /// The label with [id], if it still exists.
+  FocusLabel? _labelWithId(String? id) => [
+    for (final label in _labels)
+      if (label.id == id) label,
+  ].firstOrNull;
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -119,18 +155,26 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
       themeMode: ThemeMode.system,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: HomeScreen(
-        clock: widget.clock,
-        focusDuration: _pomodoro.focus,
-        onStart: _startSession,
-        onOpenSettings: _openSettings,
-        blockedAppCount: _blockedAppCount,
-        onOpenBlockedApps: _openBlockedApps,
-        blockerNeedsPermission: _blockedAppCount > 0 && !_blockerEnabled,
-        onAllowBlocking: _openBlockerOnboarding,
-        notificationsNeedPermission:
-            _blockedAppCount > 0 && !_notificationGateEnabled,
-        onAllowNotifications: _openNotificationOnboarding,
+      home: Builder(
+        builder: (homeContext) => HomeScreen(
+          clock: widget.clock,
+          focusDuration: _pomodoro.focus,
+          onStart: _startSession,
+          onOpenSettings: _openSettings,
+          blockedAppCount: _blockedAppCount,
+          onOpenBlockedApps: _openBlockedApps,
+          blockerNeedsPermission: _blockedAppCount > 0 && !_blockerEnabled,
+          onAllowBlocking: _openBlockerOnboarding,
+          notificationsNeedPermission:
+              _blockedAppCount > 0 && !_notificationGateEnabled,
+          onAllowNotifications: _openNotificationOnboarding,
+          labelName: _labelWithId(_selectedLabelId)?.name,
+          hasLabels: _labels.isNotEmpty,
+          onChooseLabel: () => _chooseLabel(homeContext),
+          focusedToday: _focusedToday,
+          dailyGoal: _dailyGoal,
+          onOpenStatistics: _openStatistics,
+        ),
       ),
     );
   }
@@ -142,8 +186,24 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
   }
 
   Future<void> _openSettings() async {
-    await _push((context) => SettingsScreen(settings: widget.settings));
+    await _push(
+      (context) => SettingsScreen(
+        settings: widget.settings,
+        backupFiles: widget.backupFiles,
+      ),
+    );
     await _loadState();
+  }
+
+  Future<void> _openStatistics() async {
+    await _push(
+      (context) => StatisticsScreen(
+        finishedSessions: widget.timer.watchFinished(),
+        labels: widget.labels.watchLabels(),
+        dailyGoal: _dailyGoal,
+        clock: widget.clock,
+      ),
+    );
   }
 
   Future<void> _openBlockedApps() async {
@@ -182,19 +242,46 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
     await _loadState();
   }
 
-  Future<void> _startSession() async {
-    await widget.timer.start(_pomodoro.focus);
-    _pushSession();
+  Future<void> _chooseLabel(BuildContext context) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => LabelSheet(
+        labels: _labels,
+        selectedId: _labelWithId(_selectedLabelId)?.id,
+        onSelect: (id) {
+          Navigator.of(sheetContext).pop();
+          setState(() => _selectedLabelId = id);
+          widget.settings.saveSelectedLabelId(id);
+        },
+        onManage: () {
+          Navigator.of(sheetContext).pop();
+          _push((context) => LabelsScreen(labels: widget.labels));
+        },
+      ),
+    );
   }
 
-  void _pushSession() {
-    _push(
+  Future<void> _startSession() async {
+    await widget.timer.start(
+      _pomodoro.focus,
+      labelId: _labelWithId(_selectedLabelId)?.id,
+    );
+    await _pushSession();
+  }
+
+  /// Shows the running session; home is refreshed once it is done.
+  Future<void> _pushSession() async {
+    final labelName = _labelWithId(widget.timer.current?.labelId)?.name;
+    await _push(
       (context) => SessionScreen(
         timer: widget.timer,
         clock: widget.clock,
+        labelName: labelName,
         onDone: (outcome) => _afterSession(context, outcome),
       ),
     );
+    await _loadState();
   }
 
   /// Shows the calm “resting” screen over the session for a paused app.

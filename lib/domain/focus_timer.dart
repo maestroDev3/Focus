@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'blocking.dart';
 import 'clock.dart';
+import 'daily_goal.dart';
 import 'focus_session.dart';
 import 'session_repository.dart';
 
@@ -40,9 +41,13 @@ class FocusTimer {
     return session;
   }
 
-  Future<FocusSession> start(Duration planned) async {
+  Future<FocusSession> start(Duration planned, {String? labelId}) async {
     if (_current != null) throw StateError('A session is already running.');
-    final session = FocusSession(start: _clock(), planned: planned);
+    final session = FocusSession(
+      start: _clock(),
+      planned: planned,
+      labelId: labelId,
+    );
     await _setActive(session);
     return session;
   }
@@ -62,6 +67,13 @@ class FocusTimer {
     await _finish(session.complete());
     return true;
   }
+
+  /// All completed and cancelled sessions, now and after every change.
+  Stream<List<FocusSession>> watchFinished() => _repository.watchFinished();
+
+  /// Focus time of all sessions that ended today.
+  Future<Duration> focusedToday() async =>
+      focusedOn(_clock(), await _repository.watchFinished().first);
 
   /// Number of sessions completed today; drives the Pomodoro cycle.
   Future<int> completedToday() async {

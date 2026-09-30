@@ -156,4 +156,32 @@ void main() {
       expect(await timer.restore(), isNull);
     });
   });
+
+  group('FocusTimer.start with a label', () {
+    test('stores the label on the session', () async {
+      await timer.start(planned, labelId: 'study');
+
+      expect(timer.current?.labelId, 'study');
+      expect(repository.active?.labelId, 'study');
+    });
+  });
+
+  group('FocusTimer.focusedToday', () {
+    test('sums the focused time of sessions that ended today', () async {
+      await timer.start(planned);
+      advance(const Duration(minutes: 10));
+      await timer.cancel();
+
+      expect(await timer.focusedToday(), const Duration(minutes: 10));
+    });
+  });
+
+  group('FocusTimer.watchFinished', () {
+    test('emits the finished sessions', () async {
+      await timer.start(planned);
+      await timer.cancel();
+
+      expect(await timer.watchFinished().first, repository.finished);
+    });
+  });
 }

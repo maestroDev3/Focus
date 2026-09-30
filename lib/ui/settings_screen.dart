@@ -1,14 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
+import '../domain/backup.dart';
+import '../domain/daily_goal.dart';
 import '../domain/pomodoro.dart';
 import '../domain/settings_repository.dart';
 import '../l10n/app_localizations.dart';
+import 'focus_time_text.dart';
 
 /// Lets the user tune the Pomodoro rhythm; every change is saved at once.
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({super.key, required this.settings});
+  const SettingsScreen({
+    super.key,
+    required this.settings,
+    required this.backupFiles,
+  });
 
   final SettingsRepository settings;
+
+  /// Exports and restores backups.
+  final BackupFiles backupFiles;
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -16,6 +27,7 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   PomodoroSettings? _pomodoro;
+  var _dailyGoal = const DailyGoal();
 
   @override
   void initState() {
@@ -25,8 +37,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _load() async {
     final pomodoro = await widget.settings.loadPomodoro();
+    final dailyGoal = await widget.settings.loadDailyGoal();
     if (!mounted) return;
-    setState(() => _pomodoro = pomodoro);
+    setState(() {
+      _pomodoro = pomodoro;
+      _dailyGoal = dailyGoal;
+    });
   }
 
   Future<void> _step(PomodoroField field, {required bool up}) async {
@@ -36,6 +52,62 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (next == current) return;
     setState(() => _pomodoro = next);
     await widget.settings.savePomodoro(next);
+  }
+
+  Future<void> _stepGoal({required bool up}) async {
+    final next = _dailyGoal.step(up: up);
+    if (next == _dailyGoal) return;
+    setState(() => _dailyGoal = next);
+    await widget.settings.saveDailyGoal(next);
+  }
+
+  Future<void> _export() async {
+    final messenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context);
+    if (await widget.backupFiles.export()) {
+      messenger.showSnackBar(SnackBar(content: Text(l10n.backupSaved)));
+    }
+  }
+
+  Future<void> _restore() async {
+    final messenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context);
+    final locale = Localizations.localeOf(context).toLanguageTag();
+    final Backup? picked;
+    try {
+      picked = await widget.backupFiles.pick();
+    } on FormatException {
+      messenger.showSnackBar(SnackBar(content: Text(l10n.notABackup)));
+      return;
+    }
+    if (picked == null || !mounted) return;
+    final backup = picked;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.restoreBackup),
+        content: Text(
+          l10n.restoreBackupQuestion(
+            backup.sessions.length,
+            DateFormat.yMMMd(locale).format(backup.createdAt),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(l10n.replace),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    await widget.backupFiles.restore(backup);
+    await _load();
+    messenger.showSnackBar(SnackBar(content: Text(l10n.backupRestored)));
   }
 
   @override
@@ -73,11 +145,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                 ])
                   _StepperRow(
-                    field: field,
+                    keyName: field.name,
                     name: name,
                     value: value,
                     onStep: ({required up}) => _step(field, up: up),
                   ),
+                _StepperRow(
+                  keyName: 'dailyGoal',
+                  name: l10n.settingsDailyGoal,
+                  value: focusTimeText(l10n, _dailyGoal.duration),
+                  onStep: _stepGoal,
+                ),
+                const Divider(height: 32),
+                ListTile(
+                  leading: const Icon(Icons.upload_file_outlined),
+                  title: Text(l10n.exportBackup),
+                  onTap: _export,
+                ),
+                ListTile(
+                  leading: const Icon(Icons.restore_outlined),
+                  title: Text(l10n.restoreBackup),
+                  onTap: _restore,
+                ),
               ],
             ),
     );
@@ -87,13 +176,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
 /// One setting with its current value and − / + buttons.
 class _StepperRow extends StatelessWidget {
   const _StepperRow({
-    required this.field,
+    required this.keyName,
     required this.name,
     required this.value,
     required this.onStep,
   });
 
-  final PomodoroField field;
+  /// Prefix of the button keys, e.g. `focus` → `focus-increase`.
+  final String keyName;
   final String name;
   final String value;
   final void Function({required bool up}) onStep;
@@ -114,13 +204,13 @@ class _StepperRow extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           IconButton(
-            key: Key('${field.name}-decrease'),
+            key: Key('$keyName-decrease'),
             tooltip: l10n.decreaseSetting(name),
             onPressed: () => onStep(up: false),
             icon: const Icon(Icons.remove),
           ),
           IconButton(
-            key: Key('${field.name}-increase'),
+            key: Key('$keyName-increase'),
             tooltip: l10n.increaseSetting(name),
             onPressed: () => onStep(up: true),
             icon: const Icon(Icons.add),

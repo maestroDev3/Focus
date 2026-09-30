@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:focus_timer/domain/blocking.dart';
+import 'package:focus_timer/domain/focus_label.dart';
 import 'package:focus_timer/domain/focus_session.dart';
 import 'package:focus_timer/domain/focus_timer.dart';
 import 'package:focus_timer/domain/pomodoro.dart';
@@ -8,9 +9,12 @@ import 'package:focus_timer/l10n/app_localizations.dart';
 import 'package:focus_timer/ui/focus_app.dart';
 import 'package:focus_timer/ui/theme.dart';
 
+import '../support/backup_files_for_tests.dart';
 import '../support/fake_app_blocker.dart';
 import '../support/fake_block_list_repository.dart';
+import '../support/fake_document_store.dart';
 import '../support/fake_installed_apps_source.dart';
+import '../support/fake_label_repository.dart';
 import '../support/fake_session_repository.dart';
 import '../support/fake_settings_repository.dart';
 import '../support/pump_app.dart';
@@ -19,11 +23,19 @@ void main() {
   var now = DateTime(2026, 9, 29, 20);
   var repository = FakeSessionRepository();
   var settings = FakeSettingsRepository();
+  var labels = FakeLabelRepository();
   var blockList = FakeBlockListRepository();
   var blocker = FakeAppBlocker();
   FocusApp buildApp() => FocusApp(
     timer: FocusTimer(repository: repository, clock: () => now),
     settings: settings,
+    labels: labels,
+    backupFiles: backupFilesForTests(
+      sessions: repository,
+      labels: labels,
+      settings: settings,
+      documents: FakeDocumentStore(),
+    ),
     blockList: blockList,
     installedApps: FakeInstalledAppsSource(),
     appBlocker: blocker,
@@ -34,6 +46,7 @@ void main() {
     now = DateTime(2026, 9, 29, 20);
     repository = FakeSessionRepository();
     settings = FakeSettingsRepository();
+    labels = FakeLabelRepository();
     blockList = FakeBlockListRepository();
     blocker = FakeAppBlocker();
   });
@@ -198,6 +211,94 @@ void main() {
       await tester.pump(const Duration(milliseconds: 500));
 
       expect(find.text('30 min'), findsOneWidget);
+    });
+  });
+
+  group('FocusApp labels', () {
+    testWidgets('chooses a label that the next session stores', (
+      tester,
+    ) async {
+      labels.labels.addAll([
+        FocusLabel(id: 'study', name: 'Study'),
+        FocusLabel(id: 'work', name: 'Work'),
+      ]);
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+
+      await tester.tap(find.text('No label'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      await tester.tap(find.text('Study'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(find.text('Study'), findsOneWidget);
+      expect(settings.selectedLabelId, 'study');
+
+      await beginFocus(tester);
+      expect(repository.active?.labelId, 'study');
+      expect(find.text('Focusing · Study'), findsOneWidget);
+    });
+
+    testWidgets('remembers the chosen label', (tester) async {
+      labels.labels.add(FocusLabel(id: 'work', name: 'Work'));
+      settings.selectedLabelId = 'work';
+
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+
+      expect(find.text('Work'), findsOneWidget);
+    });
+
+    testWidgets('opens the label management from the label choice', (
+      tester,
+    ) async {
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+
+      await tester.tap(find.text('Add label'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      await tester.tap(find.text('Manage labels'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(find.text('Labels'), findsOneWidget);
+    });
+  });
+
+  group('FocusApp daily goal', () {
+    testWidgets('updates the progress after a cancelled session', (
+      tester,
+    ) async {
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+      expect(find.text('0 min'), findsOneWidget);
+
+      await beginFocus(tester);
+      await elapse(tester, const Duration(minutes: 10));
+      await tester.tap(find.widgetWithText(OutlinedButton, 'End session'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      await tester.tap(find.widgetWithText(TextButton, 'End session'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(find.text('10 min'), findsOneWidget);
+      expect(find.text('of 2h daily goal'), findsOneWidget);
+    });
+  });
+
+  group('FocusApp statistics', () {
+    testWidgets('opens the statistics screen', (tester) async {
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+
+      await tester.tap(find.byTooltip('Statistics'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(find.text('This week'), findsOneWidget);
     });
   });
 

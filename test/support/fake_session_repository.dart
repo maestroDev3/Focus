@@ -26,4 +26,12 @@ class FakeSessionRepository implements SessionRepository {
     yield List.of(finished);
     yield* _changes.stream;
   }
+
+  @override
+  Future<void> replaceFinished(List<FocusSession> sessions) async {
+    finished
+      ..clear()
+      ..addAll(sessions);
+    _changes.add(List.of(finished));
+  }
 }
