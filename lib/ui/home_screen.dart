@@ -14,12 +14,18 @@ class HomeScreen extends StatelessWidget {
     required this.focusDuration,
     required this.onStart,
     required this.onOpenSettings,
+    required this.blockedAppCount,
+    required this.onOpenBlockedApps,
   });
 
   final Clock clock;
   final Duration focusDuration;
   final VoidCallback onStart;
   final VoidCallback onOpenSettings;
+
+  /// Number of apps paused during sessions.
+  final int blockedAppCount;
+  final VoidCallback onOpenBlockedApps;
 
   @override
   Widget build(BuildContext context) {
@@ -71,6 +77,22 @@ class HomeScreen extends StatelessWidget {
               ),
               const Spacer(),
               _PlannedDuration(minutes: focusDuration.inMinutes),
+              const SizedBox(height: 28),
+              Center(
+                child: ActionChip(
+                  onPressed: onOpenBlockedApps,
+                  avatar: Icon(
+                    Icons.do_not_disturb_on_outlined,
+                    size: 18,
+                    color: theme.colorScheme.primary,
+                  ),
+                  label: Text(
+                    blockedAppCount == 0
+                        ? l10n.chooseAppsToPause
+                        : l10n.appsPaused(blockedAppCount),
+                  ),
+                ),
+              ),
               const Spacer(),
               FilledButton(
                 onPressed: onStart,

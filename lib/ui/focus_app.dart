@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 
+import '../domain/block_list_repository.dart';
 import '../domain/clock.dart';
 import '../domain/focus_session.dart';
 import '../domain/focus_timer.dart';
+import '../domain/installed_apps_source.dart';
 import '../domain/pomodoro.dart';
 import '../domain/settings_repository.dart';
 import '../l10n/app_localizations.dart';
+import 'blocked_apps_screen.dart';
 import 'break_screen.dart';
 import 'home_screen.dart';
 import 'session_screen.dart';
@@ -18,6 +21,8 @@ class FocusApp extends StatefulWidget {
     super.key,
     required this.timer,
     required this.settings,
+    required this.blockList,
+    required this.installedApps,
     this.clock = DateTime.now,
   });
 
@@ -26,6 +31,12 @@ class FocusApp extends StatefulWidget {
 
   /// Stores the Pomodoro rhythm.
   final SettingsRepository settings;
+
+  /// The apps paused during sessions.
+  final BlockListRepository blockList;
+
+  /// The apps on the phone that can be paused.
+  final InstalledAppsSource installedApps;
 
   /// Source of the current time for every screen.
   final Clock clock;
@@ -36,6 +47,7 @@ class FocusApp extends StatefulWidget {
 
 class _FocusAppState extends State<FocusApp> {
   var _pomodoro = const PomodoroSettings();
+  var _blockedAppCount = 0;
 
   @override
   void initState() {
@@ -45,8 +57,12 @@ class _FocusAppState extends State<FocusApp> {
 
   Future<void> _loadSettings() async {
     final pomodoro = await widget.settings.loadPomodoro();
+    final blockList = await widget.blockList.loadBlockList();
     if (!mounted) return;
-    setState(() => _pomodoro = pomodoro);
+    setState(() {
+      _pomodoro = pomodoro;
+      _blockedAppCount = blockList.length;
+    });
   }
 
   @override
@@ -64,6 +80,8 @@ class _FocusAppState extends State<FocusApp> {
           focusDuration: _pomodoro.focus,
           onStart: () => _startSession(context),
           onOpenSettings: () => _openSettings(context),
+          blockedAppCount: _blockedAppCount,
+          onOpenBlockedApps: () => _openBlockedApps(context),
         ),
       ),
     );
@@ -73,6 +91,19 @@ class _FocusAppState extends State<FocusApp> {
     await Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (context) => SettingsScreen(settings: widget.settings),
+      ),
+    );
+    await _loadSettings();
+  }
+
+  Future<void> _openBlockedApps(BuildContext context) async {
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (context) => BlockedAppsScreen(
+          apps: widget.installedApps,
+          blockList: widget.blockList,
+          activeSession: widget.timer.current,
+        ),
       ),
     );
     await _loadSettings();

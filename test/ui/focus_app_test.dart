@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:focus_timer/domain/blocking.dart';
 import 'package:focus_timer/domain/focus_session.dart';
 import 'package:focus_timer/domain/focus_timer.dart';
 import 'package:focus_timer/domain/pomodoro.dart';
@@ -7,6 +8,8 @@ import 'package:focus_timer/l10n/app_localizations.dart';
 import 'package:focus_timer/ui/focus_app.dart';
 import 'package:focus_timer/ui/theme.dart';
 
+import '../support/fake_block_list_repository.dart';
+import '../support/fake_installed_apps_source.dart';
 import '../support/fake_session_repository.dart';
 import '../support/fake_settings_repository.dart';
 import '../support/pump_app.dart';
@@ -15,9 +18,12 @@ void main() {
   var now = DateTime(2026, 9, 29, 20);
   var repository = FakeSessionRepository();
   var settings = FakeSettingsRepository();
+  var blockList = FakeBlockListRepository();
   FocusApp buildApp() => FocusApp(
     timer: FocusTimer(repository: repository, clock: () => now),
     settings: settings,
+    blockList: blockList,
+    installedApps: FakeInstalledAppsSource(),
     clock: () => now,
   );
 
@@ -25,6 +31,7 @@ void main() {
     now = DateTime(2026, 9, 29, 20);
     repository = FakeSessionRepository();
     settings = FakeSettingsRepository();
+    blockList = FakeBlockListRepository();
   });
 
   Future<void> elapse(WidgetTester tester, Duration duration) async {
@@ -187,6 +194,28 @@ void main() {
       await tester.pump(const Duration(milliseconds: 500));
 
       expect(find.text('30 min'), findsOneWidget);
+    });
+  });
+
+  group('FocusApp blocked apps', () {
+    testWidgets('shows the number of paused apps and updates it', (
+      tester,
+    ) async {
+      blockList.blockList = const BlockList().add('org.telegram.messenger');
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+      expect(find.text('1 app paused'), findsOneWidget);
+
+      await tester.tap(find.text('1 app paused'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      await tester.tap(find.text('YouTube'));
+      await tester.pump();
+      await tester.pageBack();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(find.text('2 apps paused'), findsOneWidget);
     });
   });
 
