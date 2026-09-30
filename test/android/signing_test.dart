@@ -4,8 +4,15 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('Release signing', () {
-    test('uses a stable keystore from the repository', () {
-      expect(File('android/app/focus-release.jks').existsSync(), isTrue);
+    test('lets GitHub create the key from the user\'s secret password', () {
+      final workflow = File(
+        '.github/workflows/create-release-key.yml',
+      ).readAsStringSync();
+
+      expect(workflow, contains('workflow_dispatch'));
+      expect(workflow, contains('keytool -genkeypair'));
+      expect(workflow, contains('secrets.FOCUS_KEYSTORE_PASSWORD'));
+      expect(workflow, contains('focus-release.sha256'));
     });
 
     test('defines a release signing config with the keystore password', () {
@@ -20,7 +27,7 @@ void main() {
       final ci = File('.github/workflows/ci.yml').readAsStringSync();
 
       expect(ci, contains(r'--build-number=${{ github.run_number }}'));
-      expect(ci, contains('FOCUS_CERT_SHA256'));
+      expect(ci, contains('focus-release.sha256'));
     });
   });
 }
