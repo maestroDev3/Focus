@@ -98,8 +98,14 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          set -x
           cp build/app/outputs/flutter-apk/app-release.apk focus_timer.apk
-          gh release delete latest --yes --cleanup-tag || true
-          gh release create latest focus_timer.apk --target "$GITHUB_SHA" \
-            --title "Focus (latest)" \
-            --notes "Built automatically from ${GITHUB_SHA::7}. To install, download focus_timer.apk on your phone and open it."
+          NOTES="Built automatically from ${GITHUB_SHA::7} (build ${{ github.run_number }}). To install, download focus_timer.apk on your phone and open it."
+          if gh release view latest > /dev/null 2>&1; then
+            # Replace the APK of the existing release (updates install over it).
+            gh release upload latest focus_timer.apk --clobber
+            gh release edit latest --notes "$NOTES"
+          else
+            gh release create latest focus_timer.apk --target "$GITHUB_SHA" \
+              --title "Focus (latest)" --notes "$NOTES"
+          fi
