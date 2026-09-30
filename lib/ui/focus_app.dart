@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../domain/backup.dart';
 import '../domain/clock.dart';
 import '../domain/daily_goal.dart';
 import '../domain/focus_label.dart';
@@ -27,6 +28,7 @@ class FocusApp extends StatefulWidget {
     required this.timer,
     required this.settings,
     required this.labels,
+    required this.backupFiles,
     this.clock = DateTime.now,
   });
 
@@ -38,6 +40,9 @@ class FocusApp extends StatefulWidget {
 
   /// The user's labels.
   final LabelRepository labels;
+
+  /// Exports and restores backups.
+  final BackupFiles backupFiles;
 
   /// Source of the current time for every screen.
   final Clock clock;
@@ -127,7 +132,10 @@ class _FocusAppState extends State<FocusApp> {
   Future<void> _openSettings(BuildContext context) async {
     await Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (context) => SettingsScreen(settings: widget.settings),
+        builder: (context) => SettingsScreen(
+          settings: widget.settings,
+          backupFiles: widget.backupFiles,
+        ),
       ),
     );
     await _loadSettings();

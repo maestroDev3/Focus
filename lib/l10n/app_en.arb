@@ -283,5 +283,41 @@
         "type": "int"
       }
     }
+  },
+  "exportBackup": "Export backup",
+  "@exportBackup": {
+    "description": "Settings entry that saves a backup file."
+  },
+  "restoreBackup": "Restore backup",
+  "@restoreBackup": {
+    "description": "Settings entry that restores a backup file; also the dialog title."
+  },
+  "restoreBackupQuestion": "Replace your data with {count, plural, =1{1 session} other{{count} sessions}} from {date}?",
+  "@restoreBackupQuestion": {
+    "description": "Confirmation before a backup replaces all data.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "replace": "Replace",
+  "@replace": {
+    "description": "Dialog button that confirms restoring a backup."
+  },
+  "backupSaved": "Backup saved.",
+  "@backupSaved": {
+    "description": "Shown after a backup file was saved."
+  },
+  "backupRestored": "Backup restored.",
+  "@backupRestored": {
+    "description": "Shown after a backup was restored."
+  },
+  "notABackup": "This file is not a Focus backup.",
+  "@notABackup": {
+    "description": "Shown when the picked file can't be read as a backup."
   }
 }

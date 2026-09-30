@@ -1,5 +1,6 @@
 import 'clock.dart';
 import 'daily_goal.dart';
+import 'document_store.dart';
 import 'focus_label.dart';
 import 'focus_session.dart';
 import 'label_repository.dart';
@@ -70,6 +71,52 @@ class BackupService {
     await _labels.replaceAll(backup.labels);
     await _settings.savePomodoro(backup.pomodoro);
     await _settings.saveDailyGoal(backup.dailyGoal);
+  }
+}
+
+/// Turns a [Backup] into file text and back; throws [FormatException] for
+/// text that is not a valid backup.
+abstract interface class BackupCodec {
+  String encode(Backup backup);
+
+  Backup decode(String text);
+}
+
+/// Exports and imports backups as files the user picks.
+class BackupFiles {
+  BackupFiles({
+    required this._service,
+    required this._documents,
+    required this._codec,
+  });
+
+  final BackupService _service;
+  final DocumentStore _documents;
+  final BackupCodec _codec;
+
+  /// Saves a fresh backup; returns false if the user cancelled.
+  Future<bool> export() async {
+    final backup = await _service.create();
+    return _documents.saveText(
+      fileNameFor(backup.createdAt),
+      _codec.encode(backup),
+    );
+  }
+
+  /// Lets the user pick a backup file; null if cancelled. Throws
+  /// [FormatException] if the file is not a Focus backup.
+  Future<Backup?> pick() async {
+    final text = await _documents.openText();
+    return text == null ? null : _codec.decode(text);
+  }
+
+  Future<void> restore(Backup backup) => _service.restore(backup);
+
+  /// File name like `focus-backup-2026-09-30.json`.
+  static String fileNameFor(DateTime createdAt) {
+    String two(int value) => value.toString().padLeft(2, '0');
+    return 'focus-backup-${createdAt.year}-${two(createdAt.month)}-'
+        '${two(createdAt.day)}.json';
   }
 }
 
