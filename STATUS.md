@@ -8,12 +8,12 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- Nothing – next: #14.
+- Nothing – next: #16.
 - **Waiting for your phone test:** PR #82 – epic #20 Distraction blocking (APK as Actions artifact of the PR; test steps in the PR).
 
 ## Up next
 
-1. #14 Streaks → #16 Backup.
+1. #16 Backup and export.
 
 ## Backlog by epic
 
@@ -21,16 +21,15 @@ The GitHub issues are authoritative; this file is the summary.
 |---|---|
 | #4 Focus timer | #6 Timer survives app switch and restart (`backlog`, waits for a decision) → ~~#7 Configurable durations and breaks~~ (done) |
 | #20 Distraction blocking | #21 → #22 → #23 done on `epic/distraction-blocking`, PR #82 waits for the phone test |
-| #11 Statistics | ~~#12 Focus time per day and week~~ (done) → ~~#13 Breakdown by label~~ (done) → #14 Streaks (`ready`) |
 | #15 Data safety | #16 Backup and export (`ready`) |
 
 ## Recently done
 
+- #14 Streaks – epic #11 Statistics complete
 - #13 Breakdown by label (week / month)
 - #12 Focus time per day and week (statistics screen)
 - #10 Daily focus goal with progress ring – epic #8 Labels and goals complete
 - #9 Labels for sessions (label picker, label management, storage v2)
-- #23 Hold back notifications of blocked apps – epic #20 complete on its branch
 
 ## Open decisions (user only)
 
