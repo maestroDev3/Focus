@@ -106,6 +106,7 @@ class _FocusAppState extends State<FocusApp> {
         ),
       ),
     );
+    await widget.timer.refreshBlocking();
     await _loadSettings();
   }
 

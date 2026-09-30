@@ -3,23 +3,31 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'data/method_channel_installed_apps_source.dart';
 import 'data/shared_preferences_block_list_repository.dart';
+import 'data/shared_preferences_blocking_state_writer.dart';
 import 'data/shared_preferences_session_repository.dart';
 import 'data/shared_preferences_settings_repository.dart';
+import 'domain/blocking.dart';
 import 'domain/focus_timer.dart';
 import 'ui/focus_app.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final preferences = await SharedPreferences.getInstance();
+  final blockList = SharedPreferencesBlockListRepository(preferences);
   final timer = FocusTimer(
     repository: SharedPreferencesSessionRepository(preferences),
     clock: DateTime.now,
+    blocking: BlockingSync(
+      blockList: blockList,
+      writer: SharedPreferencesBlockingStateWriter(preferences),
+      clock: DateTime.now,
+    ),
   );
   runApp(
     FocusApp(
       timer: timer,
       settings: SharedPreferencesSettingsRepository(preferences),
-      blockList: SharedPreferencesBlockListRepository(preferences),
+      blockList: blockList,
       installedApps: const MethodChannelInstalledAppsSource(),
     ),
   );
