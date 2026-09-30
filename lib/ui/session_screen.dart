@@ -16,10 +16,14 @@ class SessionScreen extends StatefulWidget {
     required this.timer,
     required this.clock,
     required this.onDone,
+    this.labelName,
   });
 
   final FocusTimer timer;
   final Clock clock;
+
+  /// Name of the session's label, shown in the heading.
+  final String? labelName;
 
   /// Called once with the outcome when the session was completed or ended.
   final ValueChanged<SessionOutcome> onDone;
@@ -122,7 +126,11 @@ class _SessionScreenState extends State<SessionScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  paused ? l10n.sessionPaused : l10n.sessionFocusing,
+                  switch ((paused, widget.labelName)) {
+                    (true, _) => l10n.sessionPaused,
+                    (false, final label?) => l10n.sessionFocusingWithLabel(label),
+                    (false, null) => l10n.sessionFocusing,
+                  },
                   style: theme.textTheme.labelLarge?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                     letterSpacing: 3,

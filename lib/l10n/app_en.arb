@@ -149,5 +149,55 @@
         "type": "String"
       }
     }
+  },
+  "sessionFocusingWithLabel": "Focusing · {label}",
+  "@sessionFocusingWithLabel": {
+    "description": "Heading on the session screen with the session's label.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "addLabel": "Add label",
+  "@addLabel": {
+    "description": "Home chip when no labels exist, and button that adds a label."
+  },
+  "noLabel": "No label",
+  "@noLabel": {
+    "description": "Home chip and sheet entry when no label is chosen."
+  },
+  "manageLabels": "Manage labels",
+  "@manageLabels": {
+    "description": "Entry in the label sheet that opens the labels screen."
+  },
+  "labelsTitle": "Labels",
+  "@labelsTitle": {
+    "description": "Title of the screen where labels are managed."
+  },
+  "labelName": "Label name",
+  "@labelName": {
+    "description": "Title of the dialog to enter a label name."
+  },
+  "deleteLabel": "Delete {label}",
+  "@deleteLabel": {
+    "description": "Tooltip of the delete button next to a label.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "labelNameInvalid": "Please use a new name with 1–30 characters.",
+  "@labelNameInvalid": {
+    "description": "Shown when a label name is empty, too long or already used."
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Generic cancel button."
+  },
+  "save": "Save",
+  "@save": {
+    "description": "Generic save button."
   }
 }
