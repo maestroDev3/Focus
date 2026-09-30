@@ -24,4 +24,8 @@ class MethodChannelInstalledAppsSource implements InstalledAppsSource {
         },
     ];
   }
+
+  @override
+  Future<Uint8List?> iconOf(String packageName) =>
+      channel.invokeMethod<Uint8List>('appIcon', packageName);
 }

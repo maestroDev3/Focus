@@ -397,5 +397,9 @@
   "introTagline": "One quiet hour at a time.",
   "@introTagline": {
     "description": "Tagline below the wordmark on the intro shown at app start."
+  },
+  "lockedDuringSession": "Locked during this session",
+  "@lockedDuringSession": {
+    "description": "Subtitle of a paused app that can't be unchecked while a session is active."
   }
 }

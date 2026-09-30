@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 
 import '../domain/block_list_repository.dart';
@@ -28,6 +30,12 @@ class _BlockedAppsScreenState extends State<BlockedAppsScreen> {
   List<InstalledApp>? _apps;
   var _blockList = const BlockList();
   var _query = '';
+
+  /// Icons are loaded lazily and kept while the screen is open.
+  final _icons = <String, Future<Uint8List?>>{};
+
+  Future<Uint8List?> _iconOf(String packageName) =>
+      _icons.putIfAbsent(packageName, () => widget.apps.iconOf(packageName));
 
   @override
   void initState() {
@@ -102,12 +110,8 @@ class _BlockedAppsScreenState extends State<BlockedAppsScreen> {
                       return CheckboxListTile(
                         value: blocked,
                         title: Text(app.label),
-                        secondary: locked
-                            ? Icon(
-                                Icons.lock_outline,
-                                color: theme.colorScheme.primary,
-                              )
-                            : null,
+                        subtitle: locked ? Text(l10n.lockedDuringSession) : null,
+                        secondary: _AppIcon(icon: _iconOf(app.packageName)),
                         onChanged: locked
                             ? null
                             : (checked) =>
@@ -117,6 +121,31 @@ class _BlockedAppsScreenState extends State<BlockedAppsScreen> {
                   ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// The app's own icon, or a calm placeholder while loading or without one.
+class _AppIcon extends StatelessWidget {
+  const _AppIcon({required this.icon});
+
+  final Future<Uint8List?> icon;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return SizedBox.square(
+      dimension: 40,
+      child: FutureBuilder<Uint8List?>(
+        future: icon,
+        builder: (context, snapshot) => switch (snapshot.data) {
+          final bytes? => ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: Image.memory(bytes, gaplessPlayback: true),
+          ),
+          null => Icon(Icons.apps, color: theme.colorScheme.onSurfaceVariant),
+        },
       ),
     );
   }

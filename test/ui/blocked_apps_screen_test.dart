@@ -99,5 +99,28 @@ void main() {
       expect(find.text('YouTube'), findsNothing);
       expect(find.text('Instagram'), findsNothing);
     });
+
+    testWidgets('shows app icons and a placeholder without icon', (
+      tester,
+    ) async {
+      await pumpScreen(tester);
+      await tester.pump();
+
+      expect(find.byType(Image), findsNWidgets(2));
+      expect(find.byIcon(Icons.apps), findsOneWidget);
+    });
+
+    testWidgets('marks locked apps during a session', (tester) async {
+      await pumpScreen(
+        tester,
+        initial: const BlockList().add(telegram),
+        activeSession: FocusSession(
+          start: start,
+          planned: const Duration(minutes: 25),
+        ),
+      );
+
+      expect(find.text('Locked during this session'), findsOneWidget);
+    });
   });
 }
