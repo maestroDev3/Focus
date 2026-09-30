@@ -8,6 +8,7 @@ import 'package:focus_timer/l10n/app_localizations.dart';
 import 'package:focus_timer/ui/focus_app.dart';
 import 'package:focus_timer/ui/theme.dart';
 
+import '../support/fake_app_blocker.dart';
 import '../support/fake_block_list_repository.dart';
 import '../support/fake_installed_apps_source.dart';
 import '../support/fake_session_repository.dart';
@@ -19,11 +20,13 @@ void main() {
   var repository = FakeSessionRepository();
   var settings = FakeSettingsRepository();
   var blockList = FakeBlockListRepository();
+  var blocker = FakeAppBlocker();
   FocusApp buildApp() => FocusApp(
     timer: FocusTimer(repository: repository, clock: () => now),
     settings: settings,
     blockList: blockList,
     installedApps: FakeInstalledAppsSource(),
+    appBlocker: blocker,
     clock: () => now,
   );
 
@@ -32,6 +35,7 @@ void main() {
     repository = FakeSessionRepository();
     settings = FakeSettingsRepository();
     blockList = FakeBlockListRepository();
+    blocker = FakeAppBlocker();
   });
 
   Future<void> elapse(WidgetTester tester, Duration duration) async {
@@ -216,6 +220,73 @@ void main() {
       await tester.pump(const Duration(milliseconds: 500));
 
       expect(find.text('2 apps paused'), findsOneWidget);
+    });
+  });
+
+  group('FocusApp app blocking', () {
+    testWidgets('shows the blocked screen when a paused app is opened', (
+      tester,
+    ) async {
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+      await beginFocus(tester);
+
+      blocker.emit('org.telegram.messenger');
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(find.text('Telegram'), findsOneWidget);
+      expect(find.text('25:00 remain in this session.'), findsOneWidget);
+
+      await tester.tap(find.text('Return to focus'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(find.text('25:00'), findsOneWidget);
+    });
+
+    testWidgets('restores the session when launched for a blocked app', (
+      tester,
+    ) async {
+      repository.active = FocusSession(
+        start: now.subtract(const Duration(minutes: 5)),
+        planned: const Duration(minutes: 25),
+      );
+      blocker.initial = 'org.telegram.messenger';
+
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(find.text('20:00 remain in this session.'), findsOneWidget);
+
+      await tester.tap(find.text('Return to focus'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(find.text('20:00'), findsOneWidget);
+    });
+
+    testWidgets('guides to the settings when blocking is not allowed', (
+      tester,
+    ) async {
+      blockList.blockList = const BlockList().add('org.telegram.messenger');
+      blocker.enabled = false;
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+
+      await tester.tap(find.text('Allow app blocking'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      await tester.tap(find.text('Open settings'));
+      await tester.pump();
+
+      expect(blocker.openedSettings, 1);
+    });
+
+    testWidgets('shows no hint when blocking is allowed', (tester) async {
+      blockList.blockList = const BlockList().add('org.telegram.messenger');
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+
+      expect(find.text('Allow app blocking'), findsNothing);
     });
   });
 

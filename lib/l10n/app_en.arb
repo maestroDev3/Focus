@@ -174,5 +174,42 @@
         "type": "int"
       }
     }
+  },
+  "blockedResting": "Resting while you focus.",
+  "@blockedResting": {
+    "description": "Headline of the screen shown instead of a paused app during a session."
+  },
+  "blockedRemaining": "{time} remain in this session.",
+  "@blockedRemaining": {
+    "description": "Remaining session time on the blocked screen, e.g. 18:00.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "blockedSessionPaused": "Your session is paused.",
+  "@blockedSessionPaused": {
+    "description": "Shown on the blocked screen while the session is paused."
+  },
+  "returnToFocus": "Return to focus",
+  "@returnToFocus": {
+    "description": "Button on the blocked screen that goes back to the session."
+  },
+  "allowAppBlocking": "Allow app blocking",
+  "@allowAppBlocking": {
+    "description": "Home hint when apps are paused but the accessibility permission is missing."
+  },
+  "blockerOnboardingTitle": "Let Focus pause apps",
+  "@blockerOnboardingTitle": {
+    "description": "Title of the screen explaining the accessibility permission."
+  },
+  "blockerOnboardingBody": "To keep paused apps closed while you focus, Android needs your permission. In the next screen, open “Focus app pause” and switch it on. Focus only notices which app is opened – it never reads what is on your screen.",
+  "@blockerOnboardingBody": {
+    "description": "Explanation of the accessibility permission before opening the system settings."
+  },
+  "openSettings": "Open settings",
+  "@openSettings": {
+    "description": "Button that opens the Android settings."
   }
 }

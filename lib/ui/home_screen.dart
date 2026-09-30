@@ -16,6 +16,8 @@ class HomeScreen extends StatelessWidget {
     required this.onOpenSettings,
     required this.blockedAppCount,
     required this.onOpenBlockedApps,
+    required this.blockerNeedsPermission,
+    required this.onAllowBlocking,
   });
 
   final Clock clock;
@@ -26,6 +28,10 @@ class HomeScreen extends StatelessWidget {
   /// Number of apps paused during sessions.
   final int blockedAppCount;
   final VoidCallback onOpenBlockedApps;
+
+  /// Apps are paused but the blocker is not allowed yet.
+  final bool blockerNeedsPermission;
+  final VoidCallback onAllowBlocking;
 
   @override
   Widget build(BuildContext context) {
@@ -41,67 +47,86 @@ class HomeScreen extends StatelessWidget {
 
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(28, 32, 28, 32),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      DateFormat.MMMMEEEEd(locale).format(now),
-                      style: theme.textTheme.labelLarge?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                        letterSpacing: 2,
+        // Scrolls instead of overflowing on small screens or large fonts;
+        // on normal screens the spacers still center the content.
+        child: LayoutBuilder(
+          builder: (context, constraints) => SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: IntrinsicHeight(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(28, 32, 28, 32),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              DateFormat.MMMMEEEEd(locale).format(now),
+                              style: theme.textTheme.labelLarge?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                                letterSpacing: 2,
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: onOpenSettings,
+                            tooltip: l10n.settings,
+                            color: theme.colorScheme.onSurfaceVariant,
+                            icon: const Icon(Icons.tune),
+                          ),
+                        ],
                       ),
-                    ),
+                      const SizedBox(height: 24),
+                      Text(greeting, style: theme.textTheme.displaySmall),
+                      const SizedBox(height: 8),
+                      Text(
+                        l10n.homeSubtitle,
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                          fontWeight: FontWeight.w300,
+                        ),
+                      ),
+                      const Spacer(),
+                      _PlannedDuration(minutes: focusDuration.inMinutes),
+                      const SizedBox(height: 28),
+                      Center(
+                        child: ActionChip(
+                          onPressed: onOpenBlockedApps,
+                          avatar: Icon(
+                            Icons.do_not_disturb_on_outlined,
+                            size: 18,
+                            color: theme.colorScheme.primary,
+                          ),
+                          label: Text(
+                            blockedAppCount == 0
+                                ? l10n.chooseAppsToPause
+                                : l10n.appsPaused(blockedAppCount),
+                          ),
+                        ),
+                      ),
+                      if (blockerNeedsPermission)
+                        Center(
+                          child: TextButton.icon(
+                            onPressed: onAllowBlocking,
+                            icon: const Icon(Icons.warning_amber_outlined),
+                            label: Text(l10n.allowAppBlocking),
+                          ),
+                        ),
+                      const Spacer(),
+                      FilledButton(
+                        onPressed: onStart,
+                        style: FilledButton.styleFrom(
+                          minimumSize: const Size.fromHeight(64),
+                        ),
+                        child: Text(l10n.beginFocus),
+                      ),
+                    ],
                   ),
-                  IconButton(
-                    onPressed: onOpenSettings,
-                    tooltip: l10n.settings,
-                    color: theme.colorScheme.onSurfaceVariant,
-                    icon: const Icon(Icons.tune),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              Text(greeting, style: theme.textTheme.displaySmall),
-              const SizedBox(height: 8),
-              Text(
-                l10n.homeSubtitle,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w300,
                 ),
               ),
-              const Spacer(),
-              _PlannedDuration(minutes: focusDuration.inMinutes),
-              const SizedBox(height: 28),
-              Center(
-                child: ActionChip(
-                  onPressed: onOpenBlockedApps,
-                  avatar: Icon(
-                    Icons.do_not_disturb_on_outlined,
-                    size: 18,
-                    color: theme.colorScheme.primary,
-                  ),
-                  label: Text(
-                    blockedAppCount == 0
-                        ? l10n.chooseAppsToPause
-                        : l10n.appsPaused(blockedAppCount),
-                  ),
-                ),
-              ),
-              const Spacer(),
-              FilledButton(
-                onPressed: onStart,
-                style: FilledButton.styleFrom(
-                  minimumSize: const Size.fromHeight(64),
-                ),
-                child: Text(l10n.beginFocus),
-              ),
-            ],
+            ),
           ),
         ),
       ),
