@@ -8,7 +8,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- #9 Labels for sessions
+- Nothing – next: #10.
 - **Waiting for your phone test:** PR #82 – epic #20 Distraction blocking (APK as Actions artifact of the PR; test steps in the PR).
 
 ## Up next
@@ -21,17 +21,17 @@ The GitHub issues are authoritative; this file is the summary.
 |---|---|
 | #4 Focus timer | #6 Timer survives app switch and restart (`backlog`, waits for a decision) → ~~#7 Configurable durations and breaks~~ (done) |
 | #20 Distraction blocking | #21 → #22 → #23 done on `epic/distraction-blocking`, PR #82 waits for the phone test |
-| #8 Labels and goals | #9 Labels for sessions (`in-progress`) → #10 Daily focus goal with progress ring (`ready`) |
+| #8 Labels and goals | ~~#9 Labels for sessions~~ (done) → #10 Daily focus goal with progress ring (`ready`) |
 | #11 Statistics | #12 Focus time per day and week (`ready`) → #13 Breakdown by label (`ready`) → #14 Streaks (`ready`) |
 | #15 Data safety | #16 Backup and export (`ready`) |
 
 ## Recently done
 
+- #9 Labels for sessions (label picker, label management, storage v2)
 - #23 Hold back notifications of blocked apps – epic #20 complete on its branch
 - #22 Block selected apps during a focus session (on `epic/distraction-blocking`)
 - #21 Choose apps to block (on `epic/distraction-blocking`)
 - #7 Configurable durations and breaks (Pomodoro settings, breaks, settings screen)
-- Decision: repository is public (free GitHub Actions minutes)
 
 ## Open decisions (user only)
 

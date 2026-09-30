@@ -10,6 +10,7 @@ class SharedPreferencesSettingsRepository implements SettingsRepository {
   SharedPreferencesSettingsRepository(this._preferences);
 
   static const pomodoroKey = 'settings.pomodoro.v1';
+  static const selectedLabelKey = 'settings.selectedLabel.v1';
   static const _version = 1;
 
   final SharedPreferences _preferences;
@@ -49,5 +50,18 @@ class SharedPreferencesSettingsRepository implements SettingsRepository {
         'sessionsBeforeLongBreak': settings.sessionsBeforeLongBreak,
       }),
     );
+  }
+
+  @override
+  Future<String?> loadSelectedLabelId() async =>
+      _preferences.getString(selectedLabelKey);
+
+  @override
+  Future<void> saveSelectedLabelId(String? id) async {
+    if (id == null) {
+      await _preferences.remove(selectedLabelKey);
+    } else {
+      await _preferences.setString(selectedLabelKey, id);
+    }
   }
 }

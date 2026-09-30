@@ -14,12 +14,22 @@ class HomeScreen extends StatelessWidget {
     required this.focusDuration,
     required this.onStart,
     required this.onOpenSettings,
+    required this.labelName,
+    required this.hasLabels,
+    required this.onChooseLabel,
   });
 
   final Clock clock;
   final Duration focusDuration;
   final VoidCallback onStart;
   final VoidCallback onOpenSettings;
+
+  /// Label chosen for the next session, or null.
+  final String? labelName;
+
+  /// Whether any labels exist yet.
+  final bool hasLabels;
+  final VoidCallback onChooseLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -35,51 +45,76 @@ class HomeScreen extends StatelessWidget {
 
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(28, 32, 28, 32),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      DateFormat.MMMMEEEEd(locale).format(now),
-                      style: theme.textTheme.labelLarge?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                        letterSpacing: 2,
+        // Scrolls instead of overflowing on small screens or large fonts;
+        // on normal screens the spacers still center the content.
+        child: LayoutBuilder(
+          builder: (context, constraints) => SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: IntrinsicHeight(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(28, 32, 28, 32),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              DateFormat.MMMMEEEEd(locale).format(now),
+                              style: theme.textTheme.labelLarge?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                                letterSpacing: 2,
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: onOpenSettings,
+                            tooltip: l10n.settings,
+                            color: theme.colorScheme.onSurfaceVariant,
+                            icon: const Icon(Icons.tune),
+                          ),
+                        ],
                       ),
-                    ),
+                      const SizedBox(height: 24),
+                      Text(greeting, style: theme.textTheme.displaySmall),
+                      const SizedBox(height: 8),
+                      Text(
+                        l10n.homeSubtitle,
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                          fontWeight: FontWeight.w300,
+                        ),
+                      ),
+                      const Spacer(),
+                      _PlannedDuration(minutes: focusDuration.inMinutes),
+                      const SizedBox(height: 28),
+                      Center(
+                        child: ActionChip(
+                          onPressed: onChooseLabel,
+                          avatar: Icon(
+                            Icons.label_outline,
+                            size: 18,
+                            color: theme.colorScheme.primary,
+                          ),
+                          label: Text(
+                            labelName ?? (hasLabels ? l10n.noLabel : l10n.addLabel),
+                          ),
+                        ),
+                      ),
+                      const Spacer(),
+                      FilledButton(
+                        onPressed: onStart,
+                        style: FilledButton.styleFrom(
+                          minimumSize: const Size.fromHeight(64),
+                        ),
+                        child: Text(l10n.beginFocus),
+                      ),
+                    ],
                   ),
-                  IconButton(
-                    onPressed: onOpenSettings,
-                    tooltip: l10n.settings,
-                    color: theme.colorScheme.onSurfaceVariant,
-                    icon: const Icon(Icons.tune),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              Text(greeting, style: theme.textTheme.displaySmall),
-              const SizedBox(height: 8),
-              Text(
-                l10n.homeSubtitle,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w300,
                 ),
               ),
-              const Spacer(),
-              _PlannedDuration(minutes: focusDuration.inMinutes),
-              const Spacer(),
-              FilledButton(
-                onPressed: onStart,
-                style: FilledButton.styleFrom(
-                  minimumSize: const Size.fromHeight(64),
-                ),
-                child: Text(l10n.beginFocus),
-              ),
-            ],
+            ),
           ),
         ),
       ),

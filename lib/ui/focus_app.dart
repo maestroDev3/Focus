@@ -1,13 +1,19 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../domain/clock.dart';
+import '../domain/focus_label.dart';
 import '../domain/focus_session.dart';
 import '../domain/focus_timer.dart';
+import '../domain/label_repository.dart';
 import '../domain/pomodoro.dart';
 import '../domain/settings_repository.dart';
 import '../l10n/app_localizations.dart';
 import 'break_screen.dart';
 import 'home_screen.dart';
+import 'label_sheet.dart';
+import 'labels_screen.dart';
 import 'session_screen.dart';
 import 'settings_screen.dart';
 import 'theme.dart';
@@ -18,6 +24,7 @@ class FocusApp extends StatefulWidget {
     super.key,
     required this.timer,
     required this.settings,
+    required this.labels,
     this.clock = DateTime.now,
   });
 
@@ -26,6 +33,9 @@ class FocusApp extends StatefulWidget {
 
   /// Stores the Pomodoro rhythm.
   final SettingsRepository settings;
+
+  /// The user's labels.
+  final LabelRepository labels;
 
   /// Source of the current time for every screen.
   final Clock clock;
@@ -36,18 +46,40 @@ class FocusApp extends StatefulWidget {
 
 class _FocusAppState extends State<FocusApp> {
   var _pomodoro = const PomodoroSettings();
+  var _labels = const <FocusLabel>[];
+  String? _selectedLabelId;
+  StreamSubscription<List<FocusLabel>>? _labelChanges;
 
   @override
   void initState() {
     super.initState();
+    _labelChanges = widget.labels.watchLabels().listen((labels) {
+      if (mounted) setState(() => _labels = labels);
+    });
     _loadSettings();
+  }
+
+  @override
+  void dispose() {
+    _labelChanges?.cancel();
+    super.dispose();
   }
 
   Future<void> _loadSettings() async {
     final pomodoro = await widget.settings.loadPomodoro();
+    final selectedLabelId = await widget.settings.loadSelectedLabelId();
     if (!mounted) return;
-    setState(() => _pomodoro = pomodoro);
+    setState(() {
+      _pomodoro = pomodoro;
+      _selectedLabelId = selectedLabelId;
+    });
   }
+
+  /// The chosen label, if it still exists.
+  FocusLabel? get _selectedLabel => [
+    for (final label in _labels)
+      if (label.id == _selectedLabelId) label,
+  ].firstOrNull;
 
   @override
   Widget build(BuildContext context) {
@@ -64,6 +96,9 @@ class _FocusAppState extends State<FocusApp> {
           focusDuration: _pomodoro.focus,
           onStart: () => _startSession(context),
           onOpenSettings: () => _openSettings(context),
+          labelName: _selectedLabel?.name,
+          hasLabels: _labels.isNotEmpty,
+          onChooseLabel: () => _chooseLabel(context),
         ),
       ),
     );
@@ -78,14 +113,40 @@ class _FocusAppState extends State<FocusApp> {
     await _loadSettings();
   }
 
+  Future<void> _chooseLabel(BuildContext context) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => LabelSheet(
+        labels: _labels,
+        selectedId: _selectedLabel?.id,
+        onSelect: (id) {
+          Navigator.of(sheetContext).pop();
+          setState(() => _selectedLabelId = id);
+          widget.settings.saveSelectedLabelId(id);
+        },
+        onManage: () {
+          Navigator.of(sheetContext).pop();
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (context) => LabelsScreen(labels: widget.labels),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   Future<void> _startSession(BuildContext context) async {
     final navigator = Navigator.of(context);
-    await widget.timer.start(_pomodoro.focus);
+    final label = _selectedLabel;
+    await widget.timer.start(_pomodoro.focus, labelId: label?.id);
     await navigator.push(
       MaterialPageRoute<void>(
         builder: (context) => SessionScreen(
           timer: widget.timer,
           clock: widget.clock,
+          labelName: label?.name,
           onDone: (outcome) => _afterSession(context, outcome),
         ),
       ),

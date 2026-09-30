@@ -11,6 +11,9 @@ void main() {
       required DateTime now,
       VoidCallback? onStart,
       VoidCallback? onOpenSettings,
+      String? labelName,
+      bool hasLabels = false,
+      VoidCallback? onChooseLabel,
     }) {
       return tester.pumpApp(
         HomeScreen(
@@ -18,6 +21,9 @@ void main() {
           focusDuration: const Duration(minutes: 25),
           onStart: onStart ?? () {},
           onOpenSettings: onOpenSettings ?? () {},
+          labelName: labelName,
+          hasLabels: hasLabels,
+          onChooseLabel: onChooseLabel ?? () {},
         ),
       );
     }
@@ -83,6 +89,38 @@ void main() {
       await tester.pump();
 
       expect(opened, 1);
+    });
+
+    testWidgets('invites to add a label when there are none', (tester) async {
+      await pumpHome(tester, now: DateTime(2026, 9, 29, 20));
+
+      expect(find.text('Add label'), findsOneWidget);
+    });
+
+    testWidgets('shows the chosen label and opens the label choice', (
+      tester,
+    ) async {
+      var chosen = 0;
+      await pumpHome(
+        tester,
+        now: DateTime(2026, 9, 29, 20),
+        labelName: 'Study',
+        hasLabels: true,
+        onChooseLabel: () => chosen++,
+      );
+
+      await tester.tap(find.text('Study'));
+      await tester.pump();
+
+      expect(chosen, 1);
+    });
+
+    testWidgets('shows No label when labels exist but none is chosen', (
+      tester,
+    ) async {
+      await pumpHome(tester, now: DateTime(2026, 9, 29, 20), hasLabels: true);
+
+      expect(find.text('No label'), findsOneWidget);
     });
   });
 }
