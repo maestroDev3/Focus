@@ -44,4 +44,34 @@ List<Duration> weekFocus(
   ).values.toList();
 }
 
+/// Focus time of one label (`labelId` null = unlabeled).
+typedef LabelFocus = ({String? labelId, Duration focused});
+
+/// Focus time per label for sessions that ended between [from] and [to]
+/// (inclusive days), sorted by focus time. Sessions without a label or with
+/// a label that no longer exists (not in [labelIds]) count as unlabeled.
+List<LabelFocus> focusByLabel(
+  List<FocusSession> sessions, {
+  required DateTime from,
+  required DateTime to,
+  required Set<String> labelIds,
+}) {
+  final first = dayOf(from);
+  final last = dayOf(to);
+  final totals = <String?, Duration>{};
+  for (final session in sessions) {
+    final end = session.end;
+    if (end == null || !session.isFinished) continue;
+    final day = dayOf(end);
+    if (day.isBefore(first) || day.isAfter(last)) continue;
+    final labelId = labelIds.contains(session.labelId) ? session.labelId : null;
+    totals[labelId] =
+        (totals[labelId] ?? Duration.zero) + session.focusedTime(end);
+  }
+  return [
+    for (final MapEntry(:key, :value) in totals.entries)
+      (labelId: key, focused: value),
+  ]..sort((a, b) => b.focused.compareTo(a.focused));
+}
+
 const _oneDay = Duration(days: 1);
