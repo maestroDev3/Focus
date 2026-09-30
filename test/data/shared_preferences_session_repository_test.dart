@@ -66,5 +66,19 @@ void main() {
 
       expect(repository.loadActive(), throwsFormatException);
     });
+
+    test('replaces all finished sessions', () async {
+      final repository = SharedPreferencesSessionRepository(preferences);
+      await repository.addFinished(completedSample());
+
+      await repository.replaceFinished([cancelledSample()]);
+
+      expect(
+        await SharedPreferencesSessionRepository(
+          preferences,
+        ).watchFinished().first,
+        [cancelledSample()],
+      );
+    });
   });
 }
