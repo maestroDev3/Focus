@@ -4,6 +4,12 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// Release key: the PKCS12 keystore is in the repository, protected by a long
+// random password that only lives in the GitHub secret FOCUS_KEYSTORE_PASSWORD.
+// Without the password (local builds) the debug key is used.
+val focusKeystorePassword: String? =
+    System.getenv("FOCUS_KEYSTORE_PASSWORD")?.takeUnless { it.isEmpty() }
+
 android {
     namespace = "de.maestrodev.focus_timer"
     compileSdk = flutter.compileSdkVersion
@@ -29,11 +35,27 @@ android {
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        create("release") {
+            if (focusKeystorePassword != null) {
+                storeFile = file("focus-release.jks")
+                storeType = "pkcs12"
+                storePassword = focusKeystorePassword
+                keyAlias = "focus"
+                keyPassword = focusKeystorePassword
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            // One stable key, so every new APK installs as an update.
+            signingConfig =
+                if (focusKeystorePassword != null) {
+                    signingConfigs.getByName("release")
+                } else {
+                    signingConfigs.getByName("debug")
+                }
         }
     }
 }
