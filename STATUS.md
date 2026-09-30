@@ -8,30 +8,29 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- #97 Brand: app icon, splash screen and in-app background (tasks #98–#100)
+- Nothing. All stories without an open decision are done.
 - **Waiting for your phone test:** PR #82 – epic #20 Distraction blocking, already merged with the latest `main`, so its APK (Actions artifact `focus_timer-apk` of the PR) contains the complete app. Test steps in the PR.
 
 ## Up next
 
 1. After your test: merge PR #82 into `main`.
 2. #96 Include paused apps in backups (`backlog`, small follow-up after the merge).
-3. #6 Timer survives app switch and restart (decision made: leaving never cancels).
+3. #6 Timer survives app switch and restart → #105 Live countdown in the notification bar.
 
 ## Backlog by epic
 
 | Epic | Stories (in order) |
 |---|---|
-| #1 Foundation | #97 Brand: app icon, splash screen and in-app background (`in-progress`) |
-| #4 Focus timer | #6 Timer survives app switch and restart (`backlog`) → ~~#7 Configurable durations and breaks~~ (done) |
+| #4 Focus timer | #6 Timer survives app switch and restart (`backlog`) → #105 Live countdown in the notification bar (`backlog`) |
 | #20 Distraction blocking | #21 → #22 → #23 done on `epic/distraction-blocking`, PR #82 waits for the phone test → #96 Include paused apps in backups (`backlog`) |
 
 ## Recently done
 
+- #97 Brand: Ring app icon, noir splash with FOCUS intro, champagne glow background
 - Decision: design Noir & Champagne with the Ring icon, splash and glow background as designed
 - Decisions: leaving the app never cancels a session; Android first, iOS later
 - #16 Backup and export – epic #15 Data safety complete
 - #14 Streaks – epic #11 Statistics complete
-- #13 Breakdown by label (week / month)
 
 ## Open decisions (user only)
 
