@@ -90,3 +90,18 @@ bool overlaps(FocusTime a, FocusTime b) =>
     a.weekdays.intersection(b.weekdays).isNotEmpty &&
     a.startMinute < b.endMinute &&
     b.startMinute < a.endMinute;
+
+/// Consecutive runs of [weekdays] as (first, last) pairs, e.g. Mon–Fri as
+/// (1, 5), so they can be shown compactly.
+List<(int, int)> weekdayRuns(Set<int> weekdays) {
+  final days = weekdays.toList()..sort();
+  final runs = <(int, int)>[];
+  for (final day in days) {
+    if (runs.isNotEmpty && runs.last.$2 == day - 1) {
+      runs[runs.length - 1] = (runs.last.$1, day);
+    } else {
+      runs.add((day, day));
+    }
+  }
+  return runs;
+}
