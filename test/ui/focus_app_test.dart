@@ -12,6 +12,7 @@ import 'package:focus_timer/ui/theme.dart';
 import '../support/backup_files_for_tests.dart';
 import '../support/fake_app_blocker.dart';
 import '../support/fake_block_list_repository.dart';
+import '../support/fake_blocking_state_writer.dart';
 import '../support/fake_document_store.dart';
 import '../support/fake_focus_time_repository.dart';
 import '../support/fake_installed_apps_source.dart';
@@ -27,9 +28,13 @@ void main() {
   var labels = FakeLabelRepository();
   var blockList = FakeBlockListRepository();
   var blocker = FakeAppBlocker();
-  FocusApp buildApp({bool showIntro = false}) => FocusApp(
+  FocusApp buildApp({
+    bool showIntro = false,
+    FocusTimer? timer,
+    FakeFocusTimeRepository? focusTimes,
+  }) => FocusApp(
     showIntro: showIntro,
-    timer: FocusTimer(repository: repository, clock: () => now),
+    timer: timer ?? FocusTimer(repository: repository, clock: () => now),
     settings: settings,
     labels: labels,
     backupFiles: backupFilesForTests(
@@ -41,7 +46,7 @@ void main() {
     blockList: blockList,
     installedApps: FakeInstalledAppsSource(),
     appBlocker: blocker,
-    focusTimes: FakeFocusTimeRepository(),
+    focusTimes: focusTimes ?? FakeFocusTimeRepository(),
     clock: () => now,
   );
 
@@ -68,6 +73,39 @@ void main() {
   }
 
   group('FocusApp', () {
+    testWidgets('publishes the blocking state when focus times change', (
+      tester,
+    ) async {
+      final writer = FakeBlockingStateWriter();
+      final focusTimes = FakeFocusTimeRepository();
+      await tester.pumpWidget(
+        buildApp(
+          focusTimes: focusTimes,
+          timer: FocusTimer(
+            repository: repository,
+            clock: () => now,
+            blocking: BlockingSync(
+              blockList: blockList,
+              writer: writer,
+              clock: () => now,
+              focusTimes: focusTimes,
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      await focusTimes.addFocusTime(
+        weekdays: const {1, 2, 3, 4, 5},
+        startMinute: 540,
+        endMinute: 720,
+      );
+      await tester.pump();
+      await tester.pump();
+
+      expect(writer.last?.focusTimes, hasLength(1));
+    });
+
     testWidgets('starts on the home screen', (tester) async {
       await tester.pumpWidget(buildApp());
 
