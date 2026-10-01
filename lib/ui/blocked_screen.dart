@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 
 import '../domain/countdown.dart';
+import '../domain/focus_time.dart';
 import '../l10n/app_localizations.dart';
+import 'focus_time_label.dart';
 import 'widgets/focus_background.dart';
 
-/// Shown instead of a paused app while a session runs: a calm reminder and
-/// the way back to the session.
+/// Shown instead of a paused app during a session or a focus time: a calm
+/// reminder and the way back to focus.
 class BlockedScreen extends StatelessWidget {
   const BlockedScreen({
     super.key,
     required this.appLabel,
     required this.remaining,
     required this.onReturn,
+    this.focusTime,
   });
 
   final String appLabel;
@@ -20,11 +23,23 @@ class BlockedScreen extends StatelessWidget {
   final Duration? remaining;
   final VoidCallback onReturn;
 
+  /// The running focus time when no session blocks the app.
+  final FocusTime? focusTime;
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final remaining = this.remaining;
+    final focusTime = this.focusTime;
+    final locale = Localizations.localeOf(context).toLanguageTag();
+    final reason = switch ((focusTime, remaining)) {
+      (final time?, _) => l10n.focusTimeUntil(
+        minuteOfDayText(time.endMinute, locale),
+      ),
+      (null, null) => l10n.blockedSessionPaused,
+      (null, final left?) => l10n.blockedRemaining(formatCountdown(left)),
+    };
 
     return FocusBackground(
       glowCenter: const Alignment(0, -0.2),
@@ -69,9 +84,7 @@ class BlockedScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        remaining == null
-                            ? l10n.blockedSessionPaused
-                            : l10n.blockedRemaining(formatCountdown(remaining)),
+                        reason,
                         textAlign: TextAlign.center,
                         style: theme.textTheme.bodyLarge?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
