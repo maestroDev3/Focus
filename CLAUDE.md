@@ -27,13 +27,15 @@ Domain terms:
 - **Label** – `FocusLabel` – what the session was about (e.g. “Study”, “Work”)
 - **Daily goal** – `DailyGoal` – target focus minutes per day
 
-## Structure: Epic → Story → Task
+## Structure: Initiative → Epic → Story → Task
 
-Everything lives in GitHub issues, linked via sub-issues:
+Everything lives in GitHub issues, linked via sub-issues and told apart by labels
+(personal account → no issue types):
 
 | Level | Label | Content |
 |---|---|---|
-| Epic | `epic` | Big goal; stories as sub-issues, order listed in the description |
+| Initiative | `initiative` | Long-lived theme; epics as sub-issues |
+| Epic | `epic` | Finite piece of work with an outcome; stories as sub-issues, order listed in the description |
 | Story | `story` | User-visible feature; tasks as sub-issues |
 | Task | `task` | Exactly one PR, TDD, testable acceptance criteria |
 
@@ -44,14 +46,68 @@ Story status (label, exactly one; done = closed):
 
 Rules:
 - Tasks are only written when a story moves from `backlog` to `ready`.
-- New ideas from the user become a `backlog` story in the matching epic.
+- When a story is closed, remove its status label (closed = done, no label).
 - The user decides which story comes next; without guidance, take the next
   `ready` story in epic order.
+
+### Initiatives
+
+- Long-lived themes with a target picture: Why · Value · In scope / Out of scope ·
+  Epics · “Done when” (1–3 rough statements). No status label, no order, no
+  progress value (GitHub's progress bar only counts direct children – ignore it).
+- Current initiatives: **Focus experience**, **Distraction blocking**,
+  **Release & platform** (numbers in `STATUS.md`).
+- Without open epics an initiative is **dormant** and stays open.
+- **Only the user closes initiatives.** Claude suggests it when all epics are
+  closed and “Done when” is met. Follow-up work to a closed initiative becomes a
+  **new** initiative with its own outcome-based title (no “v2”) and “Related: #old”.
+
+### Epics
+
+- **Finite.** Outcome-based title, never “… II” or numbers. Closed as soon as all
+  stories are closed; the closing comment names follow-up epics, if any.
+- **Exactly one initiative as parent**, chosen by main value. If it also fits a
+  second one, that one gets “See also: #nr”. Closed epics may be attached to an
+  open initiative – that is not reopening.
+- No grab-bag epics (“Misc”, “Final features”): every epic has one outcome.
+
+### All levels
+
+- **Closed stays closed.** Claude **never** reopens a closed issue – initiative,
+  epic, story or task. New work on something done becomes a **new** issue with
+  “Related: #nr”.
+- **No orphans:** every story has exactly one epic, every epic exactly one
+  initiative (as sub-issue parent).
+- **New idea:** `backlog` story in an open epic that pursues exactly this
+  outcome → otherwise a new epic in the matching open initiative → otherwise a
+  new initiative. Claude creates it right away (no blocking question) and lists
+  everything new above story level in `STATUS.md` under “Open decisions”
+  (“created – please confirm or re-sort”).
+
+### Issue templates
+
+Every issue says **what it is for**, **what value it brings** and **when it is
+done**. Templates: `.github/ISSUE_TEMPLATE/` (initiative, epic, story, task). When
+creating issues via the API, Claude always follows that outline and sets the
+labels itself (template `labels:` only apply in the browser).
+
+- **Story:** goal as “As a user I want …, so that …”, value, out of scope,
+  **acceptance criteria from the user's point of view** (checkable on the phone),
+  decisions (links to “Decisions” below), tasks, `Epic: #nr`.
+- **Task:** purpose (which story criterion), implementation, **technical
+  acceptance criteria – each gets at least one test**, depends on, `Story: #nr`.
+  Definition of done by reference, not copied.
+- **Epic:** outcome, value, scope / out of scope, stories (order), “Done when”
+  as a reference to “Merging”, `Initiative: #nr`.
+- No Gherkin (with TDD the tests are the given/when/then); for behaviour use
+  “When …, then …”.
+- **Catching up:** backlog stories get the full template when moving to
+  `ready`. Closed issues are never edited.
 
 ## First start (once)
 
 While there are no issues yet:
-1. Create labels: `epic`, `story`, `task`, `backlog`, `ready`, `in-progress`.
+1. Create labels: `initiative`, `epic`, `story`, `task`, `backlog`, `ready`, `in-progress`.
 2. Create the epics and stories from `STATUS.md` (“Planned epics”) as issues,
    stories as sub-issues of their epic, all stories `backlog`.
 3. Run the **Scaffold** workflow (`.github/workflows/scaffold.yml`) via
@@ -65,10 +121,11 @@ While there are no issues yet:
 context in a Claude project. It must always match the issues.
 
 - Claude updates `STATUS.md` whenever any of it changes: a story changes status
-  (`backlog`/`ready`/`in-progress`) or is closed, a new story or epic, order
-  changes, a decision is made.
-- Content: In progress · Up next · Backlog by epic · Recently done (max. 5,
-  newest first) · Open decisions · “Last updated” date.
+  (`backlog`/`ready`/`in-progress`) or is closed, a new story, epic or
+  initiative, order changes, a decision is made.
+- Content: In progress · Up next · Backlog by initiative → epic (open epics
+  with “x of y stories closed”, dormant initiatives under “Dormant”) · Recently
+  done (max. 5, newest first) · Open decisions · “Last updated” date.
 - When closing a story, the update belongs in the story's last PR. Pure status
   changes without a PR: direct commit to `main` (`docs: update status`).
 - Keep it short: number + title, no task details.
@@ -162,3 +219,7 @@ commit comment).
   subtle champagne glow behind the main screens.
 - 2026-09-30 – Ambient sounds: yes (bundled sounds, no internet) – story #122
   in epic #123 “Final features”.
+- 2026-10-01 – Planning structure Initiative → Epic → Story → Task: finite
+  epics, closed issues are never reopened, no orphans, issue templates per
+  level; three initiatives (Focus experience, Distraction blocking,
+  Release & platform).
