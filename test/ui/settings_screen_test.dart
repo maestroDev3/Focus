@@ -9,6 +9,7 @@ import 'package:focus_timer/ui/settings_screen.dart';
 
 import '../support/backup_files_for_tests.dart';
 import '../support/fake_document_store.dart';
+import '../support/fake_focus_time_repository.dart';
 import '../support/fake_label_repository.dart';
 import '../support/fake_session_repository.dart';
 import '../support/fake_settings_repository.dart';
@@ -32,6 +33,7 @@ void main() {
       await tester.pumpApp(
         SettingsScreen(
           settings: repository,
+          focusTimes: FakeFocusTimeRepository(),
           backupFiles: backupFilesForTests(
             sessions: sessions,
             labels: FakeLabelRepository(),
@@ -186,6 +188,17 @@ void main() {
       await tester.pump();
 
       expect(find.text('This file is not a Focus backup.'), findsOneWidget);
+    });
+
+    testWidgets('opens the focus times', (tester) async {
+      await pumpSettings(tester);
+
+      await tester.scrollUntilVisible(find.text('Focus times'), 100);
+      await tester.tap(find.text('Focus times'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(find.text('Add focus time'), findsOneWidget);
     });
   });
 }

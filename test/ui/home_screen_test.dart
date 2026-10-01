@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:focus_timer/domain/daily_goal.dart';
+import 'package:focus_timer/domain/focus_time.dart';
 import 'package:focus_timer/ui/home_screen.dart';
 
 import '../support/pump_app.dart';
@@ -24,6 +25,8 @@ void main() {
       VoidCallback? onAllowBlocking,
       bool notificationsNeedPermission = false,
       VoidCallback? onAllowNotifications,
+      FocusTime? activeFocusTime,
+      DateTime? nextFocusTimeStart,
     }) {
       return tester.pumpApp(
         HomeScreen(
@@ -43,6 +46,8 @@ void main() {
           onAllowBlocking: onAllowBlocking ?? () {},
           notificationsNeedPermission: notificationsNeedPermission,
           onAllowNotifications: onAllowNotifications ?? () {},
+          activeFocusTime: activeFocusTime,
+          nextFocusTimeStart: nextFocusTimeStart,
         ),
       );
     }
@@ -244,6 +249,31 @@ void main() {
 
       expect(allowed, 1);
       expect(find.text('Allow app blocking'), findsNothing);
+    });
+
+    testWidgets('shows the running focus time', (tester) async {
+      await pumpHome(
+        tester,
+        now: DateTime(2026, 9, 30, 10),
+        activeFocusTime: FocusTime(
+          id: 'a',
+          weekdays: const {1, 2, 3, 4, 5},
+          startMinute: 540,
+          endMinute: 720,
+        ),
+      );
+
+      expect(find.text('Focus time until 12:00'), findsOneWidget);
+    });
+
+    testWidgets('shows the next focus time', (tester) async {
+      await pumpHome(
+        tester,
+        now: DateTime(2026, 10, 2, 13),
+        nextFocusTimeStart: DateTime(2026, 10, 5, 9),
+      );
+
+      expect(find.text('Next focus time · Mon 09:00'), findsOneWidget);
     });
   });
 }
