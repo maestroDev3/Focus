@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:focus_timer/data/shared_preferences_blocking_state_writer.dart';
 import 'package:focus_timer/domain/blocking.dart';
+import 'package:focus_timer/domain/focus_time.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -25,6 +26,7 @@ void main() {
         'active': true,
         'packages': ['com.a.b', 'org.telegram.messenger'],
         'plannedEndMillis': end.millisecondsSinceEpoch,
+        'focusTimes': <Object>[],
       });
     });
 
@@ -41,6 +43,41 @@ void main() {
         'active': false,
         'packages': <String>[],
         'plannedEndMillis': null,
+        'focusTimes': <Object>[],
+      });
+    });
+
+    test('stores focus times for the native side', () async {
+      SharedPreferences.setMockInitialValues({});
+      final preferences = await SharedPreferences.getInstance();
+
+      await SharedPreferencesBlockingStateWriter(preferences).write(
+        BlockingState(
+          active: false,
+          packageNames: const {'org.telegram.messenger'},
+          focusTimes: [
+            FocusTime(
+              id: 'focus-time-1',
+              weekdays: const {5, 1, 2},
+              startMinute: 540,
+              endMinute: 720,
+            ),
+          ],
+        ),
+      );
+
+      expect(jsonDecode(preferences.getString('blocking.state.v1') ?? ''), {
+        'v': 1,
+        'active': false,
+        'packages': ['org.telegram.messenger'],
+        'plannedEndMillis': null,
+        'focusTimes': [
+          {
+            'weekdays': [1, 2, 5],
+            'start': 540,
+            'end': 720,
+          },
+        ],
       });
     });
   });
