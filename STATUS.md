@@ -8,7 +8,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- #118 Reminder when a focus time starts – epic #115 Focus times (being refined)
+- #118 Reminder when a focus time starts (tasks #134, #135) – epic #115 Focus times
 - #107 Updates install over the previous version – release key created from your secret, signed releases since build 188; waiting for your update test with build 193.
 
 ## Up next
