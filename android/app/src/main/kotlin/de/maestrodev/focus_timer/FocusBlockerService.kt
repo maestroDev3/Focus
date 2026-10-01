@@ -5,9 +5,9 @@ import android.content.Intent
 import android.view.accessibility.AccessibilityEvent
 
 /**
- * Notices when a paused app comes to the foreground during a focus session
- * and brings the user back to Focus. Only window state changes are observed;
- * screen content is never read.
+ * Notices when a paused app comes to the foreground during a focus session or
+ * a focus time and brings the user back to Focus. Only window state changes
+ * are observed; screen content is never read.
  */
 class FocusBlockerService : AccessibilityService() {
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {

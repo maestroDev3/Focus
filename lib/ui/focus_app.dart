@@ -319,7 +319,14 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
   /// Shows the calm “resting” screen over the session for a paused app.
   Future<void> _showBlocked(String packageName) async {
     final session = widget.timer.current;
-    if (session == null) return;
+    // Without a session the app is blocked by a focus time, if one runs.
+    final focusTime = session == null
+        ? activeFocusTime(
+            await widget.focusTimes.watchFocusTimes().first,
+            widget.clock(),
+          )
+        : null;
+    if (session == null && focusTime == null) return;
     final apps = await widget.installedApps.installedApps();
     final label = [
       for (final app in apps)
@@ -329,7 +336,11 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
     await _push(
       (context) => BlockedScreen(
         appLabel: label ?? packageName,
-        remaining: session.isPaused ? null : session.remaining(now),
+        remaining: switch (session) {
+          final session? when !session.isPaused => session.remaining(now),
+          _ => null,
+        },
+        focusTime: focusTime,
         onReturn: () => Navigator.of(context).pop(),
       ),
     );

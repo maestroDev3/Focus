@@ -4,10 +4,11 @@ import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 
 /**
- * Holds back notifications of paused apps while a session is active. They are
- * snoozed for at most a minute per round; when the snooze expires Android
- * posts them again and they are snoozed again while the session lasts. After
- * the session ends (timer or cancel) they simply reappear – nothing is lost.
+ * Holds back notifications of paused apps during a session or a focus time.
+ * They are snoozed for at most a minute per round; when the snooze expires
+ * Android posts them again and they are snoozed again while the block lasts.
+ * Once it ends (timer, cancel or end of the focus time) they simply reappear –
+ * nothing is lost.
  */
 class FocusNotificationGate : NotificationListenerService() {
     override fun onListenerConnected() {
