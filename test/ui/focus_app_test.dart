@@ -15,6 +15,7 @@ import '../support/fake_app_blocker.dart';
 import '../support/fake_block_list_repository.dart';
 import '../support/fake_blocking_state_writer.dart';
 import '../support/fake_document_store.dart';
+import '../support/fake_focus_time_reminders.dart';
 import '../support/fake_focus_time_repository.dart';
 import '../support/fake_installed_apps_source.dart';
 import '../support/fake_label_repository.dart';
@@ -29,6 +30,7 @@ void main() {
   var labels = FakeLabelRepository();
   var blockList = FakeBlockListRepository();
   var blocker = FakeAppBlocker();
+  var reminders = FakeFocusTimeReminders();
   FocusApp buildApp({
     bool showIntro = false,
     FocusTimer? timer,
@@ -48,6 +50,7 @@ void main() {
     installedApps: FakeInstalledAppsSource(),
     appBlocker: blocker,
     focusTimes: focusTimes ?? FakeFocusTimeRepository(),
+    reminders: reminders,
     clock: () => now,
   );
 
@@ -58,6 +61,7 @@ void main() {
     labels = FakeLabelRepository();
     blockList = FakeBlockListRepository();
     blocker = FakeAppBlocker();
+    reminders = FakeFocusTimeReminders();
   });
 
   Future<void> elapse(WidgetTester tester, Duration duration) async {
@@ -105,6 +109,47 @@ void main() {
       await tester.pump();
 
       expect(writer.last?.focusTimes, hasLength(1));
+    });
+
+    testWidgets('reschedules reminders with localized texts', (tester) async {
+      final focusTimes = FakeFocusTimeRepository();
+      await tester.pumpWidget(buildApp(focusTimes: focusTimes));
+      await tester.pump();
+      final before = reminders.rescheduled.length;
+
+      await focusTimes.addFocusTime(
+        weekdays: const {1, 2, 3, 4, 5},
+        startMinute: 540,
+        endMinute: 720,
+      );
+      await tester.pump();
+      await tester.pump();
+
+      expect(reminders.rescheduled.length, greaterThan(before));
+      expect(reminders.rescheduled.last, (
+        channelName: 'Focus time reminders',
+        title: 'Focus time until {time}',
+        body: 'Start a session?',
+      ));
+    });
+
+    testWidgets('asks for notifications only once focus times exist', (
+      tester,
+    ) async {
+      final focusTimes = FakeFocusTimeRepository();
+      await tester.pumpWidget(buildApp(focusTimes: focusTimes));
+      await tester.pump();
+      expect(reminders.permissionRequests, 0);
+
+      await focusTimes.addFocusTime(
+        weekdays: const {1, 2, 3, 4, 5},
+        startMinute: 540,
+        endMinute: 720,
+      );
+      await tester.pump();
+      await tester.pump();
+
+      expect(reminders.permissionRequests, greaterThan(0));
     });
 
     testWidgets('starts on the home screen', (tester) async {
