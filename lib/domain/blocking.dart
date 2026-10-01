@@ -171,8 +171,8 @@ class BlockingSync {
     required this._blockList,
     required this._writer,
     required this._clock,
-    FocusTimeRepository? focusTimes,
-  }) : _focusTimes = focusTimes;
+    this._focusTimes,
+  });
 
   final BlockListRepository _blockList;
   final BlockingStateWriter _writer;
