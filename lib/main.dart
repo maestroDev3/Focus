@@ -7,6 +7,7 @@ import 'data/method_channel_document_store.dart';
 import 'data/method_channel_installed_apps_source.dart';
 import 'data/shared_preferences_block_list_repository.dart';
 import 'data/shared_preferences_blocking_state_writer.dart';
+import 'data/shared_preferences_focus_time_repository.dart';
 import 'data/shared_preferences_label_repository.dart';
 import 'data/shared_preferences_session_repository.dart';
 import 'data/shared_preferences_settings_repository.dart';
@@ -50,6 +51,7 @@ Future<void> main() async {
       blockList: blockList,
       installedApps: const MethodChannelInstalledAppsSource(),
       appBlocker: MethodChannelAppBlocker(),
+      focusTimes: SharedPreferencesFocusTimeRepository(preferences),
     ),
   );
 }

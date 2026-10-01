@@ -3,20 +3,26 @@ import 'package:intl/intl.dart';
 
 import '../domain/backup.dart';
 import '../domain/daily_goal.dart';
+import '../domain/focus_time_repository.dart';
 import '../domain/pomodoro.dart';
 import '../domain/settings_repository.dart';
 import '../l10n/app_localizations.dart';
 import 'focus_time_text.dart';
+import 'focus_times_screen.dart';
 
 /// Lets the user tune the Pomodoro rhythm; every change is saved at once.
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({
     super.key,
     required this.settings,
+    required this.focusTimes,
     required this.backupFiles,
   });
 
   final SettingsRepository settings;
+
+  /// Recurring focus times, edited on their own screen.
+  final FocusTimeRepository focusTimes;
 
   /// Exports and restores backups.
   final BackupFiles backupFiles;
@@ -155,6 +161,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   name: l10n.settingsDailyGoal,
                   value: focusTimeText(l10n, _dailyGoal.duration),
                   onStep: _stepGoal,
+                ),
+                ListTile(
+                  leading: const Icon(Icons.schedule),
+                  title: Text(l10n.focusTimes),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (context) =>
+                          FocusTimesScreen(focusTimes: widget.focusTimes),
+                    ),
+                  ),
                 ),
                 const Divider(height: 32),
                 ListTile(

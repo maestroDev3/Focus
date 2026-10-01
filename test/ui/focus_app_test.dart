@@ -13,6 +13,7 @@ import '../support/backup_files_for_tests.dart';
 import '../support/fake_app_blocker.dart';
 import '../support/fake_block_list_repository.dart';
 import '../support/fake_document_store.dart';
+import '../support/fake_focus_time_repository.dart';
 import '../support/fake_installed_apps_source.dart';
 import '../support/fake_label_repository.dart';
 import '../support/fake_session_repository.dart';
@@ -40,6 +41,7 @@ void main() {
     blockList: blockList,
     installedApps: FakeInstalledAppsSource(),
     appBlocker: blocker,
+    focusTimes: FakeFocusTimeRepository(),
     clock: () => now,
   );
 
