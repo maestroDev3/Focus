@@ -455,6 +455,55 @@ void main() {
       expect(find.text('Focus time until 21:00'), findsOneWidget);
     });
 
+    testWidgets('starts a session when launched from the reminder', (
+      tester,
+    ) async {
+      reminders.initialStart = true;
+
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(repository.active, isNotNull);
+      expect(find.text('25:00'), findsOneWidget);
+    });
+
+    testWidgets('starts a session when the reminder is tapped', (
+      tester,
+    ) async {
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+
+      reminders.emitStart();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(repository.active?.planned, const Duration(minutes: 25));
+      expect(find.text('25:00'), findsOneWidget);
+    });
+
+    testWidgets('keeps a running session when the reminder is tapped', (
+      tester,
+    ) async {
+      final start = now.subtract(const Duration(minutes: 5));
+      repository.active = FocusSession(
+        start: start,
+        planned: const Duration(minutes: 25),
+      );
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      reminders.emitStart();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(repository.active?.start, start);
+      expect(find.text('20:00'), findsOneWidget);
+    });
+
     testWidgets('restores the session when launched for a blocked app', (
       tester,
     ) async {

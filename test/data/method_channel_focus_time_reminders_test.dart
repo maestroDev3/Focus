@@ -13,7 +13,10 @@ void main() {
     calls.clear();
     messenger.setMockMethodCallHandler(channel, (call) async {
       calls.add(call);
-      return null;
+      return switch (call.method) {
+        'initialStartRequest' => true,
+        _ => null,
+      };
     });
   });
 
@@ -43,6 +46,27 @@ void main() {
       await MethodChannelFocusTimeReminders().requestPermission();
 
       expect(calls.single.method, 'requestPermission');
+    });
+
+    test('reports a launch from the reminder', () async {
+      expect(
+        await MethodChannelFocusTimeReminders().initialStartRequest(),
+        isTrue,
+      );
+    });
+
+    test('forwards taps on the reminder while Focus runs', () async {
+      final reminders = MethodChannelFocusTimeReminders();
+      final requests = <void>[];
+      reminders.startRequested.listen(requests.add);
+
+      await messenger.handlePlatformMessage(
+        channel.name,
+        channel.codec.encodeMethodCall(const MethodCall('startRequested')),
+        (_) {},
+      );
+
+      expect(requests, hasLength(1));
     });
   });
 }
