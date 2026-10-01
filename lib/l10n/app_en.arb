@@ -451,5 +451,13 @@
         "type": "String"
       }
     }
+  },
+  "lockedDuringFocusTime": "Locked during this focus time",
+  "@lockedDuringFocusTime": {
+    "description": "Subtitle of a paused app that can't be removed during a focus time."
+  },
+  "focusTimeRunning": "Running focus times can't be changed.",
+  "@focusTimeRunning": {
+    "description": "Subtitle of a focus time that is running and therefore locked."
   }
 }

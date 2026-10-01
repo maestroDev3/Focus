@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../domain/clock.dart';
 import '../domain/focus_time.dart';
 import '../domain/focus_time_repository.dart';
 import '../l10n/app_localizations.dart';
@@ -7,9 +8,16 @@ import 'focus_time_label.dart';
 
 /// Lets the user plan recurring focus times.
 class FocusTimesScreen extends StatelessWidget {
-  const FocusTimesScreen({super.key, required this.focusTimes});
+  const FocusTimesScreen({
+    super.key,
+    required this.focusTimes,
+    this.clock = DateTime.now,
+  });
 
   final FocusTimeRepository focusTimes;
+
+  /// Decides which focus time is running and therefore locked.
+  final Clock clock;
 
   Future<void> _edit(BuildContext context, {FocusTime? time}) async {
     final messenger = ScaffoldMessenger.of(context);
@@ -77,17 +85,21 @@ class FocusTimesScreen extends StatelessWidget {
             itemCount: times.length,
             itemBuilder: (context, index) {
               final time = times[index];
+              final changeable = canChangeFocusTime(time, clock());
               return ListTile(
                 leading: Icon(
                   Icons.schedule,
                   color: theme.colorScheme.primary,
                 ),
                 title: Text(focusTimeLabel(time, locale)),
-                onTap: () => _edit(context, time: time),
+                subtitle: changeable ? null : Text(l10n.focusTimeRunning),
+                onTap: changeable ? () => _edit(context, time: time) : null,
                 trailing: IconButton(
                   tooltip: l10n.deleteFocusTime,
                   icon: const Icon(Icons.delete_outline),
-                  onPressed: () => focusTimes.deleteFocusTime(time.id),
+                  onPressed: changeable
+                      ? () => focusTimes.deleteFocusTime(time.id)
+                      : null,
                 ),
               );
             },

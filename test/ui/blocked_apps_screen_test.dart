@@ -17,6 +17,7 @@ void main() {
     WidgetTester tester, {
     BlockList initial = const BlockList(),
     FocusSession? activeSession,
+    bool inFocusTime = false,
   }) async {
     final repository = FakeBlockListRepository(initial);
     await tester.pumpApp(
@@ -24,6 +25,7 @@ void main() {
         apps: FakeInstalledAppsSource(),
         blockList: repository,
         activeSession: activeSession,
+        inFocusTime: inFocusTime,
       ),
     );
     await tester.pump();
@@ -87,6 +89,23 @@ void main() {
       await tester.pump();
       expect(repository.blockList.contains(youtube), isTrue);
       expect(isEnabled(tester, 'YouTube'), isFalse);
+    });
+
+    testWidgets('keeps blocked apps locked during a focus time', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        initial: const BlockList().add(telegram),
+        inFocusTime: true,
+      );
+
+      expect(isEnabled(tester, 'Telegram'), isFalse);
+      expect(find.text('Locked during this focus time'), findsOneWidget);
+      expect(
+        find.text('While you focus, apps can be added but not removed.'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('filters the list by name', (tester) async {

@@ -54,10 +54,12 @@ class BlockList {
   int get hashCode => Object.hashAllUnordered(packageNames);
 }
 
-/// Strict mode: while a session runs or is paused, apps can be added to the
-/// block list but not removed.
-bool canRemoveFromBlockList({required FocusSession? activeSession}) =>
-    activeSession == null || activeSession.isFinished;
+/// Strict mode: while a session runs or is paused, or a focus time runs,
+/// apps can be added to the block list but not removed.
+bool canRemoveFromBlockList({
+  required FocusSession? activeSession,
+  bool inFocusTime = false,
+}) => !inFocusTime && (activeSession == null || activeSession.isFinished);
 
 /// Whether [packageName] must be blocked right now: only while a session
 /// runs or is paused, and only for apps on the block list.
