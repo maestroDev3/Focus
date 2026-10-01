@@ -8,7 +8,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- #117 Block paused apps during focus times – epic #115 Focus times (being refined)
+- #117 Block paused apps during focus times (tasks #128–#130) – epic #115 Focus times
 - #107 Updates install over the previous version – release key created from your secret, signed releases since build 188; waiting for your update test with build 193.
 
 ## Up next
