@@ -105,3 +105,7 @@ List<(int, int)> weekdayRuns(Set<int> weekdays) {
   }
   return runs;
 }
+
+/// Strict mode: a running focus time can't be edited or deleted, so its
+/// block can't be lifted early.
+bool canChangeFocusTime(FocusTime time, DateTime now) => !time.isActiveAt(now);

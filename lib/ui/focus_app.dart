@@ -244,6 +244,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
         apps: widget.installedApps,
         blockList: widget.blockList,
         activeSession: widget.timer.current,
+        inFocusTime: activeFocusTime(_focusTimes, widget.clock()) != null,
       ),
     );
     await widget.timer.refreshBlocking();

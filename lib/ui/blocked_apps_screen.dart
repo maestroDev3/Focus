@@ -9,18 +9,23 @@ import '../domain/installed_apps_source.dart';
 import '../l10n/app_localizations.dart';
 
 /// Lets the user choose which apps are paused while focusing. In strict
-/// mode (a session is active) apps can only be added, never removed.
+/// mode (a session is active or a focus time runs) apps can only be added,
+/// never removed.
 class BlockedAppsScreen extends StatefulWidget {
   const BlockedAppsScreen({
     super.key,
     required this.apps,
     required this.blockList,
     required this.activeSession,
+    this.inFocusTime = false,
   });
 
   final InstalledAppsSource apps;
   final BlockListRepository blockList;
   final FocusSession? activeSession;
+
+  /// Whether a focus time runs right now.
+  final bool inFocusTime;
 
   @override
   State<BlockedAppsScreen> createState() => _BlockedAppsScreenState();
@@ -65,7 +70,14 @@ class _BlockedAppsScreenState extends State<BlockedAppsScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    final strict = !canRemoveFromBlockList(activeSession: widget.activeSession);
+    final strict = !canRemoveFromBlockList(
+      activeSession: widget.activeSession,
+      inFocusTime: widget.inFocusTime,
+    );
+    // Without a session, a focus time is what locks the apps.
+    final lockedText = widget.activeSession == null && widget.inFocusTime
+        ? l10n.lockedDuringFocusTime
+        : l10n.lockedDuringSession;
     final apps = _apps;
     final query = _query.trim().toLowerCase();
     final visible = [
@@ -110,7 +122,7 @@ class _BlockedAppsScreenState extends State<BlockedAppsScreen> {
                       return CheckboxListTile(
                         value: blocked,
                         title: Text(app.label),
-                        subtitle: locked ? Text(l10n.lockedDuringSession) : null,
+                        subtitle: locked ? Text(lockedText) : null,
                         secondary: _AppIcon(icon: _iconOf(app.packageName)),
                         onChanged: locked
                             ? null
