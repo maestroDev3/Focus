@@ -4,9 +4,11 @@ import 'package:intl/intl.dart';
 import '../domain/clock.dart';
 import '../domain/daily_goal.dart';
 import '../domain/day_part.dart';
+import '../domain/focus_time.dart';
 import '../l10n/app_localizations.dart';
-import 'widgets/focus_background.dart';
+import 'focus_time_label.dart';
 import 'focus_time_text.dart';
+import 'widgets/focus_background.dart';
 
 /// The calm first screen: date, a greeting and one big button to start
 /// focusing without any friction.
@@ -29,6 +31,8 @@ class HomeScreen extends StatelessWidget {
     required this.focusedToday,
     required this.dailyGoal,
     required this.onOpenStatistics,
+    this.activeFocusTime,
+    this.nextFocusTimeStart,
   });
 
   final Clock clock;
@@ -59,6 +63,26 @@ class HomeScreen extends StatelessWidget {
   final Duration focusedToday;
   final DailyGoal dailyGoal;
   final VoidCallback onOpenStatistics;
+
+  /// The focus time running now, if any.
+  final FocusTime? activeFocusTime;
+
+  /// Start of the next focus time, shown when none is running.
+  final DateTime? nextFocusTimeStart;
+
+  /// “Focus time until 12:00” or “Next focus time · Mon 09:00”.
+  String? _focusTimeLine(AppLocalizations l10n, String locale) {
+    if (activeFocusTime case final active?) {
+      return l10n.focusTimeUntil(minuteOfDayText(active.endMinute, locale));
+    }
+    final next = nextFocusTimeStart;
+    if (next == null) return null;
+    final minute = next.hour * 60 + next.minute;
+    return l10n.nextFocusTime(
+      '${weekdayName(next.weekday, locale)} '
+      '${minuteOfDayText(minute, locale)}',
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -186,6 +210,17 @@ class HomeScreen extends StatelessWidget {
                               label: Text(l10n.allowHoldingNotifications),
                             ),
                           ),
+                        if (_focusTimeLine(l10n, locale) case final line?) ...[
+                          const SizedBox(height: 16),
+                          Text(
+                            line,
+                            textAlign: TextAlign.center,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                              letterSpacing: 1,
+                            ),
+                          ),
+                        ],
                         const Spacer(),
                         FilledButton(
                           onPressed: onStart,

@@ -6,6 +6,8 @@ import '../domain/app_blocker.dart';
 import '../domain/backup.dart';
 import '../domain/block_list_repository.dart';
 import '../domain/clock.dart';
+import '../domain/focus_time.dart';
+import '../domain/focus_time_repository.dart';
 import '../domain/daily_goal.dart';
 import '../domain/focus_label.dart';
 import '../domain/focus_session.dart';
@@ -39,6 +41,7 @@ class FocusApp extends StatefulWidget {
     required this.blockList,
     required this.installedApps,
     required this.appBlocker,
+    required this.focusTimes,
     this.clock = DateTime.now,
     this.showIntro = false,
   });
@@ -64,6 +67,9 @@ class FocusApp extends StatefulWidget {
   /// The native app blocker.
   final AppBlocker appBlocker;
 
+  /// Recurring focus times.
+  final FocusTimeRepository focusTimes;
+
   /// Source of the current time for every screen.
   final Clock clock;
 
@@ -87,6 +93,8 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
   var _notificationGateEnabled = true;
   StreamSubscription<List<FocusLabel>>? _labelChanges;
   StreamSubscription<String>? _blockedApps;
+  var _focusTimes = const <FocusTime>[];
+  StreamSubscription<List<FocusTime>>? _focusTimeChanges;
 
   @override
   void initState() {
@@ -94,6 +102,9 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     _labelChanges = widget.labels.watchLabels().listen((labels) {
       if (mounted) setState(() => _labels = labels);
+    });
+    _focusTimeChanges = widget.focusTimes.watchFocusTimes().listen((times) {
+      if (mounted) setState(() => _focusTimes = times);
     });
     _blockedApps = widget.appBlocker.blockedAppOpened.listen(_showBlocked);
     _loadState();
@@ -105,6 +116,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
     _labelChanges?.cancel();
     _blockedApps?.cancel();
+    _focusTimeChanges?.cancel();
     super.dispose();
   }
 
@@ -184,6 +196,11 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
                   focusedToday: _focusedToday,
                   dailyGoal: _dailyGoal,
                   onOpenStatistics: _openStatistics,
+                  activeFocusTime: activeFocusTime(_focusTimes, widget.clock()),
+                  nextFocusTimeStart: nextFocusTimeStart(
+                    _focusTimes,
+                    widget.clock(),
+                  ),
                 ),
               )
             : IntroScreen(onDone: () => setState(() => _introDone = true)),
@@ -201,6 +218,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
     await _push(
       (context) => SettingsScreen(
         settings: widget.settings,
+        focusTimes: widget.focusTimes,
         backupFiles: widget.backupFiles,
       ),
     );

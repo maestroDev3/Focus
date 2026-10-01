@@ -401,5 +401,55 @@
   "lockedDuringSession": "Locked during this session",
   "@lockedDuringSession": {
     "description": "Subtitle of a paused app that can't be unchecked while a session is active."
+  },
+  "focusTimes": "Focus times",
+  "@focusTimes": {
+    "description": "Title of the focus times screen and its settings entry."
+  },
+  "addFocusTime": "Add focus time",
+  "@addFocusTime": {
+    "description": "Button that adds a recurring focus time."
+  },
+  "deleteFocusTime": "Delete focus time",
+  "@deleteFocusTime": {
+    "description": "Tooltip of the delete button of a focus time."
+  },
+  "focusTimeStart": "Start",
+  "@focusTimeStart": {
+    "description": "Start time of a focus time in the editor."
+  },
+  "focusTimeEnd": "End",
+  "@focusTimeEnd": {
+    "description": "End time of a focus time in the editor."
+  },
+  "focusTimeOverlaps": "This overlaps another focus time.",
+  "@focusTimeOverlaps": {
+    "description": "Shown when a new focus time overlaps an existing one."
+  },
+  "focusTimeInvalid": "Choose at least one weekday and at least 15 minutes.",
+  "@focusTimeInvalid": {
+    "description": "Shown when a focus time has no weekday or is too short."
+  },
+  "focusTimesEmpty": "No focus times yet. Plan regular times to focus, e.g. weekdays 09:00–12:00 – your paused apps will be blocked automatically.",
+  "@focusTimesEmpty": {
+    "description": "Shown on the focus times screen without focus times."
+  },
+  "focusTimeUntil": "Focus time until {time}",
+  "@focusTimeUntil": {
+    "description": "Home line while a focus time is running.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "nextFocusTime": "Next focus time · {time}",
+  "@nextFocusTime": {
+    "description": "Home line with the start of the next focus time, e.g. “Mon 09:00”.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
   }
 }
