@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:focus_timer/domain/blocking.dart';
 import 'package:focus_timer/domain/focus_label.dart';
 import 'package:focus_timer/domain/focus_session.dart';
+import 'package:focus_timer/domain/focus_time.dart';
 import 'package:focus_timer/domain/focus_timer.dart';
 import 'package:focus_timer/domain/pomodoro.dart';
 import 'package:focus_timer/l10n/app_localizations.dart';
@@ -383,6 +384,30 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
       expect(find.text('25:00'), findsOneWidget);
+    });
+
+    testWidgets('shows the blocked screen during a focus time', (
+      tester,
+    ) async {
+      // 2026-09-29 is a Tuesday; now is 20:00.
+      final focusTimes = FakeFocusTimeRepository([
+        FocusTime(
+          id: 'focus-time-1',
+          weekdays: const {2},
+          startMinute: 19 * 60,
+          endMinute: 21 * 60,
+        ),
+      ]);
+      await tester.pumpWidget(buildApp(focusTimes: focusTimes));
+      await tester.pump();
+
+      blocker.emit('org.telegram.messenger');
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(find.text('Telegram'), findsOneWidget);
+      expect(find.text('Resting while you focus.'), findsOneWidget);
+      expect(find.text('Focus time until 21:00'), findsOneWidget);
     });
 
     testWidgets('restores the session when launched for a blocked app', (

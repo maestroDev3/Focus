@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:focus_timer/domain/focus_time.dart';
 import 'package:focus_timer/ui/blocked_screen.dart';
 
 import '../support/pump_app.dart';
@@ -25,6 +26,25 @@ void main() {
       );
 
       expect(find.text('Your session is paused.'), findsOneWidget);
+    });
+
+    testWidgets('names the end of a running focus time', (tester) async {
+      await tester.pumpApp(
+        BlockedScreen(
+          appLabel: 'Telegram',
+          remaining: null,
+          focusTime: FocusTime(
+            id: 'focus-time-1',
+            weekdays: const {1, 2, 3, 4, 5},
+            startMinute: 9 * 60,
+            endMinute: 12 * 60,
+          ),
+          onReturn: () {},
+        ),
+      );
+
+      expect(find.text('Focus time until 12:00'), findsOneWidget);
+      expect(find.text('Your session is paused.'), findsNothing);
     });
 
     testWidgets('returns to focus', (tester) async {
