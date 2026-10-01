@@ -33,7 +33,6 @@ Future<void> main() async {
       writer: SharedPreferencesBlockingStateWriter(preferences),
       clock: DateTime.now,
       focusTimes: focusTimes,
-      reminders: MethodChannelFocusTimeReminders(),
     ),
   );
   runApp(
@@ -56,6 +55,7 @@ Future<void> main() async {
       installedApps: const MethodChannelInstalledAppsSource(),
       appBlocker: MethodChannelAppBlocker(),
       focusTimes: focusTimes,
+      reminders: MethodChannelFocusTimeReminders(),
     ),
   );
 }
