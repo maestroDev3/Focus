@@ -459,5 +459,13 @@
   "focusTimeRunning": "Running focus times can't be changed.",
   "@focusTimeRunning": {
     "description": "Subtitle of a focus time that is running and therefore locked."
+  },
+  "focusTimeReminderChannel": "Focus time reminders",
+  "@focusTimeReminderChannel": {
+    "description": "Android notification channel name for reminders when a focus time starts."
+  },
+  "focusTimeReminderBody": "Start a session?",
+  "@focusTimeReminderBody": {
+    "description": "Text of the reminder notification when a focus time starts."
   }
 }

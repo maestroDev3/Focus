@@ -65,5 +65,25 @@ void main() {
         contains('android.service.notification.NotificationListenerService'),
       );
     });
+
+    test('may post notifications and reschedule reminders after a restart', () {
+      expect(manifest, contains('android.permission.POST_NOTIFICATIONS'));
+      expect(manifest, contains('android.permission.RECEIVE_BOOT_COMPLETED'));
+    });
+
+    test('uses inexact alarms only', () {
+      expect(manifest, isNot(contains('SCHEDULE_EXACT_ALARM')));
+      expect(manifest, isNot(contains('USE_EXACT_ALARM')));
+    });
+
+    test('declares the private focus time reminder receiver', () {
+      final receiver = RegExp(
+        r'<receiver[^>]*FocusTimeReminderReceiver[\s\S]*?</receiver>',
+      ).firstMatch(manifest)?.group(0);
+
+      expect(receiver, contains('android:exported="false"'));
+      expect(receiver, contains('android.intent.action.BOOT_COMPLETED'));
+      expect(receiver, contains('android.intent.action.MY_PACKAGE_REPLACED'));
+    });
   });
 }

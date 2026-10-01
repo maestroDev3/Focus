@@ -1,5 +1,6 @@
 package de.maestrodev.focus_timer
 
+import android.Manifest
 import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -26,6 +27,25 @@ class MainActivity : FlutterActivity() {
             when (call.method) {
                 "installedApps" -> result.success(installedApps())
                 "appIcon" -> result.success(appIcon(call.arguments as? String))
+                else -> result.notImplemented()
+            }
+        }
+        MethodChannel(messenger, REMINDERS_CHANNEL).setMethodCallHandler { call, result ->
+            when (call.method) {
+                "reschedule" -> {
+                    FocusTimeReminder.saveTexts(
+                        this,
+                        channelName = call.argument<String>("channelName") ?: "",
+                        title = call.argument<String>("title") ?: "",
+                        body = call.argument<String>("body") ?: "",
+                    )
+                    FocusTimeReminder.reschedule(this)
+                    result.success(null)
+                }
+                "requestPermission" -> {
+                    requestNotificationPermission()
+                    result.success(null)
+                }
                 else -> result.notImplemented()
             }
         }
@@ -72,6 +92,17 @@ class MainActivity : FlutterActivity() {
         intent.getStringExtra(EXTRA_BLOCKED_PACKAGE)?.let { app ->
             blockingChannel?.invokeMethod("blockedAppOpened", app)
         }
+    }
+
+    /** Asks once for POST_NOTIFICATIONS (Android 13+) so focus time reminders can show. */
+    private fun requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return
+        if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) ==
+            PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+        requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), NOTIFICATION_REQUEST)
     }
 
     private fun isBlockerEnabled(): Boolean {
@@ -135,5 +166,7 @@ class MainActivity : FlutterActivity() {
         private const val ICON_SIZE = 96
         private const val APPS_CHANNEL = "de.maestrodev.focus_timer/apps"
         private const val BLOCKING_CHANNEL = "de.maestrodev.focus_timer/blocking"
+        private const val REMINDERS_CHANNEL = "de.maestrodev.focus_timer/reminders"
+        private const val NOTIFICATION_REQUEST = 7302
     }
 }

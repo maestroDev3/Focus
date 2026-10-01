@@ -6,9 +6,10 @@ import '../domain/app_blocker.dart';
 import '../domain/backup.dart';
 import '../domain/block_list_repository.dart';
 import '../domain/clock.dart';
-import '../domain/focus_time.dart';
-import '../domain/focus_time_repository.dart';
 import '../domain/daily_goal.dart';
+import '../domain/focus_time.dart';
+import '../domain/focus_time_reminders.dart';
+import '../domain/focus_time_repository.dart';
 import '../domain/focus_label.dart';
 import '../domain/focus_session.dart';
 import '../domain/focus_timer.dart';
@@ -42,6 +43,7 @@ class FocusApp extends StatefulWidget {
     required this.installedApps,
     required this.appBlocker,
     required this.focusTimes,
+    required this.reminders,
     this.clock = DateTime.now,
     this.showIntro = false,
   });
@@ -69,6 +71,9 @@ class FocusApp extends StatefulWidget {
 
   /// Recurring focus times.
   final FocusTimeRepository focusTimes;
+
+  /// Notifications when a focus time starts.
+  final FocusTimeReminders reminders;
 
   /// Source of the current time for every screen.
   final Clock clock;
@@ -103,11 +108,9 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
     _labelChanges = widget.labels.watchLabels().listen((labels) {
       if (mounted) setState(() => _labels = labels);
     });
-    _focusTimeChanges = widget.focusTimes.watchFocusTimes().listen((times) {
-      if (mounted) setState(() => _focusTimes = times);
-      // The native blocker enforces focus times on its own.
-      widget.timer.refreshBlocking();
-    });
+    _focusTimeChanges = widget.focusTimes.watchFocusTimes().listen(
+      _onFocusTimesChanged,
+    );
     _blockedApps = widget.appBlocker.blockedAppOpened.listen(_showBlocked);
     _loadState();
     _restore();
@@ -157,6 +160,25 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
     if (!mounted || session == null) return;
     _pushSession();
     if (blockedPackage != null) await _showBlocked(blockedPackage);
+  }
+
+  /// Publishes focus times to the native side: the blocker enforces them on
+  /// its own and reminders are scheduled from the published state.
+  Future<void> _onFocusTimesChanged(List<FocusTime> times) async {
+    if (mounted) setState(() => _focusTimes = times);
+    await widget.timer.refreshBlocking();
+    final l10n = lookupAppLocalizations(
+      basicLocaleListResolution(
+        WidgetsBinding.instance.platformDispatcher.locales,
+        AppLocalizations.supportedLocales,
+      ),
+    );
+    await widget.reminders.reschedule((
+      channelName: l10n.focusTimeReminderChannel,
+      title: l10n.focusTimeUntil('{time}'),
+      body: l10n.focusTimeReminderBody,
+    ));
+    if (times.isNotEmpty) await widget.reminders.requestPermission();
   }
 
   /// The label with [id], if it still exists.

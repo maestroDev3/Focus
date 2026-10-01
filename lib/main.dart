@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'data/json_backup_codec.dart';
 import 'data/method_channel_app_blocker.dart';
 import 'data/method_channel_document_store.dart';
+import 'data/method_channel_focus_time_reminders.dart';
 import 'data/method_channel_installed_apps_source.dart';
 import 'data/shared_preferences_block_list_repository.dart';
 import 'data/shared_preferences_blocking_state_writer.dart';
@@ -54,6 +55,7 @@ Future<void> main() async {
       installedApps: const MethodChannelInstalledAppsSource(),
       appBlocker: MethodChannelAppBlocker(),
       focusTimes: focusTimes,
+      reminders: MethodChannelFocusTimeReminders(),
     ),
   );
 }
