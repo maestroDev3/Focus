@@ -11,4 +11,10 @@ abstract interface class FocusTimeReminders {
 
   /// Asks for permission to post notifications, if not granted yet.
   Future<void> requestPermission();
+
+  /// Whether Focus was launched by tapping the reminder (consumed once).
+  Future<bool> initialStartRequest();
+
+  /// Taps on the reminder while Focus is running.
+  Stream<void> get startRequested;
 }

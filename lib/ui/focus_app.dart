@@ -98,6 +98,10 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
   var _notificationGateEnabled = true;
   StreamSubscription<List<FocusLabel>>? _labelChanges;
   StreamSubscription<String>? _blockedApps;
+  StreamSubscription<void>? _startRequests;
+
+  /// Whether the session screen is open, so it is never pushed twice.
+  var _sessionShown = false;
   var _focusTimes = const <FocusTime>[];
   StreamSubscription<List<FocusTime>>? _focusTimeChanges;
 
@@ -112,6 +116,9 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
       _onFocusTimesChanged,
     );
     _blockedApps = widget.appBlocker.blockedAppOpened.listen(_showBlocked);
+    _startRequests = widget.reminders.startRequested.listen(
+      (_) => _startFromReminder(),
+    );
     _loadState();
     _restore();
   }
@@ -121,6 +128,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
     _labelChanges?.cancel();
     _blockedApps?.cancel();
+    _startRequests?.cancel();
     _focusTimeChanges?.cancel();
     super.dispose();
   }
@@ -157,9 +165,31 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
   Future<void> _restore() async {
     final session = await widget.timer.restore();
     final blockedPackage = await widget.appBlocker.initialBlockedPackage();
-    if (!mounted || session == null) return;
+    final startRequested = await widget.reminders.initialStartRequest();
+    if (!mounted) return;
+    if (session == null) {
+      if (startRequested) await _startFromReminder();
+      return;
+    }
     _pushSession();
     if (blockedPackage != null) await _showBlocked(blockedPackage);
+  }
+
+  /// The focus time reminder was tapped: start focusing with the default
+  /// duration, or show the session that already runs.
+  Future<void> _startFromReminder() async {
+    if (widget.timer.current != null) {
+      if (!_sessionShown) await _pushSession();
+      return;
+    }
+    final pomodoro = await widget.settings.loadPomodoro();
+    if (!mounted || widget.timer.current != null) return;
+    setState(() => _introDone = true);
+    await widget.timer.start(
+      pomodoro.focus,
+      labelId: _labelWithId(_selectedLabelId)?.id,
+    );
+    await _pushSession();
   }
 
   /// Publishes focus times to the native side: the blocker enforces them on
@@ -328,6 +358,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
   /// Shows the running session; home is refreshed once it is done.
   Future<void> _pushSession() async {
     final labelName = _labelWithId(widget.timer.current?.labelId)?.name;
+    _sessionShown = true;
     await _push(
       (context) => SessionScreen(
         timer: widget.timer,
@@ -336,6 +367,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
         onDone: (outcome) => _afterSession(context, outcome),
       ),
     );
+    _sessionShown = false;
     await _loadState();
   }
 

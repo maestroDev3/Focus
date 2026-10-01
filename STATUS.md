@@ -8,14 +8,13 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- #118 Reminder when a focus time starts (tasks #134, #135) – epic #115 Focus times
 - #107 Updates install over the previous version – release key created from your secret, signed releases since build 188; waiting for your update test with build 193.
 
 ## Up next
 
 1. #96 Include paused apps in backups (`backlog`).
 2. #6 Timer survives app switch and restart → #105 Live countdown in the notification bar.
-3. Epic #123 Final features.
+3. Epic #123 Final features: #119 Mindful opening of paused apps first.
 
 ## Backlog by epic
 
@@ -24,16 +23,15 @@ The GitHub issues are authoritative; this file is the summary.
 | #1 Foundation | #107 Updates install over the previous version (`in-progress`) |
 | #4 Focus timer | #6 Timer survives app switch and restart (`backlog`) → #105 Live countdown in the notification bar (`backlog`) |
 | #20 Distraction blocking | #96 Include paused apps in backups (`backlog`) |
-| #115 Focus times (scheduled blocking) | #118 Reminder when a focus time starts (`in-progress`) |
 | #123 Final features | #119 Mindful opening of paused apps → #120 Home screen widget → #121 Intention and reflection → #122 Ambient sounds (all `backlog`) |
 
 ## Recently done
 
-- #117 Block paused apps during focus times (strict, also with Focus closed)
-- #116 Plan recurring focus times (Settings → Focus times, hint on home)
+- Epic #115 Focus times done: #116 plan focus times, #117 blocking during focus times, #118 reminder with one-tap start
 - Decision: ambient sounds yes; new epic #123 Final features (#119–#122) next to #115 Focus times
 - #112 App icons in the paused apps list
 - Epic #20 Distraction blocking merged into `main` (PR #82, on your request before a dedicated phone test)
+- #97 Brand: Ring app icon, noir splash with FOCUS intro, champagne glow background
 
 ## Open decisions (user only)
 
