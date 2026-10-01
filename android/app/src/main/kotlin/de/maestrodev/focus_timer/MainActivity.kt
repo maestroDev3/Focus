@@ -18,6 +18,8 @@ class MainActivity : FlutterActivity() {
     private var blockingChannel: MethodChannel? = null
     private var documents: DocumentChannel? = null
     private var pendingBlockedPackage: String? = null
+    private var remindersChannel: MethodChannel? = null
+    private var pendingStartRequest = false
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -30,7 +32,10 @@ class MainActivity : FlutterActivity() {
                 else -> result.notImplemented()
             }
         }
-        MethodChannel(messenger, REMINDERS_CHANNEL).setMethodCallHandler { call, result ->
+        pendingStartRequest =
+            intent?.getBooleanExtra(FocusTimeReminder.EXTRA_START_SESSION, false) == true
+        remindersChannel = MethodChannel(messenger, REMINDERS_CHANNEL)
+        remindersChannel?.setMethodCallHandler { call, result ->
             when (call.method) {
                 "reschedule" -> {
                     FocusTimeReminder.saveTexts(
@@ -45,6 +50,10 @@ class MainActivity : FlutterActivity() {
                 "requestPermission" -> {
                     requestNotificationPermission()
                     result.success(null)
+                }
+                "initialStartRequest" -> {
+                    result.success(pendingStartRequest)
+                    pendingStartRequest = false
                 }
                 else -> result.notImplemented()
             }
@@ -91,6 +100,9 @@ class MainActivity : FlutterActivity() {
         setIntent(intent)
         intent.getStringExtra(EXTRA_BLOCKED_PACKAGE)?.let { app ->
             blockingChannel?.invokeMethod("blockedAppOpened", app)
+        }
+        if (intent.getBooleanExtra(FocusTimeReminder.EXTRA_START_SESSION, false)) {
+            remindersChannel?.invokeMethod("startRequested", null)
         }
     }
 
