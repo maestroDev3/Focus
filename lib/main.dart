@@ -23,6 +23,7 @@ Future<void> main() async {
   final settings = SharedPreferencesSettingsRepository(preferences);
   final labels = SharedPreferencesLabelRepository(preferences);
   final blockList = SharedPreferencesBlockListRepository(preferences);
+  final focusTimes = SharedPreferencesFocusTimeRepository(preferences);
   final timer = FocusTimer(
     repository: sessions,
     clock: DateTime.now,
@@ -30,6 +31,7 @@ Future<void> main() async {
       blockList: blockList,
       writer: SharedPreferencesBlockingStateWriter(preferences),
       clock: DateTime.now,
+      focusTimes: focusTimes,
     ),
   );
   runApp(
@@ -51,7 +53,7 @@ Future<void> main() async {
       blockList: blockList,
       installedApps: const MethodChannelInstalledAppsSource(),
       appBlocker: MethodChannelAppBlocker(),
-      focusTimes: SharedPreferencesFocusTimeRepository(preferences),
+      focusTimes: focusTimes,
     ),
   );
 }

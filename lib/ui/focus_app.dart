@@ -105,6 +105,8 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
     });
     _focusTimeChanges = widget.focusTimes.watchFocusTimes().listen((times) {
       if (mounted) setState(() => _focusTimes = times);
+      // The native blocker enforces focus times on its own.
+      widget.timer.refreshBlocking();
     });
     _blockedApps = widget.appBlocker.blockedAppOpened.listen(_showBlocked);
     _loadState();

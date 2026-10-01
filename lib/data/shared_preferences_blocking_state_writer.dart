@@ -23,6 +23,14 @@ class SharedPreferencesBlockingStateWriter implements BlockingStateWriter {
         'active': state.active,
         'packages': state.packageNames.toList()..sort(),
         'plannedEndMillis': state.plannedEnd?.millisecondsSinceEpoch,
+        'focusTimes': [
+          for (final time in state.focusTimes)
+            {
+              'weekdays': time.weekdays.toList()..sort(),
+              'start': time.startMinute,
+              'end': time.endMinute,
+            },
+        ],
       }),
     );
   }
