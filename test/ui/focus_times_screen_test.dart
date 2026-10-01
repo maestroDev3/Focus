@@ -9,8 +9,13 @@ import '../support/pump_app.dart';
 void main() {
   late FakeFocusTimeRepository repository;
 
+  // 2026-09-30 is a Wednesday.
+  var now = DateTime(2026, 9, 30, 20);
+
   Future<void> pumpScreen(WidgetTester tester) async {
-    await tester.pumpApp(FocusTimesScreen(focusTimes: repository));
+    await tester.pumpApp(
+      FocusTimesScreen(focusTimes: repository, clock: () => now),
+    );
     await tester.pump();
   }
 
@@ -26,7 +31,10 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
   }
 
-  setUp(() => repository = FakeFocusTimeRepository());
+  setUp(() {
+    repository = FakeFocusTimeRepository();
+    now = DateTime(2026, 9, 30, 20);
+  });
 
   group('FocusTimesScreen', () {
     testWidgets('lists focus times with weekdays and times', (tester) async {
@@ -97,6 +105,49 @@ void main() {
 
       expect(find.text('This overlaps another focus time.'), findsOneWidget);
       expect(repository.times, hasLength(1));
+    });
+
+    testWidgets('locks a running focus time but keeps the others editable', (
+      tester,
+    ) async {
+      now = DateTime(2026, 9, 30, 10);
+      repository.times.addAll([
+        FocusTime(
+          id: 'a',
+          weekdays: const {1, 2, 3, 4, 5},
+          startMinute: 540,
+          endMinute: 720,
+        ),
+        FocusTime(
+          id: 'b',
+          weekdays: const {6, 7},
+          startMinute: 600,
+          endMinute: 690,
+        ),
+      ]);
+      await pumpScreen(tester);
+
+      expect(
+        find.text("Running focus times can't be changed."),
+        findsOneWidget,
+      );
+      final deletes = tester
+          .widgetList<IconButton>(
+            find.widgetWithIcon(IconButton, Icons.delete_outline),
+          )
+          .toList();
+      expect(deletes.first.onPressed, isNull);
+      expect(deletes.last.onPressed, isNotNull);
+
+      await tester.tap(find.text('Mon–Fri · 09:00–12:00'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(find.text('Save'), findsNothing);
+
+      await tester.tap(find.text('Sat, Sun · 10:00–11:30'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(find.text('Save'), findsOneWidget);
     });
   });
 }

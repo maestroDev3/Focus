@@ -101,4 +101,23 @@ void main() {
       expect(overlaps(morning(), at(10 * 60, 11 * 60, {6, 7})), isFalse);
     });
   });
+
+  group('canChangeFocusTime', () {
+    final mornings = FocusTime(
+      id: 'focus-time-1',
+      weekdays: const {1, 2, 3, 4, 5},
+      startMinute: 9 * 60,
+      endMinute: 12 * 60,
+    );
+
+    test('is false while the focus time runs', () {
+      // 2026-09-30 is a Wednesday.
+      expect(canChangeFocusTime(mornings, DateTime(2026, 9, 30, 10)), isFalse);
+    });
+
+    test('is true outside the focus time', () {
+      expect(canChangeFocusTime(mornings, DateTime(2026, 9, 30, 12)), isTrue);
+      expect(canChangeFocusTime(mornings, DateTime(2026, 10, 3, 10)), isTrue);
+    });
+  });
 }

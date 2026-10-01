@@ -45,6 +45,13 @@ void main() {
       );
     });
 
+    test('is false during a focus time, also without a session', () {
+      expect(
+        canRemoveFromBlockList(activeSession: null, inFocusTime: true),
+        isFalse,
+      );
+    });
+
     test('is true without a session or after it ended', () {
       expect(canRemoveFromBlockList(activeSession: null), isTrue);
       expect(
