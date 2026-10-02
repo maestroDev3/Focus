@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:focus_timer/domain/blocking.dart';
+import 'package:focus_timer/domain/daily_goal.dart';
 import 'package:focus_timer/domain/focus_label.dart';
 import 'package:focus_timer/domain/focus_session.dart';
 import 'package:focus_timer/domain/focus_time.dart';
 import 'package:focus_timer/domain/focus_timer.dart';
-import 'package:focus_timer/domain/daily_goal.dart';
 import 'package:focus_timer/domain/home_widget.dart';
 import 'package:focus_timer/domain/pomodoro.dart';
 import 'package:focus_timer/l10n/app_localizations.dart';

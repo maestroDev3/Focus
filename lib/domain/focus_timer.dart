@@ -4,6 +4,7 @@ import 'blocking.dart';
 import 'clock.dart';
 import 'daily_goal.dart';
 import 'focus_session.dart';
+import 'home_widget.dart';
 import 'label_repository.dart';
 import 'session_countdown.dart';
 import 'session_end_alarm.dart';
@@ -68,6 +69,20 @@ class FocusTimer {
     );
     await _setActive(session);
     return session;
+  }
+
+  /// Takes over a session the home screen widget started while Focus was
+  /// closed; completes it right away if its time is already over.
+  Future<void> adopt(ExternalStart external) async {
+    if (_current != null) throw StateError('A session is already running.');
+    await _setActive(
+      FocusSession(
+        start: external.start,
+        planned: external.planned,
+        labelId: external.labelId,
+      ),
+    );
+    await completeIfDue();
   }
 
   Future<void> pause() => _setActive(_requireActive().pause(_clock()));
