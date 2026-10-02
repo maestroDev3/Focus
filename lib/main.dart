@@ -6,6 +6,7 @@ import 'data/method_channel_app_blocker.dart';
 import 'data/method_channel_document_store.dart';
 import 'data/method_channel_focus_time_reminders.dart';
 import 'data/method_channel_installed_apps_source.dart';
+import 'data/method_channel_session_end_alarm.dart';
 import 'data/shared_preferences_block_list_repository.dart';
 import 'data/shared_preferences_blocking_state_writer.dart';
 import 'data/shared_preferences_focus_time_repository.dart';
@@ -15,6 +16,7 @@ import 'data/shared_preferences_settings_repository.dart';
 import 'domain/backup.dart';
 import 'domain/blocking.dart';
 import 'domain/focus_timer.dart';
+import 'l10n/app_localizations.dart';
 import 'ui/focus_app.dart';
 
 Future<void> main() async {
@@ -25,6 +27,12 @@ Future<void> main() async {
   final labels = SharedPreferencesLabelRepository(preferences);
   final blockList = SharedPreferencesBlockListRepository(preferences);
   final focusTimes = SharedPreferencesFocusTimeRepository(preferences);
+  final l10n = lookupAppLocalizations(
+    basicLocaleListResolution(
+      WidgetsBinding.instance.platformDispatcher.locales,
+      AppLocalizations.supportedLocales,
+    ),
+  );
   final timer = FocusTimer(
     repository: sessions,
     clock: DateTime.now,
@@ -33,6 +41,13 @@ Future<void> main() async {
       writer: SharedPreferencesBlockingStateWriter(preferences),
       clock: DateTime.now,
       focusTimes: focusTimes,
+    ),
+    sessionEndAlarm: MethodChannelSessionEndAlarm(
+      texts: (
+        channelName: l10n.sessionEndChannel,
+        title: l10n.sessionEndTitle,
+        body: l10n.sessionEndBody,
+      ),
     ),
   );
   runApp(

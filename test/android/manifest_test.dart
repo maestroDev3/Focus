@@ -71,9 +71,21 @@ void main() {
       expect(manifest, contains('android.permission.RECEIVE_BOOT_COMPLETED'));
     });
 
-    test('uses inexact alarms only', () {
-      expect(manifest, isNot(contains('SCHEDULE_EXACT_ALARM')));
-      expect(manifest, isNot(contains('USE_EXACT_ALARM')));
+    test('asks for exact alarms only as a timer app (decision 2026-10-02)', () {
+      expect(manifest, contains('android.permission.USE_EXACT_ALARM'));
+      final scheduleExact = RegExp(
+        r'<uses-permission[^>]*SCHEDULE_EXACT_ALARM[^>]*/>',
+      ).firstMatch(manifest)?.group(0);
+      expect(scheduleExact, contains('android:maxSdkVersion="32"'));
+    });
+
+    test('declares the private session-end receiver', () {
+      final receiver = RegExp(
+        r'<receiver[^>]*SessionEndReceiver[\s\S]*?</receiver>',
+      ).firstMatch(manifest)?.group(0);
+
+      expect(receiver, contains('android:exported="false"'));
+      expect(receiver, contains('android.intent.action.BOOT_COMPLETED'));
     });
 
     test('declares the private focus time reminder receiver', () {

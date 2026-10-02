@@ -37,6 +37,27 @@ class MainActivity : FlutterActivity() {
         }
         pendingStartRequest =
             intent?.getBooleanExtra(FocusTimeReminder.EXTRA_START_SESSION, false) == true
+        MethodChannel(messenger, SESSION_END_CHANNEL).setMethodCallHandler { call, result ->
+            when (call.method) {
+                "schedule" -> {
+                    SessionEndAlarm.saveTexts(
+                        this,
+                        channelName = call.argument<String>("channelName") ?: "",
+                        title = call.argument<String>("title") ?: "",
+                        body = call.argument<String>("body") ?: "",
+                    )
+                    val end = call.argument<Number>("endMillis")?.toLong()
+                    if (end != null) SessionEndAlarm.schedule(this, end)
+                    requestNotificationPermission()
+                    result.success(null)
+                }
+                "cancel" -> {
+                    SessionEndAlarm.cancel(this)
+                    result.success(null)
+                }
+                else -> result.notImplemented()
+            }
+        }
         remindersChannel = MethodChannel(messenger, REMINDERS_CHANNEL)
         remindersChannel?.setMethodCallHandler { call, result ->
             when (call.method) {
@@ -112,7 +133,7 @@ class MainActivity : FlutterActivity() {
         }
     }
 
-    /** Asks once for POST_NOTIFICATIONS (Android 13+) so focus time reminders can show. */
+    /** Asks once for POST_NOTIFICATIONS (Android 13+) so reminders and the session end can show. */
     private fun requestNotificationPermission() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return
         if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) ==
@@ -233,6 +254,7 @@ class MainActivity : FlutterActivity() {
         private const val APPS_CHANNEL = "de.maestrodev.focus_timer/apps"
         private const val BLOCKING_CHANNEL = "de.maestrodev.focus_timer/blocking"
         private const val REMINDERS_CHANNEL = "de.maestrodev.focus_timer/reminders"
+        private const val SESSION_END_CHANNEL = "de.maestrodev.focus_timer/session_end"
         private const val NOTIFICATION_REQUEST = 7302
 
         // Undocumented but widely supported (AOSP, Samsung): highlight an entry
