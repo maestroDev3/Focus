@@ -17,25 +17,20 @@ Android app (Flutter): a clean, distraction-free Pomodoro focus timer with daily
 
 ```
 This project belongs to the app “Focus” – Minimal focus timer: Pomodoro sessions, daily goals and honest statistics.
-Repository: github.com/maestroDev3/Focus
+Repository (public): https://github.com/maestroDev3/Focus
 
-- CLAUDE.md (working rules) and STATUS.md (current state) in the repo are authoritative.
-  Read STATUS.md at the start of every conversation.
-- Everything in the repo is English (code, UI, docs, issues, commits). You may talk
-  to me in German.
-- Planning runs through GitHub issues: Initiative → Epic → Story → Task (sub-issues),
-  status labels backlog / ready / in-progress. Epics are finite; closed issues are
-  never reopened – new work on something done is a new issue with "Related: #nr".
-  New ideas: backlog story in an open epic with exactly that outcome, else a new
-  epic in the matching initiative (reported under "Open decisions").
-- Implementation strictly TDD (red → green → refactor), one PR per task, squash-merge
-  when CI is green.
-- For Dart/Flutter work, the skill .claude/skills/flutter-dart/SKILL.md applies.
-- Keep answers short and concrete. Never make the open decisions listed in STATUS.md
-  yourself – present them to me.
+The repo is the only source of truth – this project keeps no copies.
+- At the start of every conversation, read the current files from `main`:
+  - https://raw.githubusercontent.com/maestroDev3/Focus/main/CLAUDE.md (working rules, binding)
+  - https://raw.githubusercontent.com/maestroDev3/Focus/main/STATUS.md (current state)
+  With the repo attached, read them from the checkout instead (after `git pull`).
+- If they can't be read, say so instead of guessing the state.
+- Never upload or update copies of CLAUDE.md or STATUS.md in the project knowledge.
+- Everything in the repo is English; you may talk to me in German.
+- Never make the open decisions listed in STATUS.md yourself – present them to me.
 ```
 
-**Project knowledge:** upload this ZIP (or `CLAUDE.md` and `STATUS.md`).
+**Project knowledge:** none needed – CLAUDE.md and STATUS.md are read from the repo.
 
 ## First message to Claude (session with the repo attached)
 

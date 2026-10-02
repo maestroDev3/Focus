@@ -45,11 +45,11 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## Recently done
 
+- CLAUDE.md and STATUS.md are read from the repo; no more copies in the Claude project
 - Decision: named block lists – one per focus time, labels only add; default list as fallback (#143: #146 → #144 → #145)
 - Initiatives confirmed; epic #123 split into #123 Session ritual, #141 Mindful access, #142 Home screen widget
 - Planning structure Initiative → Epic → Story → Task set up: initiatives #138–#140, issue templates, rules in CLAUDE.md
 - Epic #115 Focus times done: #116 plan focus times, #117 blocking during focus times, #118 reminder with one-tap start
-- Decision: ambient sounds yes; new epic #123 Final features (#119–#122) next to #115 Focus times
 
 ## Open decisions (user only)
 

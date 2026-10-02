@@ -117,8 +117,8 @@ While there are no issues yet:
 
 ## Keeping the status (`STATUS.md`)
 
-`STATUS.md` is the short summary of the project state. The user reads it as
-context in a Claude project. It must always match the issues.
+`STATUS.md` is the short summary of the project state. The user and Claude read
+it at the start of every conversation (see below). It must always match the issues.
 
 - Claude updates `STATUS.md` whenever any of it changes: a story changes status
   (`backlog`/`ready`/`in-progress`) or is closed, a new story, epic or
@@ -129,9 +129,12 @@ context in a Claude project. It must always match the issues.
 - When closing a story, the update belongs in the story's last PR. Pure status
   changes without a PR: direct commit to `main` (`docs: update status`).
 - Keep it short: number + title, no task details.
-- `CLAUDE.md` and `STATUS.md` are also stored as docs in the Claude project
-  “Focus”. When the session is attached to that project, update the project
-  copy whenever the file changes on `main`.
+- **The repo is the only source.** `CLAUDE.md` and `STATUS.md` live only here;
+  the Claude project “Focus” keeps no copies. At the start of a conversation
+  read both from `main` – from the checkout (after `git pull`) when the repo is
+  attached, otherwise from
+  `https://raw.githubusercontent.com/maestroDev3/Focus/main/CLAUDE.md` and
+  `…/main/STATUS.md`. Never create or update copies in the project knowledge.
 
 ## Workflow: Story → sub-issues
 
@@ -231,3 +234,5 @@ commit comment).
   default list applies); a label can only **add** a list to the default list,
   never block less; a session during a focus time blocks the union; the
   blocked screen names the active list.
+- 2026-10-02 – The repo is the only source for `CLAUDE.md` and `STATUS.md`;
+  the Claude project keeps no copies and reads them from GitHub.
