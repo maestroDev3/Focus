@@ -9,7 +9,7 @@ The GitHub issues are authoritative; this file is the summary.
 ## In progress
 
 - #105 Live countdown in the notification bar – tasks #162, #163 merged; waiting for your test on the phone.
-- #120 Home screen widget – in work.
+- #120 Home screen widget – tasks #166, #167 merged; waiting for your test on the phone.
 
 ## Up next
 
@@ -26,7 +26,7 @@ The GitHub issues are authoritative; this file is the summary.
 |---|---|---|
 | #4 Focus timer | 4 of 5 closed | #105 Live countdown in the notification bar (`in-progress`) |
 | #123 Session ritual | 0 of 2 closed | #121 Intention and reflection → #122 Ambient sounds (both `backlog`) |
-| #142 Home screen widget | 0 of 1 closed | #120 Home screen widget (`backlog`) |
+| #142 Home screen widget | 0 of 1 closed | #120 Home screen widget (`in-progress`) |
 
 **#139 Distraction blocking**
 
