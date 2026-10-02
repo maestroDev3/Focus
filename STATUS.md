@@ -8,16 +8,17 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- #6 Timer survives app switch and restart – all tasks merged (#150, #151, #157); restart and remaining time confirmed; waiting for your test of the end notification (also after the phone was off).
+- Nothing – next is #105.
 
 ## Up next
 
-1. #105 Live countdown in the notification bar (after #6).
-2. #120 Home screen widget – one tap starts a session with the defaults (builds on #6).
-3. Epic #143 Named block lists: #146 → #144 → #145.
-4. #96 Include paused apps in backups (after #143, so the backup format changes only once).
-5. #119 Mindful opening of paused apps.
-6. Epic #123 Session ritual: #121 Intention and reflection → #122 Ambient sounds.
+1. #105 Live countdown in the notification bar.
+2. #159 Filter the paused-apps list: All / Paused (small, quick win).
+3. #120 Home screen widget – one tap starts a session with the defaults.
+4. Epic #143 Named block lists: #146 → #144 → #145.
+5. #96 Include paused apps in backups (after #143, so the backup format changes only once).
+6. #119 Mindful opening of paused apps.
+7. Epic #123 Session ritual: #121 Intention and reflection → #122 Ambient sounds.
 
 ## Backlog by initiative → epic
 
@@ -25,7 +26,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 | Epic | State | Stories (in order) |
 |---|---|---|
-| #4 Focus timer | 3 of 5 closed | #6 Timer survives app switch and restart (`in-progress`) → #105 Live countdown in the notification bar (`backlog`) |
+| #4 Focus timer | 4 of 5 closed | #105 Live countdown in the notification bar (`backlog`) |
 | #123 Session ritual | 0 of 2 closed | #121 Intention and reflection → #122 Ambient sounds (both `backlog`) |
 | #142 Home screen widget | 0 of 1 closed | #120 Home screen widget (`backlog`) |
 
@@ -33,7 +34,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 | Epic | State | Stories (in order) |
 |---|---|---|
-| #20 Distraction blocking | 5 of 6 closed | #96 Include paused apps in backups (`backlog`, after #143) |
+| #20 Distraction blocking | 5 of 7 closed | #159 Filter the paused-apps list: All / Paused (`backlog`) → #96 Include paused apps in backups (`backlog`, after #143) |
 | #141 Mindful access to paused apps | 0 of 1 closed | #119 Mindful opening of paused apps (`backlog`) |
 | #143 Named block lists for focus times and labels | 0 of 3 closed | #146 Named block lists → #144 Choose a block list per focus time → #145 Labels block additional apps (all `backlog`) |
 
@@ -43,11 +44,11 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## Recently done
 
+- #6 Timer survives app switch and restart – on-time end notification, also after the phone was off; confirmed on the phone
 - #154 Enter durations directly – tap a value in the settings to type it (focus 1–180 min)
 - #147 Permission screens lead straight to the right switch – confirmed on the phone
 - #107 Updates install over the previous version – confirmed on the phone; epic #1 Foundation closed
 - CLAUDE.md and STATUS.md are read from the repo; no more copies in the Claude project
-- Decision: named block lists – one per focus time, labels only add; default list as fallback (#143: #146 → #144 → #145)
 
 ## Open decisions (user only)
 
