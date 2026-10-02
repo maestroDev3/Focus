@@ -21,6 +21,8 @@ object SessionEndAlarm {
     private const val CHANNEL_ID = "session_end"
     private const val NOTIFICATION_ID = 7303
     private const val PREFERENCES = "session_end"
+    private const val EXTRA_END_MILLIS = "endMillis"
+    private const val NOTIFIED_END = "notifiedEndMillis"
 
     /** Stores the localized texts Flutter passes in, for the receiver. */
     fun saveTexts(context: Context, channelName: String, title: String, body: String) {
@@ -34,7 +36,7 @@ object SessionEndAlarm {
     /** Replaces any pending end notification with one at [endMillis]. */
     fun schedule(context: Context, endMillis: Long) {
         val alarms = context.getSystemService(AlarmManager::class.java) ?: return
-        val intent = alarmIntent(context)
+        val intent = alarmIntent(context, endMillis)
         val exact = Build.VERSION.SDK_INT < Build.VERSION_CODES.S || alarms.canScheduleExactAlarms()
         try {
             if (exact) {
@@ -48,25 +50,42 @@ object SessionEndAlarm {
     }
 
     fun cancel(context: Context) {
-        context.getSystemService(AlarmManager::class.java)?.cancel(alarmIntent(context))
+        context.getSystemService(AlarmManager::class.java)?.cancel(alarmIntent(context, 0))
     }
 
-    /** Schedules again from the published state, e.g. after a restart. */
+    /**
+     * Schedules again from the published state after a restart or update. If
+     * the session ended while the phone was off, the notification comes now –
+     * but only once per session end.
+     */
     fun rescheduleFromState(context: Context) {
         val state = BlockingState.read(context)
         val end = state.plannedEndMillis
-        if (state.active && end != null && end > System.currentTimeMillis()) {
-            schedule(context, end)
-        } else {
+        if (!state.active || end == null) {
             cancel(context)
+            return
+        }
+        if (end > System.currentTimeMillis()) {
+            schedule(context, end)
+        } else if (notifiedEnd(context) != end) {
+            show(context, end)
         }
     }
 
-    /** Posts the notification; tapping it opens Focus, which completes the session. */
-    fun show(context: Context) {
+    private fun notifiedEnd(context: Context): Long =
+        context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE).getLong(NOTIFIED_END, 0)
+
+    internal fun endOf(intent: Intent): Long = intent.getLongExtra(EXTRA_END_MILLIS, 0)
+
+    /**
+     * Posts the notification for the session ending at [endMillis] and
+     * remembers it; tapping it opens Focus, which completes the session.
+     */
+    fun show(context: Context, endMillis: Long) {
+        val texts = context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE)
+        texts.edit().putLong(NOTIFIED_END, endMillis).apply()
         val manager = context.getSystemService(NotificationManager::class.java) ?: return
         if (!manager.areNotificationsEnabled()) return
-        val texts = context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE)
         val open = PendingIntent.getActivity(
             context,
             NOTIFICATION_ID,
@@ -99,11 +118,13 @@ object SessionEndAlarm {
         )
     }
 
-    private fun alarmIntent(context: Context): PendingIntent =
+    private fun alarmIntent(context: Context, endMillis: Long): PendingIntent =
         PendingIntent.getBroadcast(
             context,
             NOTIFICATION_ID,
-            Intent(context, SessionEndReceiver::class.java).setAction(ACTION_SESSION_END),
+            Intent(context, SessionEndReceiver::class.java)
+                .setAction(ACTION_SESSION_END)
+                .putExtra(EXTRA_END_MILLIS, endMillis),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
 }
@@ -112,7 +133,7 @@ object SessionEndAlarm {
 class SessionEndReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action == SessionEndAlarm.ACTION_SESSION_END) {
-            SessionEndAlarm.show(context)
+            SessionEndAlarm.show(context, SessionEndAlarm.endOf(intent))
         } else {
             SessionEndAlarm.rescheduleFromState(context)
         }
