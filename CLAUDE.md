@@ -236,3 +236,5 @@ commit comment).
   blocked screen names the active list.
 - 2026-10-02 – The repo is the only source for `CLAUDE.md` and `STATUS.md`;
   the Claude project keeps no copies and reads them from GitHub.
+- 2026-10-02 – Home screen widget (#120) comes right after the live countdown:
+  one tap starts a session with the defaults, without opening the app.

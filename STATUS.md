@@ -13,11 +13,11 @@ The GitHub issues are authoritative; this file is the summary.
 ## Up next
 
 1. #6 Timer survives app switch and restart → #105 Live countdown in the notification bar (core promise of the timer first).
-2. Epic #143 Named block lists: #146 → #144 → #145.
-3. #96 Include paused apps in backups (after #143, so the backup format changes only once).
-4. #119 Mindful opening of paused apps.
-5. Epic #123 Session ritual: #121 Intention and reflection → #122 Ambient sounds.
-6. #120 Home screen widget.
+2. #120 Home screen widget – one tap starts a session with the defaults (builds on #6).
+3. Epic #143 Named block lists: #146 → #144 → #145.
+4. #96 Include paused apps in backups (after #143, so the backup format changes only once).
+5. #119 Mindful opening of paused apps.
+6. Epic #123 Session ritual: #121 Intention and reflection → #122 Ambient sounds.
 
 ## Backlog by initiative → epic
 
