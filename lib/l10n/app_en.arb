@@ -502,5 +502,20 @@
     "placeholders": {
       "name": {"type": "String"}
     }
+  },
+  "filterAllApps": "All",
+  "@filterAllApps": {
+    "description": "Filter on the paused-apps screen showing every installed app."
+  },
+  "filterPausedApps": "Paused ({count})",
+  "@filterPausedApps": {
+    "description": "Filter on the paused-apps screen showing only paused apps, with their number.",
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "noPausedApps": "No paused apps yet.",
+  "@noPausedApps": {
+    "description": "Shown in the paused filter when no app is paused."
   }
 }
