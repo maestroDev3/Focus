@@ -82,6 +82,22 @@
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
             </intent-filter>
         </receiver>
+        <!-- Home screen widget (story #120). Exported because the launcher
+             hosts it; its own start action is only sent by the widget. -->
+        <receiver
+            android:name=".FocusWidgetProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/focus_widget_info"/>
+        </receiver>
+        <!-- One-tap start from the widget; only its own PendingIntent reaches it. -->
+        <receiver
+            android:name=".FocusWidgetStartReceiver"
+            android:exported="false"/>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

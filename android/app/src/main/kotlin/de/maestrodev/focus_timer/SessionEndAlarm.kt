@@ -142,5 +142,6 @@ class SessionEndReceiver : BroadcastReceiver() {
             SessionEndAlarm.rescheduleFromState(context)
             SessionCountdown.repostFromState(context)
         }
+        HomeWidget.refresh(context)
     }
 }

@@ -539,5 +539,17 @@
     "placeholders": {
       "time": {"type": "String"}
     }
+  },
+  "widgetStart": "Focus",
+  "@widgetStart": {
+    "description": "Button on the home screen widget that starts a session."
+  },
+  "widgetProgress": "{today} of {goal}",
+  "@widgetProgress": {
+    "description": "Today's focus time towards the daily goal on the home screen widget.",
+    "placeholders": {
+      "today": {"type": "String"},
+      "goal": {"type": "String"}
+    }
   }
 }
