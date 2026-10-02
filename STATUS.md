@@ -8,7 +8,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- #6 Timer survives app switch and restart – both tasks merged (#150, #151); waiting for your test on the phone with the next build.
+- #6 Timer survives app switch and restart – all tasks merged (#150, #151, #157); restart and remaining time confirmed; waiting for your test of the end notification (also after the phone was off).
 
 ## Up next
 
