@@ -226,3 +226,6 @@ commit comment).
 - 2026-10-02 – Initiatives confirmed. Epic #123 “Final features” split into
   #123 Session ritual, #141 Mindful access to paused apps, #142 Home screen
   widget.
+- 2026-10-02 – Own app lists per focus time and per label (epic #143); a
+  focus time or label without its own list uses the normal focus block list;
+  a session during a focus time blocks both lists.
