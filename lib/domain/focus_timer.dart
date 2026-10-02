@@ -4,6 +4,8 @@ import 'blocking.dart';
 import 'clock.dart';
 import 'daily_goal.dart';
 import 'focus_session.dart';
+import 'label_repository.dart';
+import 'session_countdown.dart';
 import 'session_end_alarm.dart';
 import 'session_repository.dart';
 
@@ -15,6 +17,8 @@ class FocusTimer {
     required this._clock,
     this._blocking,
     this._sessionEndAlarm,
+    this._countdown,
+    this._labels,
   });
 
   final SessionRepository _repository;
@@ -26,6 +30,12 @@ class FocusTimer {
   /// Notifies the user at the planned end while Focus is closed; optional so
   /// tests stay simple.
   final SessionEndAlarm? _sessionEndAlarm;
+
+  /// Shows the remaining time outside the app; optional so tests stay simple.
+  final SessionCountdown? _countdown;
+
+  /// Resolves label names for the countdown.
+  final LabelRepository? _labels;
   final _changes = StreamController<FocusSession?>.broadcast();
   FocusSession? _current;
 
@@ -44,6 +54,7 @@ class FocusTimer {
     if (await completeIfDue()) return null;
     await _blocking?.update(session);
     await _syncAlarm(session);
+    await _syncCountdown(session);
     _changes.add(session);
     return session;
   }
@@ -112,7 +123,36 @@ class FocusTimer {
     await _repository.saveActive(session);
     await _blocking?.update(session);
     await _syncAlarm(session);
+    await _syncCountdown(session);
     _changes.add(session);
+  }
+
+  /// Running: countdown to the end; paused: remaining time; else hidden.
+  Future<void> _syncCountdown(FocusSession? session) async {
+    final countdown = _countdown;
+    if (countdown == null) return;
+    if (session == null) {
+      await countdown.hide();
+      return;
+    }
+    final labelName = await _labelName(session.labelId);
+    final now = _clock();
+    final remaining = session.remaining(now);
+    await countdown.show(
+      session.isPaused
+          ? CountdownPaused(remaining: remaining, labelName: labelName)
+          : CountdownRunning(end: now.add(remaining), labelName: labelName),
+    );
+  }
+
+  Future<String?> _labelName(String? id) async {
+    final labels = _labels;
+    if (id == null || labels == null) return null;
+    final all = await labels.watchLabels().first;
+    return [
+      for (final label in all)
+        if (label.id == id) label.name,
+    ].firstOrNull;
   }
 
   /// A running session has its end scheduled; paused or no session, none.
