@@ -37,6 +37,26 @@ class MainActivity : FlutterActivity() {
         }
         pendingStartRequest =
             intent?.getBooleanExtra(FocusTimeReminder.EXTRA_START_SESSION, false) == true
+        MethodChannel(messenger, COUNTDOWN_CHANNEL).setMethodCallHandler { call, result ->
+            when (call.method) {
+                "show" -> {
+                    SessionCountdown.show(
+                        this,
+                        channelName = call.argument<String>("channelName") ?: "",
+                        title = call.argument<String>("title") ?: "",
+                        paused = call.argument<Boolean>("paused") ?: false,
+                        endMillis = call.argument<Number>("endMillis")?.toLong(),
+                        text = call.argument<String>("text"),
+                    )
+                    result.success(null)
+                }
+                "hide" -> {
+                    SessionCountdown.hide(this)
+                    result.success(null)
+                }
+                else -> result.notImplemented()
+            }
+        }
         MethodChannel(messenger, SESSION_END_CHANNEL).setMethodCallHandler { call, result ->
             when (call.method) {
                 "schedule" -> {
@@ -255,6 +275,7 @@ class MainActivity : FlutterActivity() {
         private const val BLOCKING_CHANNEL = "de.maestrodev.focus_timer/blocking"
         private const val REMINDERS_CHANNEL = "de.maestrodev.focus_timer/reminders"
         private const val SESSION_END_CHANNEL = "de.maestrodev.focus_timer/session_end"
+        private const val COUNTDOWN_CHANNEL = "de.maestrodev.focus_timer/countdown"
         private const val NOTIFICATION_REQUEST = 7302
 
         // Undocumented but widely supported (AOSP, Samsung): highlight an entry
