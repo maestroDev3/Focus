@@ -378,6 +378,14 @@
   "@blockerOnboardingBody": {
     "description": "Explanation of the accessibility permission before opening the system settings."
   },
+  "restrictedSettingsHint": "Switch greyed out? Android restricts this setting for apps installed outside the Play Store. Open the app info, tap ⋮ and choose “Allow restricted settings”, then try again.",
+  "@restrictedSettingsHint": {
+    "description": "Hint on the permission screens for greyed-out switches (Android restricted settings)."
+  },
+  "openAppInfo": "Open app info",
+  "@openAppInfo": {
+    "description": "Button that opens Focus' app info page in the system settings."
+  },
   "openSettings": "Open settings",
   "@openSettings": {
     "description": "Button that opens the Android settings."

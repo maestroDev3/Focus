@@ -1,13 +1,16 @@
 package de.maestrodev.focus_timer
 
 import android.Manifest
+import android.content.ActivityNotFoundException
 import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.content.pm.ResolveInfo
+import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.provider.Settings
 import java.io.ByteArrayOutputStream
 import io.flutter.embedding.android.FlutterActivity
@@ -64,17 +67,20 @@ class MainActivity : FlutterActivity() {
                 when (call.method) {
                     "isBlockerEnabled" -> result.success(isBlockerEnabled())
                     "openBlockerSettings" -> {
-                        startActivity(
-                            Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
-                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
-                        )
+                        openBlockerSettings()
                         result.success(null)
                     }
                     "isNotificationGateEnabled" -> result.success(isNotificationGateEnabled())
                     "openNotificationGateSettings" -> {
-                        startActivity(
-                            Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
-                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                        openNotificationGateSettings()
+                        result.success(null)
+                    }
+                    "openAppInfo" -> {
+                        openSettingsPage(
+                            Intent(
+                                Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                Uri.fromParts("package", packageName, null),
+                            ),
                         )
                         result.success(null)
                     }
@@ -116,6 +122,54 @@ class MainActivity : FlutterActivity() {
         }
         requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), NOTIFICATION_REQUEST)
     }
+
+    /**
+     * Opens the accessibility settings with Focus highlighted. CLEAR_TASK
+     * resets a settings screen left open in the background – otherwise some
+     * launchers (Samsung One UI) only bring that old screen to the front.
+     */
+    private fun openBlockerSettings() {
+        val blocker = ComponentName(this, FocusBlockerService::class.java).flattenToString()
+        openSettingsPage(highlighting(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS), blocker))
+    }
+
+    /** Opens Focus' own notification access switch (Android 11+), else the list. */
+    private fun openNotificationGateSettings() {
+        val gate = ComponentName(this, FocusNotificationGate::class.java)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val detail = Intent(Settings.ACTION_NOTIFICATION_LISTENER_DETAIL_SETTINGS)
+                .putExtra(
+                    Settings.EXTRA_NOTIFICATION_LISTENER_COMPONENT_NAME,
+                    gate.flattenToString(),
+                )
+            if (openSettingsPage(detail)) return
+        }
+        openSettingsPage(
+            highlighting(
+                Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS),
+                gate.flattenToString(),
+            ),
+        )
+    }
+
+    /** Adds the extras that scroll to and highlight [key] in a settings list. */
+    private fun highlighting(intent: Intent, key: String): Intent =
+        intent
+            .putExtra(EXTRA_FRAGMENT_ARG_KEY, key)
+            .putExtra(EXTRA_SHOW_FRAGMENT_ARGUMENTS, Bundle().apply {
+                putString(EXTRA_FRAGMENT_ARG_KEY, key)
+            })
+
+    /** Starts [intent] as a fresh settings task; false if no screen handles it. */
+    private fun openSettingsPage(intent: Intent): Boolean =
+        try {
+            startActivity(
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK),
+            )
+            true
+        } catch (_: ActivityNotFoundException) {
+            false
+        }
 
     private fun isBlockerEnabled(): Boolean {
         val enabled = Settings.Secure.getString(
@@ -180,5 +234,10 @@ class MainActivity : FlutterActivity() {
         private const val BLOCKING_CHANNEL = "de.maestrodev.focus_timer/blocking"
         private const val REMINDERS_CHANNEL = "de.maestrodev.focus_timer/reminders"
         private const val NOTIFICATION_REQUEST = 7302
+
+        // Undocumented but widely supported (AOSP, Samsung): highlight an entry
+        // in a settings list.
+        private const val EXTRA_FRAGMENT_ARG_KEY = ":settings:fragment_args_key"
+        private const val EXTRA_SHOW_FRAGMENT_ARGUMENTS = ":settings:show_fragment_args"
     }
 }

@@ -12,6 +12,10 @@ abstract interface class AppBlocker {
   /// Opens the system settings for notification access.
   Future<void> openNotificationGateSettings();
 
+  /// Opens Focus' app info page, where Android lets the user allow
+  /// restricted settings for apps installed outside the Play Store.
+  Future<void> openAppInfo();
+
   /// The blocked app Focus was launched for, if any (consumed once).
   Future<String?> initialBlockedPackage();
 
