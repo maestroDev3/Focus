@@ -12,9 +12,12 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## Up next
 
-1. #96 Include paused apps in backups (`backlog`).
-2. #6 Timer survives app switch and restart → #105 Live countdown in the notification bar.
-3. Epic #141 Mindful access to paused apps: #119 Mindful opening of paused apps.
+1. #6 Timer survives app switch and restart → #105 Live countdown in the notification bar (core promise of the timer first).
+2. Epic #143 Named block lists: #146 → #144 → #145.
+3. #96 Include paused apps in backups (after #143, so the backup format changes only once).
+4. #119 Mindful opening of paused apps.
+5. Epic #123 Session ritual: #121 Intention and reflection → #122 Ambient sounds.
+6. #120 Home screen widget.
 
 ## Backlog by initiative → epic
 
@@ -30,7 +33,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 | Epic | State | Stories (in order) |
 |---|---|---|
-| #20 Distraction blocking | 4 of 5 closed | #96 Include paused apps in backups (`backlog`) |
+| #20 Distraction blocking | 4 of 5 closed | #96 Include paused apps in backups (`backlog`, after #143) |
 | #141 Mindful access to paused apps | 0 of 1 closed | #119 Mindful opening of paused apps (`backlog`) |
 | #143 Named block lists for focus times and labels | 0 of 3 closed | #146 Named block lists → #144 Choose a block list per focus time → #145 Labels block additional apps (all `backlog`) |
 
