@@ -32,7 +32,7 @@ The GitHub issues are authoritative; this file is the summary.
 |---|---|---|
 | #20 Distraction blocking | 4 of 5 closed | #96 Include paused apps in backups (`backlog`) |
 | #141 Mindful access to paused apps | 0 of 1 closed | #119 Mindful opening of paused apps (`backlog`) |
-| #143 Separate app lists for focus times and labels | 0 of 2 closed | #144 Choose apps per focus time → #145 Choose apps per label (both `backlog`) |
+| #143 Named block lists for focus times and labels | 0 of 3 closed | #146 Named block lists → #144 Choose a block list per focus time → #145 Labels block additional apps (all `backlog`) |
 
 **#140 Release & platform**
 
@@ -42,7 +42,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## Recently done
 
-- Decision: own app lists per focus time and per label (#143: #144, #145); without an own list the normal focus list applies
+- Decision: named block lists – one per focus time, labels only add; default list as fallback (#143: #146 → #144 → #145)
 - Initiatives confirmed; epic #123 split into #123 Session ritual, #141 Mindful access, #142 Home screen widget
 - Planning structure Initiative → Epic → Story → Task set up: initiatives #138–#140, issue templates, rules in CLAUDE.md
 - Epic #115 Focus times done: #116 plan focus times, #117 blocking during focus times, #118 reminder with one-tap start
