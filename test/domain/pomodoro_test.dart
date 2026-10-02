@@ -112,9 +112,18 @@ void main() {
       );
     });
 
+    test('goes from 5 minutes focus down to the 1 minute minimum', () {
+      final five = defaults.copyWith(focus: const Duration(minutes: 5));
+
+      expect(
+        five.step(PomodoroField.focus, up: false).focus,
+        const Duration(minutes: 1),
+      );
+    });
+
     test('stays within the limits', () {
       final minimum = defaults.copyWith(
-        focus: const Duration(minutes: 5),
+        focus: const Duration(minutes: 1),
         shortBreak: const Duration(minutes: 1),
         sessionsBeforeLongBreak: 2,
       );
@@ -135,6 +144,42 @@ void main() {
       expect(
         maximum.step(PomodoroField.sessionsBeforeLongBreak, up: true),
         maximum,
+      );
+    });
+  });
+
+  group('PomodoroSettings.withValue', () {
+    test('sets the field to the typed value', () {
+      expect(
+        defaults.withValue(PomodoroField.focus, 2).focus,
+        const Duration(minutes: 2),
+      );
+      expect(
+        defaults.withValue(PomodoroField.longBreak, 25).longBreak,
+        const Duration(minutes: 25),
+      );
+      expect(
+        defaults
+            .withValue(PomodoroField.sessionsBeforeLongBreak, 6)
+            .sessionsBeforeLongBreak,
+        6,
+      );
+    });
+
+    test('clamps values outside the limits', () {
+      expect(
+        defaults.withValue(PomodoroField.focus, 500).focus,
+        const Duration(minutes: 180),
+      );
+      expect(
+        defaults.withValue(PomodoroField.shortBreak, 0).shortBreak,
+        const Duration(minutes: 1),
+      );
+      expect(
+        defaults
+            .withValue(PomodoroField.sessionsBeforeLongBreak, 1)
+            .sessionsBeforeLongBreak,
+        2,
       );
     });
   });

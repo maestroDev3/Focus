@@ -487,5 +487,20 @@
   "sessionEndBody": "Well done – time for a break.",
   "@sessionEndBody": {
     "description": "Text of the notification when a focus session ends while Focus is closed."
+  },
+  "settingRange": "Between {min} and {max}",
+  "@settingRange": {
+    "description": "Helper text in the dialog for typing a setting value.",
+    "placeholders": {
+      "min": {"type": "int"},
+      "max": {"type": "int"}
+    }
+  },
+  "editSetting": "Change {name}",
+  "@editSetting": {
+    "description": "Semantics hint for tapping a setting value to type it.",
+    "placeholders": {
+      "name": {"type": "String"}
+    }
   }
 }

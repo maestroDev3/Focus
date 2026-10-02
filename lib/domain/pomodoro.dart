@@ -50,27 +50,35 @@ class PomodoroSettings {
     ).validate();
   }
 
-  /// Moves [field] one step up or down within its limits: focus 5–180 min
-  /// in 5 min steps, breaks 1–60 min, 2–8 sessions before a long break.
-  PomodoroSettings step(PomodoroField field, {required bool up}) {
-    int next(int value, int step, int min, int max) =>
-        (value + (up ? step : -step)).clamp(min, max);
-    Duration minutes(Duration value, int step, int min, int max) =>
-        Duration(minutes: next(value.inMinutes, step, min, max));
+  /// The current value of [field] in minutes (or sessions).
+  int valueOf(PomodoroField field) => switch (field) {
+    PomodoroField.focus => focus.inMinutes,
+    PomodoroField.shortBreak => shortBreak.inMinutes,
+    PomodoroField.longBreak => longBreak.inMinutes,
+    PomodoroField.sessionsBeforeLongBreak => sessionsBeforeLongBreak,
+  };
 
+  /// Sets [field] to a typed [value], clamped to the field's limits.
+  PomodoroSettings withValue(PomodoroField field, int value) {
+    final clamped = value.clamp(field.min, field.max);
     return switch (field) {
-      PomodoroField.focus => copyWith(focus: minutes(focus, 5, 5, 180)),
+      PomodoroField.focus => copyWith(focus: Duration(minutes: clamped)),
       PomodoroField.shortBreak => copyWith(
-        shortBreak: minutes(shortBreak, 1, 1, 60),
+        shortBreak: Duration(minutes: clamped),
       ),
       PomodoroField.longBreak => copyWith(
-        longBreak: minutes(longBreak, 1, 1, 60),
+        longBreak: Duration(minutes: clamped),
       ),
       PomodoroField.sessionsBeforeLongBreak => copyWith(
-        sessionsBeforeLongBreak: next(sessionsBeforeLongBreak, 1, 2, 8),
+        sessionsBeforeLongBreak: clamped,
       ),
     };
   }
+
+  /// Moves [field] one step up or down within its limits: focus in 5 min
+  /// steps, breaks and sessions in steps of one.
+  PomodoroSettings step(PomodoroField field, {required bool up}) =>
+      withValue(field, valueOf(field) + (up ? field.step : -field.step));
 
   @override
   bool operator ==(Object other) =>
@@ -85,8 +93,26 @@ class PomodoroSettings {
       Object.hash(focus, shortBreak, longBreak, sessionsBeforeLongBreak);
 }
 
-/// A setting the user can change in steps.
-enum PomodoroField { focus, shortBreak, longBreak, sessionsBeforeLongBreak }
+/// A setting the user can change in steps or by typing a value.
+enum PomodoroField {
+  focus(min: 1, max: 180, step: 5),
+  shortBreak(min: 1, max: 60, step: 1),
+  longBreak(min: 1, max: 60, step: 1),
+  sessionsBeforeLongBreak(min: 2, max: 8, step: 1);
+
+  const PomodoroField({
+    required this.min,
+    required this.max,
+    required this.step,
+  });
+
+  /// Limits in minutes (sessions for [sessionsBeforeLongBreak]).
+  final int min;
+  final int max;
+
+  /// Change per tap on + or −.
+  final int step;
+}
 
 /// Kind of break following a completed focus session.
 enum BreakKind { short, long }
