@@ -4,7 +4,7 @@ Current project state for planning and Claude projects. Maintained by Claude
 after every status change (see CLAUDE.md, “Keeping the status”).
 The GitHub issues are authoritative; this file is the summary.
 
-**Last updated:** 2026-10-01
+**Last updated:** 2026-10-02
 
 ## In progress
 
@@ -14,7 +14,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 1. #96 Include paused apps in backups (`backlog`).
 2. #6 Timer survives app switch and restart → #105 Live countdown in the notification bar.
-3. Epic #123 Final features: #119 Mindful opening of paused apps first.
+3. Epic #141 Mindful access to paused apps: #119 Mindful opening of paused apps.
 
 ## Backlog by initiative → epic
 
@@ -23,13 +23,16 @@ The GitHub issues are authoritative; this file is the summary.
 | Epic | State | Stories (in order) |
 |---|---|---|
 | #4 Focus timer | 2 of 4 closed | #6 Timer survives app switch and restart (`backlog`) → #105 Live countdown in the notification bar (`backlog`) |
-| #123 Final features | 0 of 4 closed | #119 Mindful opening of paused apps → #120 Home screen widget → #121 Intention and reflection → #122 Ambient sounds (all `backlog`) |
+| #123 Session ritual | 0 of 2 closed | #121 Intention and reflection → #122 Ambient sounds (both `backlog`) |
+| #142 Home screen widget | 0 of 1 closed | #120 Home screen widget (`backlog`) |
 
 **#139 Distraction blocking**
 
 | Epic | State | Stories (in order) |
 |---|---|---|
 | #20 Distraction blocking | 4 of 5 closed | #96 Include paused apps in backups (`backlog`) |
+| #141 Mindful access to paused apps | 0 of 1 closed | #119 Mindful opening of paused apps (`backlog`) |
+| #143 Separate app lists for focus times | 0 of 1 closed | #144 Choose apps per focus time (`backlog`) |
 
 **#140 Release & platform**
 
@@ -39,13 +42,12 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## Recently done
 
+- Initiatives confirmed; epic #123 split into #123 Session ritual, #141 Mindful access, #142 Home screen widget
 - Planning structure Initiative → Epic → Story → Task set up: initiatives #138–#140, issue templates, rules in CLAUDE.md
 - Epic #115 Focus times done: #116 plan focus times, #117 blocking during focus times, #118 reminder with one-tap start
 - Decision: ambient sounds yes; new epic #123 Final features (#119–#122) next to #115 Focus times
 - #112 App icons in the paused apps list
-- Epic #20 Distraction blocking merged into `main` (PR #82, on your request before a dedicated phone test)
 
 ## Open decisions (user only)
 
-- New initiatives #138 Focus experience, #139 Distraction blocking, #140 Release & platform – please confirm or re-sort.
-- Epic #123 “Final features” is a grab-bag without one outcome (0 of 4 done). Proposal: split into outcome-based epics, e.g. “Mindful access to paused apps” (#119, under #139) and “Session ritual” (#121, #122) plus “Home screen widget” (#120) under #138 – or keep #123 as is.
+- New epic #143 Separate app lists for focus times with story #144 (created – please confirm or re-sort). Scheduled blocking itself (weekdays, several time ranges per day, strict block, held-back notifications) already exists via epic #115.

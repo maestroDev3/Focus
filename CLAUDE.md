@@ -218,8 +218,11 @@ commit comment).
   light mode) with the **Ring** app icon, noir splash with “FOCUS” intro and a
   subtle champagne glow behind the main screens.
 - 2026-09-30 – Ambient sounds: yes (bundled sounds, no internet) – story #122
-  in epic #123 “Final features”.
+  in epic #123 (now “Session ritual”).
 - 2026-10-01 – Planning structure Initiative → Epic → Story → Task: finite
   epics, closed issues are never reopened, no orphans, issue templates per
   level; three initiatives (Focus experience, Distraction blocking,
   Release & platform).
+- 2026-10-02 – Initiatives confirmed. Epic #123 “Final features” split into
+  #123 Session ritual, #141 Mindful access to paused apps, #142 Home screen
+  widget.
