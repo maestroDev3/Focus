@@ -560,6 +560,40 @@ void main() {
       expect(blocker.openedNotificationSettings, 1);
     });
 
+    testWidgets('offers the app info from the blocking onboarding', (
+      tester,
+    ) async {
+      blockList.blockList = const BlockList().add('org.telegram.messenger');
+      blocker.enabled = false;
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+
+      await tester.tap(find.text('Allow app blocking'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      await tester.tap(find.text('Open app info'));
+      await tester.pump();
+
+      expect(blocker.openedAppInfo, 1);
+    });
+
+    testWidgets('offers the app info from the notification onboarding', (
+      tester,
+    ) async {
+      blockList.blockList = const BlockList().add('org.telegram.messenger');
+      blocker.notificationGateEnabled = false;
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+
+      await tester.tap(find.text('Allow holding notifications'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      await tester.tap(find.text('Open app info'));
+      await tester.pump();
+
+      expect(blocker.openedAppInfo, 1);
+    });
+
     testWidgets('shows no hint when blocking is allowed', (tester) async {
       blockList.blockList = const BlockList().add('org.telegram.messenger');
       await tester.pumpWidget(buildApp());
