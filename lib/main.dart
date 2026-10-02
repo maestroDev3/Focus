@@ -5,6 +5,7 @@ import 'data/json_backup_codec.dart';
 import 'data/method_channel_app_blocker.dart';
 import 'data/method_channel_document_store.dart';
 import 'data/method_channel_focus_time_reminders.dart';
+import 'data/method_channel_home_widget_bridge.dart';
 import 'data/method_channel_installed_apps_source.dart';
 import 'data/method_channel_session_countdown.dart';
 import 'data/method_channel_session_end_alarm.dart';
@@ -19,6 +20,7 @@ import 'domain/blocking.dart';
 import 'domain/focus_timer.dart';
 import 'l10n/app_localizations.dart';
 import 'ui/focus_app.dart';
+import 'ui/focus_time_text.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -81,6 +83,16 @@ Future<void> main() async {
       appBlocker: MethodChannelAppBlocker(),
       focusTimes: focusTimes,
       reminders: MethodChannelFocusTimeReminders(),
+      homeWidget: MethodChannelHomeWidgetBridge(
+        texts: (
+          start: l10n.widgetStart,
+          progress: l10n.widgetProgress('{today}', '{goal}'),
+          focusing: l10n.countdownFocusing,
+          focusingWithLabel: l10n.countdownFocusingWithLabel('{label}'),
+          countdownChannel: l10n.countdownChannel,
+        ),
+        formatDuration: (duration) => focusTimeText(l10n, duration),
+      ),
     ),
   );
 }

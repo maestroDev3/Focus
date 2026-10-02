@@ -79,6 +79,15 @@ void main() {
       expect(scheduleExact, contains('android:maxSdkVersion="32"'));
     });
 
+    test('declares the home screen widget', () {
+      final receiver = RegExp(
+        r'<receiver[^>]*FocusWidgetProvider[\s\S]*?</receiver>',
+      ).firstMatch(manifest)?.group(0);
+
+      expect(receiver, contains('android.appwidget.action.APPWIDGET_UPDATE'));
+      expect(receiver, contains('@xml/focus_widget_info'));
+    });
+
     test('declares the private session-end receiver', () {
       final receiver = RegExp(
         r'<receiver[^>]*SessionEndReceiver[\s\S]*?</receiver>',
