@@ -242,3 +242,8 @@ commit comment).
 - 2026-10-02 – The session-end notification comes on time: Focus may use the
   exact alarm permission for timer apps (falls back to an inexact alarm if
   it isn't granted).
+- 2026-10-02 – Order: #159 filter → #105 live countdown → #120 widget.
+  Live countdown: no buttons (tap opens the session), focus sessions only
+  (break countdown later as its own story). Widget: one tap starts the
+  session in the background (app stays closed) with the defaults and the
+  label of the last session (none if there is none).

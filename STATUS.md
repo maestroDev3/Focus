@@ -8,12 +8,12 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- Nothing – next is #105.
+- Nothing – next is #159.
 
 ## Up next
 
-1. #105 Live countdown in the notification bar.
-2. #159 Filter the paused-apps list: All / Paused (small, quick win).
+1. #159 Filter the paused-apps list: All / Paused.
+2. #105 Live countdown in the notification bar.
 3. #120 Home screen widget – one tap starts a session with the defaults.
 4. Epic #143 Named block lists: #146 → #144 → #145.
 5. #96 Include paused apps in backups (after #143, so the backup format changes only once).
