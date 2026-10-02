@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 import '../domain/backup.dart';
@@ -58,6 +59,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (next == current) return;
     setState(() => _pomodoro = next);
     await widget.settings.savePomodoro(next);
+  }
+
+  /// Lets the user type the value of [field]; saves it within its limits.
+  Future<void> _edit(PomodoroField field, String name) async {
+    final current = _pomodoro;
+    if (current == null) return;
+    final typed = await showDialog<int>(
+      context: context,
+      builder: (context) => _ValueDialog(
+        title: name,
+        initial: current.valueOf(field),
+        min: field.min,
+        max: field.max,
+      ),
+    );
+    if (typed == null) return;
+    final next = current.withValue(field, typed);
+    await widget.settings.savePomodoro(next);
+    if (!mounted) return;
+    setState(() => _pomodoro = next);
   }
 
   Future<void> _stepGoal({required bool up}) async {
@@ -155,6 +176,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     name: name,
                     value: value,
                     onStep: ({required up}) => _step(field, up: up),
+                    onEdit: () => _edit(field, name),
                   ),
                 _StepperRow(
                   keyName: 'dailyGoal',
@@ -197,6 +219,7 @@ class _StepperRow extends StatelessWidget {
     required this.name,
     required this.value,
     required this.onStep,
+    this.onEdit,
   });
 
   /// Prefix of the button keys, e.g. `focus` → `focus-increase`.
@@ -205,14 +228,22 @@ class _StepperRow extends StatelessWidget {
   final String value;
   final void Function({required bool up}) onStep;
 
+  /// Opens the dialog for typing the value; null if it can only be stepped.
+  final VoidCallback? onEdit;
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
+    final edit = onEdit;
     return ListTile(
+      onTap: edit,
       title: Text(name),
       subtitle: Text(
         value,
+        semanticsLabel: edit == null
+            ? null
+            : '$value, ${l10n.editSetting(name)}',
         style: theme.textTheme.headlineSmall?.copyWith(
           color: theme.colorScheme.onSurface,
         ),
@@ -234,6 +265,62 @@ class _StepperRow extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Asks for a whole number; returns it on Save, null on Cancel or empty input.
+class _ValueDialog extends StatefulWidget {
+  const _ValueDialog({
+    required this.title,
+    required this.initial,
+    required this.min,
+    required this.max,
+  });
+
+  final String title;
+  final int initial;
+  final int min;
+  final int max;
+
+  @override
+  State<_ValueDialog> createState() => _ValueDialogState();
+}
+
+class _ValueDialogState extends State<_ValueDialog> {
+  late final _controller = TextEditingController(text: '${widget.initial}');
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _save() =>
+      Navigator.of(context).pop(int.tryParse(_controller.text.trim()));
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return AlertDialog(
+      title: Text(widget.title),
+      content: TextField(
+        controller: _controller,
+        autofocus: true,
+        keyboardType: TextInputType.number,
+        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        decoration: InputDecoration(
+          helperText: l10n.settingRange(widget.min, widget.max),
+        ),
+        onSubmitted: (_) => _save(),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(l10n.cancel),
+        ),
+        FilledButton(onPressed: _save, child: Text(l10n.save)),
+      ],
     );
   }
 }
