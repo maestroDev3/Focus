@@ -6,6 +6,7 @@ import 'data/method_channel_app_blocker.dart';
 import 'data/method_channel_document_store.dart';
 import 'data/method_channel_focus_time_reminders.dart';
 import 'data/method_channel_installed_apps_source.dart';
+import 'data/method_channel_session_countdown.dart';
 import 'data/method_channel_session_end_alarm.dart';
 import 'data/shared_preferences_block_list_repository.dart';
 import 'data/shared_preferences_blocking_state_writer.dart';
@@ -49,6 +50,15 @@ Future<void> main() async {
         body: l10n.sessionEndBody,
       ),
     ),
+    countdown: MethodChannelSessionCountdown(
+      texts: (
+        channelName: l10n.countdownChannel,
+        focusing: l10n.countdownFocusing,
+        focusingWithLabel: l10n.countdownFocusingWithLabel('{label}'),
+        paused: l10n.countdownPaused('{time}'),
+      ),
+    ),
+    labels: labels,
   );
   runApp(
     FocusApp(

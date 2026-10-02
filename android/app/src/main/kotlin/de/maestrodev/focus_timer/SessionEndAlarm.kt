@@ -129,13 +129,18 @@ object SessionEndAlarm {
         )
 }
 
-/** Shows the due end notification and reschedules after a restart or update. */
+/**
+ * Shows the due end notification (replacing the countdown) and reschedules
+ * both after a restart or update.
+ */
 class SessionEndReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action == SessionEndAlarm.ACTION_SESSION_END) {
+            SessionCountdown.dismiss(context)
             SessionEndAlarm.show(context, SessionEndAlarm.endOf(intent))
         } else {
             SessionEndAlarm.rescheduleFromState(context)
+            SessionCountdown.repostFromState(context)
         }
     }
 }

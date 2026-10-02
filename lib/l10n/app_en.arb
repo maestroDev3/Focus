@@ -517,5 +517,27 @@
   "noPausedApps": "No paused apps yet.",
   "@noPausedApps": {
     "description": "Shown in the paused filter when no app is paused."
+  },
+  "countdownChannel": "Session countdown",
+  "@countdownChannel": {
+    "description": "Android notification channel name for the ongoing countdown during a focus session."
+  },
+  "countdownFocusing": "Focusing",
+  "@countdownFocusing": {
+    "description": "Title of the ongoing countdown notification for a session without label."
+  },
+  "countdownFocusingWithLabel": "Focusing · {label}",
+  "@countdownFocusingWithLabel": {
+    "description": "Title of the ongoing countdown notification; label is the session's label.",
+    "placeholders": {
+      "label": {"type": "String"}
+    }
+  },
+  "countdownPaused": "Paused · {time} left",
+  "@countdownPaused": {
+    "description": "Text of the countdown notification while the session is paused; time is the remaining time (mm:ss).",
+    "placeholders": {
+      "time": {"type": "String"}
+    }
   }
 }
