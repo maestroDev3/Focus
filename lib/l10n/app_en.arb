@@ -475,5 +475,17 @@
   "focusTimeReminderBody": "Start a session?",
   "@focusTimeReminderBody": {
     "description": "Text of the reminder notification when a focus time starts."
+  },
+  "sessionEndChannel": "Session end",
+  "@sessionEndChannel": {
+    "description": "Android notification channel name for the notification when a focus session ends."
+  },
+  "sessionEndTitle": "Session complete",
+  "@sessionEndTitle": {
+    "description": "Title of the notification when a focus session ends while Focus is closed."
+  },
+  "sessionEndBody": "Well done – time for a break.",
+  "@sessionEndBody": {
+    "description": "Text of the notification when a focus session ends while Focus is closed."
   }
 }

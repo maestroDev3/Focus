@@ -1,9 +1,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Reminder when a focus time starts (story #118). -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
-    <!-- Reschedules the next focus time reminder after a restart; alarms are
-         inexact, so no exact-alarm permission is needed. -->
+    <!-- Reschedules focus time reminders and the session-end notification
+         after a restart. -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <!-- On-time “Session complete” notification (user decision 2026-10-02).
+         USE_EXACT_ALARM is granted to timer apps on Android 13+; Android 12
+         needs SCHEDULE_EXACT_ALARM, otherwise an inexact alarm is used. -->
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
+    <uses-permission
+        android:name="android.permission.SCHEDULE_EXACT_ALARM"
+        android:maxSdkVersion="32"/>
     <application
         android:label="Focus"
         android:name="${applicationName}"
@@ -59,6 +66,16 @@
              or an app update. Not reachable by other apps. -->
         <receiver
             android:name=".FocusTimeReminderReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+            </intent-filter>
+        </receiver>
+        <!-- Posts the session-end notification and reschedules it after a
+             restart or an app update. Not reachable by other apps. -->
+        <receiver
+            android:name=".SessionEndReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
