@@ -4,6 +4,7 @@ import 'blocking.dart';
 import 'clock.dart';
 import 'daily_goal.dart';
 import 'focus_session.dart';
+import 'session_end_alarm.dart';
 import 'session_repository.dart';
 
 /// Runs one focus session at a time and keeps the repository in sync after
@@ -13,6 +14,7 @@ class FocusTimer {
     required this._repository,
     required this._clock,
     this._blocking,
+    this._sessionEndAlarm,
   });
 
   final SessionRepository _repository;
@@ -20,6 +22,10 @@ class FocusTimer {
 
   /// Keeps the native app blocker informed; optional so tests stay simple.
   final BlockingSync? _blocking;
+
+  /// Notifies the user at the planned end while Focus is closed; optional so
+  /// tests stay simple.
+  final SessionEndAlarm? _sessionEndAlarm;
   final _changes = StreamController<FocusSession?>.broadcast();
   FocusSession? _current;
 
@@ -37,6 +43,7 @@ class FocusTimer {
     _current = session;
     if (await completeIfDue()) return null;
     await _blocking?.update(session);
+    await _syncAlarm(session);
     _changes.add(session);
     return session;
   }
@@ -104,7 +111,20 @@ class FocusTimer {
     _current = session;
     await _repository.saveActive(session);
     await _blocking?.update(session);
+    await _syncAlarm(session);
     _changes.add(session);
+  }
+
+  /// A running session has its end scheduled; paused or no session, none.
+  Future<void> _syncAlarm(FocusSession? session) async {
+    final alarm = _sessionEndAlarm;
+    if (alarm == null) return;
+    if (session == null || session.isPaused) {
+      await alarm.cancel();
+      return;
+    }
+    final now = _clock();
+    await alarm.scheduleAt(now.add(session.remaining(now)));
   }
 
   Future<void> _finish(FocusSession session) async {
