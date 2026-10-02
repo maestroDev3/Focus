@@ -310,6 +310,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
         title: l10n.blockerOnboardingTitle,
         body: l10n.blockerOnboardingBody,
         onOpenSettings: widget.appBlocker.openBlockerSettings,
+        onOpenAppInfo: widget.appBlocker.openAppInfo,
       );
     });
     await _loadState();
@@ -322,6 +323,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
         title: l10n.notificationOnboardingTitle,
         body: l10n.notificationOnboardingBody,
         onOpenSettings: widget.appBlocker.openNotificationGateSettings,
+        onOpenAppInfo: widget.appBlocker.openAppInfo,
       );
     });
     await _loadState();

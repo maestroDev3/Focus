@@ -48,6 +48,12 @@ void main() {
       expect(calls.single.method, 'openNotificationGateSettings');
     });
 
+    test('opens the app info', () async {
+      await MethodChannelAppBlocker().openAppInfo();
+
+      expect(calls.single.method, 'openAppInfo');
+    });
+
     test('reports the blocked app Focus was launched for', () async {
       expect(
         await MethodChannelAppBlocker().initialBlockedPackage(),

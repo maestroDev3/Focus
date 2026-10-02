@@ -8,7 +8,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- #107 Updates install over the previous version – release key created from your secret, signed releases since build 188; waiting for your update test with build 193.
+- #147 Permission screens lead straight to the right switch – fix merged (task #148); waiting for your test on the phone with the next build.
 
 ## Up next
 
@@ -33,23 +33,21 @@ The GitHub issues are authoritative; this file is the summary.
 
 | Epic | State | Stories (in order) |
 |---|---|---|
-| #20 Distraction blocking | 4 of 5 closed | #96 Include paused apps in backups (`backlog`, after #143) |
+| #20 Distraction blocking | 4 of 6 closed | #147 Permission screens lead straight to the right switch (`in-progress`) → #96 Include paused apps in backups (`backlog`, after #143) |
 | #141 Mindful access to paused apps | 0 of 1 closed | #119 Mindful opening of paused apps (`backlog`) |
 | #143 Named block lists for focus times and labels | 0 of 3 closed | #146 Named block lists → #144 Choose a block list per focus time → #145 Labels block additional apps (all `backlog`) |
 
-**#140 Release & platform**
+## Dormant
 
-| Epic | State | Stories (in order) |
-|---|---|---|
-| #1 Foundation | 4 of 5 closed | #107 Updates install over the previous version (`in-progress`) |
+- #140 Release & platform – all epics done (#1 Foundation, #15 Data safety)
 
 ## Recently done
 
+- #107 Updates install over the previous version – confirmed on the phone; epic #1 Foundation closed
 - CLAUDE.md and STATUS.md are read from the repo; no more copies in the Claude project
 - Decision: named block lists – one per focus time, labels only add; default list as fallback (#143: #146 → #144 → #145)
 - Initiatives confirmed; epic #123 split into #123 Session ritual, #141 Mindful access, #142 Home screen widget
 - Planning structure Initiative → Epic → Story → Task set up: initiatives #138–#140, issue templates, rules in CLAUDE.md
-- Epic #115 Focus times done: #116 plan focus times, #117 blocking during focus times, #118 reminder with one-tap start
 
 ## Open decisions (user only)
 

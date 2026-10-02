@@ -15,6 +15,7 @@ class FakeAppBlocker implements AppBlocker {
   var openedNotificationSettings = 0;
   String? initial;
   var openedSettings = 0;
+  var openedAppInfo = 0;
   final _opened = StreamController<String>.broadcast();
 
   /// Simulates the user opening a blocked app while Focus runs.
@@ -32,6 +33,9 @@ class FakeAppBlocker implements AppBlocker {
   @override
   Future<void> openNotificationGateSettings() async =>
       openedNotificationSettings++;
+
+  @override
+  Future<void> openAppInfo() async => openedAppInfo++;
 
   @override
   Future<String?> initialBlockedPackage() async {

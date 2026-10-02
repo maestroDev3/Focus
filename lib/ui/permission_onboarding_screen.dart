@@ -10,11 +10,15 @@ class PermissionOnboardingScreen extends StatelessWidget {
     required this.title,
     required this.body,
     required this.onOpenSettings,
+    required this.onOpenAppInfo,
   });
 
   final String title;
   final String body;
   final VoidCallback onOpenSettings;
+
+  /// Opens Focus' app info, the way out when Android greys out the switch.
+  final VoidCallback onOpenAppInfo;
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +41,21 @@ class PermissionOnboardingScreen extends StatelessWidget {
                 ),
               ),
               const Spacer(),
+              Text(
+                l10n.restrictedSettingsHint,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 12),
+              OutlinedButton(
+                onPressed: onOpenAppInfo,
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(56),
+                ),
+                child: Text(l10n.openAppInfo),
+              ),
+              const SizedBox(height: 12),
               FilledButton(
                 onPressed: onOpenSettings,
                 style: FilledButton.styleFrom(
