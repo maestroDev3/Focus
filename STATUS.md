@@ -8,11 +8,11 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- #147 Permission screens lead straight to the right switch – fix merged (task #148); waiting for your test on the phone with the next build.
+- #6 Timer survives app switch and restart – tasks #150 (session-end alarm in the timer) → #151 (native on-time end notification).
 
 ## Up next
 
-1. #6 Timer survives app switch and restart → #105 Live countdown in the notification bar (core promise of the timer first).
+1. #105 Live countdown in the notification bar (after #6).
 2. #120 Home screen widget – one tap starts a session with the defaults (builds on #6).
 3. Epic #143 Named block lists: #146 → #144 → #145.
 4. #96 Include paused apps in backups (after #143, so the backup format changes only once).
@@ -25,7 +25,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 | Epic | State | Stories (in order) |
 |---|---|---|
-| #4 Focus timer | 2 of 4 closed | #6 Timer survives app switch and restart (`backlog`) → #105 Live countdown in the notification bar (`backlog`) |
+| #4 Focus timer | 2 of 4 closed | #6 Timer survives app switch and restart (`in-progress`) → #105 Live countdown in the notification bar (`backlog`) |
 | #123 Session ritual | 0 of 2 closed | #121 Intention and reflection → #122 Ambient sounds (both `backlog`) |
 | #142 Home screen widget | 0 of 1 closed | #120 Home screen widget (`backlog`) |
 
@@ -33,7 +33,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 | Epic | State | Stories (in order) |
 |---|---|---|
-| #20 Distraction blocking | 4 of 6 closed | #147 Permission screens lead straight to the right switch (`in-progress`) → #96 Include paused apps in backups (`backlog`, after #143) |
+| #20 Distraction blocking | 5 of 6 closed | #96 Include paused apps in backups (`backlog`, after #143) |
 | #141 Mindful access to paused apps | 0 of 1 closed | #119 Mindful opening of paused apps (`backlog`) |
 | #143 Named block lists for focus times and labels | 0 of 3 closed | #146 Named block lists → #144 Choose a block list per focus time → #145 Labels block additional apps (all `backlog`) |
 
@@ -43,11 +43,11 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## Recently done
 
+- #147 Permission screens lead straight to the right switch – confirmed on the phone
 - #107 Updates install over the previous version – confirmed on the phone; epic #1 Foundation closed
 - CLAUDE.md and STATUS.md are read from the repo; no more copies in the Claude project
 - Decision: named block lists – one per focus time, labels only add; default list as fallback (#143: #146 → #144 → #145)
 - Initiatives confirmed; epic #123 split into #123 Session ritual, #141 Mindful access, #142 Home screen widget
-- Planning structure Initiative → Epic → Story → Task set up: initiatives #138–#140, issue templates, rules in CLAUDE.md
 
 ## Open decisions (user only)
 

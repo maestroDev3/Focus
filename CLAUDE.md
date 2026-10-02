@@ -190,8 +190,9 @@ configuration, load and follow the skill `.claude/skills/flutter-dart/SKILL.md`
   an `AccessibilityService` (blocked app in foreground) and a
   `NotificationListenerService` (hold back notifications) – both approved by
   the user. App list via a launcher-intent `<queries>` entry, not
-  `QUERY_ALL_PACKAGES`. No foreground service as long as the timestamp-based
-  approach is enough.
+  `QUERY_ALL_PACKAGES`. Exact alarm (`USE_EXACT_ALARM`, Android 12:
+  `SCHEDULE_EXACT_ALARM`) only for the on-time session-end notification. No
+  foreground service as long as the timestamp-based approach is enough.
 - `flutter analyze` must report no issues.
 
 ## Environment note
@@ -238,3 +239,6 @@ commit comment).
   the Claude project keeps no copies and reads them from GitHub.
 - 2026-10-02 – Home screen widget (#120) comes right after the live countdown:
   one tap starts a session with the defaults, without opening the app.
+- 2026-10-02 – The session-end notification comes on time: Focus may use the
+  exact alarm permission for timer apps (falls back to an inexact alarm if
+  it isn't granted).
