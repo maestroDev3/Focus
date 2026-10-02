@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:focus_timer/domain/blocking.dart';
+import 'package:focus_timer/domain/daily_goal.dart';
 import 'package:focus_timer/domain/focus_label.dart';
 import 'package:focus_timer/domain/focus_session.dart';
 import 'package:focus_timer/domain/focus_time.dart';
 import 'package:focus_timer/domain/focus_timer.dart';
+import 'package:focus_timer/domain/home_widget.dart';
 import 'package:focus_timer/domain/pomodoro.dart';
 import 'package:focus_timer/l10n/app_localizations.dart';
 import 'package:focus_timer/ui/focus_app.dart';
@@ -17,6 +19,7 @@ import '../support/fake_blocking_state_writer.dart';
 import '../support/fake_document_store.dart';
 import '../support/fake_focus_time_reminders.dart';
 import '../support/fake_focus_time_repository.dart';
+import '../support/fake_home_widget_bridge.dart';
 import '../support/fake_installed_apps_source.dart';
 import '../support/fake_label_repository.dart';
 import '../support/fake_session_repository.dart';
@@ -35,6 +38,7 @@ void main() {
     bool showIntro = false,
     FocusTimer? timer,
     FakeFocusTimeRepository? focusTimes,
+    FakeHomeWidgetBridge? homeWidget,
   }) => FocusApp(
     showIntro: showIntro,
     timer: timer ?? FocusTimer(repository: repository, clock: () => now),
@@ -51,6 +55,7 @@ void main() {
     appBlocker: blocker,
     focusTimes: focusTimes ?? FakeFocusTimeRepository(),
     reminders: reminders,
+    homeWidget: homeWidget,
     clock: () => now,
   );
 
@@ -628,6 +633,64 @@ void main() {
       );
 
       expect(find.text('Focus'), findsOneWidget);
+    });
+  });
+
+  group('FocusApp home screen widget', () {
+    testWidgets('adopts a session the widget started while closed', (
+      tester,
+    ) async {
+      final bridge = FakeHomeWidgetBridge()
+        ..pending = ExternalStart(
+          start: now.subtract(const Duration(minutes: 5)),
+          planned: const Duration(minutes: 25),
+        );
+
+      await tester.pumpWidget(buildApp(homeWidget: bridge));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(repository.active?.start, now.subtract(const Duration(minutes: 5)));
+      expect(find.text('20:00'), findsOneWidget);
+    });
+
+    testWidgets('adopts a widget start when Focus comes back', (tester) async {
+      final bridge = FakeHomeWidgetBridge();
+      await tester.pumpWidget(buildApp(homeWidget: bridge));
+      await tester.pump();
+
+      bridge.pending = ExternalStart(
+        start: now,
+        planned: const Duration(minutes: 25),
+      );
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(repository.active?.start, now);
+    });
+
+    testWidgets('publishes the defaults and today for the widget', (
+      tester,
+    ) async {
+      final bridge = FakeHomeWidgetBridge();
+      labels = FakeLabelRepository([FocusLabel(id: 'study', name: 'Study')]);
+      settings.selectedLabelId = 'study';
+
+      await tester.pumpWidget(buildApp(homeWidget: bridge));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(
+        bridge.published.last,
+        WidgetSnapshot(
+          focus: const PomodoroSettings().focus,
+          labelId: 'study',
+          labelName: 'Study',
+          focusedToday: Duration.zero,
+          dailyGoal: const DailyGoal().duration,
+        ),
+      );
     });
   });
 }

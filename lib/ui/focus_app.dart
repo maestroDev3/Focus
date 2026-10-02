@@ -13,6 +13,7 @@ import '../domain/focus_time_repository.dart';
 import '../domain/focus_label.dart';
 import '../domain/focus_session.dart';
 import '../domain/focus_timer.dart';
+import '../domain/home_widget.dart';
 import '../domain/installed_apps_source.dart';
 import '../domain/label_repository.dart';
 import '../domain/pomodoro.dart';
@@ -44,6 +45,7 @@ class FocusApp extends StatefulWidget {
     required this.appBlocker,
     required this.focusTimes,
     required this.reminders,
+    this.homeWidget,
     this.clock = DateTime.now,
     this.showIntro = false,
   });
@@ -75,6 +77,9 @@ class FocusApp extends StatefulWidget {
   /// Notifications when a focus time starts.
   final FocusTimeReminders reminders;
 
+  /// The home screen widget; optional because not every test needs it.
+  final HomeWidgetBridge? homeWidget;
+
   /// Source of the current time for every screen.
   final Clock clock;
 
@@ -99,6 +104,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
   StreamSubscription<List<FocusLabel>>? _labelChanges;
   StreamSubscription<String>? _blockedApps;
   StreamSubscription<void>? _startRequests;
+  StreamSubscription<FocusSession?>? _sessionChanges;
 
   /// Whether the session screen is open, so it is never pushed twice.
   var _sessionShown = false;
@@ -111,7 +117,10 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     _labelChanges = widget.labels.watchLabels().listen((labels) {
       if (mounted) setState(() => _labels = labels);
+      _publishWidget();
     });
+    // Today's focus time changes when a session ends.
+    _sessionChanges = widget.timer.changes.listen((_) => _loadState());
     _focusTimeChanges = widget.focusTimes.watchFocusTimes().listen(
       _onFocusTimesChanged,
     );
@@ -129,6 +138,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
     _labelChanges?.cancel();
     _blockedApps?.cancel();
     _startRequests?.cancel();
+    _sessionChanges?.cancel();
     _focusTimeChanges?.cancel();
     super.dispose();
   }
@@ -136,7 +146,10 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     // The user may have granted a permission in the system settings.
-    if (state == AppLifecycleState.resumed) _loadState();
+    if (state == AppLifecycleState.resumed) {
+      _loadState();
+      _adoptWidgetStart();
+    }
   }
 
   Future<void> _loadState() async {
@@ -158,6 +171,37 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
       _blockerEnabled = blockerEnabled;
       _notificationGateEnabled = notificationGateEnabled;
     });
+    await _publishWidget();
+  }
+
+  /// Hands the widget the defaults for a one-tap start and today's progress.
+  Future<void> _publishWidget() async {
+    final bridge = widget.homeWidget;
+    if (bridge == null) return;
+    final label = _labelWithId(_selectedLabelId);
+    await bridge.publish(
+      WidgetSnapshot(
+        focus: _pomodoro.focus,
+        labelId: label?.id,
+        labelName: label?.name,
+        focusedToday: _focusedToday,
+        dailyGoal: _dailyGoal.duration,
+      ),
+    );
+  }
+
+  /// Takes over a session the widget started while Focus was closed and
+  /// shows it; returns whether one was adopted.
+  Future<bool> _adoptWidgetStart() async {
+    final bridge = widget.homeWidget;
+    if (bridge == null || widget.timer.current != null) return false;
+    final pending = await bridge.takePendingStart();
+    if (pending == null || widget.timer.current != null) return false;
+    await widget.timer.adopt(pending);
+    if (!mounted || widget.timer.current == null) return false;
+    setState(() => _introDone = true);
+    if (!_sessionShown) await _pushSession();
+    return true;
   }
 
   /// Continues a session that was running when Focus was closed, and shows
@@ -168,6 +212,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
     final startRequested = await widget.reminders.initialStartRequest();
     if (!mounted) return;
     if (session == null) {
+      if (await _adoptWidgetStart()) return;
       if (startRequested) await _startFromReminder();
       return;
     }
