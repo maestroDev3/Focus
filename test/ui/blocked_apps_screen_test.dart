@@ -119,6 +119,70 @@ void main() {
       expect(find.text('Instagram'), findsNothing);
     });
 
+    testWidgets('shows all apps by default', (tester) async {
+      await pumpScreen(tester, initial: const BlockList().add(telegram));
+
+      expect(find.text('All'), findsOneWidget);
+      expect(find.text('Instagram'), findsOneWidget);
+      expect(find.text('YouTube'), findsOneWidget);
+    });
+
+    testWidgets('shows only paused apps with their count', (tester) async {
+      await pumpScreen(
+        tester,
+        initial: const BlockList().add(telegram).add(youtube),
+      );
+
+      await tester.tap(find.text('Paused (2)'));
+      await tester.pump();
+
+      expect(find.text('Telegram'), findsOneWidget);
+      expect(find.text('YouTube'), findsOneWidget);
+      expect(find.text('Instagram'), findsNothing);
+    });
+
+    testWidgets('drops an unchecked app from the paused view', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        initial: const BlockList().add(telegram).add(youtube),
+      );
+      await tester.tap(find.text('Paused (2)'));
+      await tester.pump();
+
+      await tester.tap(find.text('YouTube'));
+      await tester.pump();
+
+      expect(find.text('YouTube'), findsNothing);
+      expect(find.text('Paused (1)'), findsOneWidget);
+    });
+
+    testWidgets('combines search and the paused view', (tester) async {
+      await pumpScreen(
+        tester,
+        initial: const BlockList().add(telegram).add(youtube),
+      );
+      await tester.tap(find.text('Paused (2)'));
+      await tester.pump();
+
+      await tester.enterText(find.byType(TextField), 'tele');
+      await tester.pump();
+
+      expect(find.text('Telegram'), findsOneWidget);
+      expect(find.text('YouTube'), findsNothing);
+    });
+
+    testWidgets('explains an empty paused view', (tester) async {
+      await pumpScreen(tester);
+
+      await tester.tap(find.text('Paused (0)'));
+      await tester.pump();
+
+      expect(find.text('No paused apps yet.'), findsOneWidget);
+      expect(find.text('Telegram'), findsNothing);
+    });
+
     testWidgets('shows app icons and a placeholder without icon', (
       tester,
     ) async {

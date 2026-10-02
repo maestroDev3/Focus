@@ -8,17 +8,15 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- Nothing – next is #159.
+- #105 Live countdown in the notification bar.
 
 ## Up next
 
-1. #159 Filter the paused-apps list: All / Paused.
-2. #105 Live countdown in the notification bar.
-3. #120 Home screen widget – one tap starts a session with the defaults.
-4. Epic #143 Named block lists: #146 → #144 → #145.
-5. #96 Include paused apps in backups (after #143, so the backup format changes only once).
-6. #119 Mindful opening of paused apps.
-7. Epic #123 Session ritual: #121 Intention and reflection → #122 Ambient sounds.
+1. #120 Home screen widget – one tap starts a session with the defaults.
+2. Epic #143 Named block lists: #146 → #144 → #145.
+3. #96 Include paused apps in backups (after #143, so the backup format changes only once).
+4. #119 Mindful opening of paused apps.
+5. Epic #123 Session ritual: #121 Intention and reflection → #122 Ambient sounds.
 
 ## Backlog by initiative → epic
 
@@ -34,7 +32,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 | Epic | State | Stories (in order) |
 |---|---|---|
-| #20 Distraction blocking | 5 of 7 closed | #159 Filter the paused-apps list: All / Paused (`backlog`) → #96 Include paused apps in backups (`backlog`, after #143) |
+| #20 Distraction blocking | 6 of 7 closed | #96 Include paused apps in backups (`backlog`, after #143) |
 | #141 Mindful access to paused apps | 0 of 1 closed | #119 Mindful opening of paused apps (`backlog`) |
 | #143 Named block lists for focus times and labels | 0 of 3 closed | #146 Named block lists → #144 Choose a block list per focus time → #145 Labels block additional apps (all `backlog`) |
 
@@ -44,11 +42,11 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## Recently done
 
+- #159 Filter the paused-apps list: All / Paused
 - #6 Timer survives app switch and restart – on-time end notification, also after the phone was off; confirmed on the phone
 - #154 Enter durations directly – tap a value in the settings to type it (focus 1–180 min)
 - #147 Permission screens lead straight to the right switch – confirmed on the phone
 - #107 Updates install over the previous version – confirmed on the phone; epic #1 Foundation closed
-- CLAUDE.md and STATUS.md are read from the repo; no more copies in the Claude project
 
 ## Open decisions (user only)
 

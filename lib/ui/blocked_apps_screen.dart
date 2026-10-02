@@ -35,6 +35,7 @@ class _BlockedAppsScreenState extends State<BlockedAppsScreen> {
   List<InstalledApp>? _apps;
   var _blockList = const BlockList();
   var _query = '';
+  var _filter = _AppFilter.all;
 
   /// Icons are loaded lazily and kept while the screen is open.
   final _icons = <String, Future<Uint8List?>>{};
@@ -80,10 +81,17 @@ class _BlockedAppsScreenState extends State<BlockedAppsScreen> {
         : l10n.lockedDuringSession;
     final apps = _apps;
     final query = _query.trim().toLowerCase();
+    final pausedOnly = _filter == _AppFilter.paused;
     final visible = [
       for (final app in apps ?? const <InstalledApp>[])
-        if (query.isEmpty || app.label.toLowerCase().contains(query)) app,
+        if ((query.isEmpty || app.label.toLowerCase().contains(query)) &&
+            (!pausedOnly || _blockList.contains(app.packageName)))
+          app,
     ];
+    final pausedCount = [
+      for (final app in apps ?? const <InstalledApp>[])
+        if (_blockList.contains(app.packageName)) app,
+    ].length;
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.blockedAppsTitle)),
@@ -100,6 +108,25 @@ class _BlockedAppsScreenState extends State<BlockedAppsScreen> {
               ),
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+            child: SegmentedButton<_AppFilter>(
+              showSelectedIcon: false,
+              segments: [
+                ButtonSegment(
+                  value: _AppFilter.all,
+                  label: Text(l10n.filterAllApps),
+                ),
+                ButtonSegment(
+                  value: _AppFilter.paused,
+                  label: Text(l10n.filterPausedApps(pausedCount)),
+                ),
+              ],
+              selected: {_filter},
+              onSelectionChanged: (selection) =>
+                  setState(() => _filter = selection.first),
+            ),
+          ),
           if (strict)
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 4, 20, 8),
@@ -113,6 +140,19 @@ class _BlockedAppsScreenState extends State<BlockedAppsScreen> {
           Expanded(
             child: apps == null
                 ? const Center(child: CircularProgressIndicator())
+                : pausedOnly && visible.isEmpty && query.isEmpty
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(32),
+                      child: Text(
+                        l10n.noPausedApps,
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                  )
                 : ListView.builder(
                     itemCount: visible.length,
                     itemBuilder: (context, index) {
@@ -137,6 +177,9 @@ class _BlockedAppsScreenState extends State<BlockedAppsScreen> {
     );
   }
 }
+
+/// Which apps the list shows.
+enum _AppFilter { all, paused }
 
 /// The app's own icon, or a calm placeholder while loading or without one.
 class _AppIcon extends StatelessWidget {
