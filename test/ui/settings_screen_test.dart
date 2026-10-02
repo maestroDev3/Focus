@@ -73,6 +73,46 @@ void main() {
       expect(repository.pomodoro.focus, const Duration(minutes: 30));
     });
 
+    testWidgets('saves a typed focus duration', (tester) async {
+      final repository = await pumpSettings(tester);
+
+      await tester.tap(find.text('25 min'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField), '2');
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('2 min'), findsOneWidget);
+      expect(repository.pomodoro.focus, const Duration(minutes: 2));
+    });
+
+    testWidgets('saves the maximum for a too large typed value', (
+      tester,
+    ) async {
+      final repository = await pumpSettings(tester);
+
+      await tester.tap(find.text('25 min'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField), '500');
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      expect(repository.pomodoro.focus, const Duration(minutes: 180));
+    });
+
+    testWidgets('keeps the value when typing is cancelled', (tester) async {
+      final repository = await pumpSettings(tester);
+
+      await tester.tap(find.text('25 min'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField), '2');
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('25 min'), findsOneWidget);
+      expect(repository.pomodoro.focus, const Duration(minutes: 25));
+    });
+
     testWidgets('does nothing below the minimum', (tester) async {
       final repository = await pumpSettings(
         tester,
