@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="blocker_service_label">Focus App-Sperre</string>
+    <string name="blocker_service_description">Focus nutzt diesen Dienst nur, um zu erkennen, wann während einer Fokus-Session eine gesperrte App geöffnet wird, und dich zu Focus zurückzubringen. Es liest nie, was auf deinem Bildschirm steht.</string>
+    <string name="notification_gate_label">Focus Benachrichtigungen</string>
+    <string name="widget_description">Starte eine Fokus-Session mit einem Tipp und sieh die verbleibende Zeit.</string>
+    <string name="warning_channel">Focus-Warnungen</string>
+    <string name="blocker_off_title">App-Sperre ist aus</string>
+    <string name="blocker_off_text">Schalte „Focus App-Sperre“ wieder ein, damit gesperrte Apps geschlossen bleiben.</string>
+    <string name="gate_off_title">Benachrichtigungen werden nicht mehr zurückgehalten</string>
+    <string name="gate_off_text">Schalte „Focus Benachrichtigungen“ wieder ein, damit Benachrichtigungen gesperrter Apps zurückgehalten werden.</string>
+</resources>
