@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:focus_timer/domain/blocking.dart';
+import 'package:focus_timer/domain/focus_time.dart';
 import 'package:focus_timer/domain/named_block_list.dart';
 import 'package:focus_timer/ui/block_lists_screen.dart';
 
@@ -28,17 +29,29 @@ void main() {
     ]);
   });
 
-  Future<void> pumpScreen(WidgetTester tester) async {
+  Future<void> pumpScreen(
+    WidgetTester tester, {
+    FocusTime? activeFocusTime,
+  }) async {
     await tester.pumpApp(
       BlockListsScreen(
         apps: FakeInstalledAppsSource(),
         defaultList: defaultList,
         namedLists: namedLists,
         activeSession: null,
+        activeFocusTime: activeFocusTime,
       ),
     );
     await tester.pump();
   }
+
+  final morningTime = FocusTime(
+    id: 'focus-time-1',
+    weekdays: const {1, 2, 3, 4, 5, 6, 7},
+    startMinute: 8 * 60,
+    endMinute: 10 * 60,
+    blockListId: 'list-1',
+  );
 
   group('BlockListsScreen', () {
     testWidgets('shows the default list and named lists with counts', (
@@ -110,6 +123,41 @@ void main() {
 
     testWidgets('opens the default list in the app picker', (tester) async {
       await pumpScreen(tester);
+
+      await tester.tap(find.text('Default list'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Telegram'));
+      await tester.pump();
+
+      expect(defaultList.blockList.contains(telegram), isFalse);
+    });
+  });
+
+  group('BlockListsScreen while a focus time uses a list', () {
+    testWidgets('keeps the used list strict', (tester) async {
+      await pumpScreen(tester, activeFocusTime: morningTime);
+
+      await tester.tap(find.text('Morning'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('YouTube'));
+      await tester.pump();
+
+      expect(namedLists.lists.single.apps.contains(youtube), isTrue);
+    });
+
+    testWidgets('offers no delete for the used list', (tester) async {
+      await pumpScreen(tester, activeFocusTime: morningTime);
+
+      await tester.tap(find.byTooltip('Options for Morning'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Delete'));
+      await tester.pumpAndSettle();
+
+      expect(namedLists.lists, hasLength(1));
+    });
+
+    testWidgets('leaves the default list editable', (tester) async {
+      await pumpScreen(tester, activeFocusTime: morningTime);
 
       await tester.tap(find.text('Default list'));
       await tester.pumpAndSettle();
