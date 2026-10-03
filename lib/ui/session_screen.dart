@@ -18,6 +18,8 @@ class SessionScreen extends StatefulWidget {
     required this.clock,
     required this.onDone,
     this.labelName,
+    this.blockingActive,
+    this.onTurnBlockingOn,
   });
 
   final FocusTimer timer;
@@ -25,6 +27,13 @@ class SessionScreen extends StatefulWidget {
 
   /// Name of the session's label, shown in the heading.
   final String? labelName;
+
+  /// False while apps are paused but app blocking is switched off; then the
+  /// screen warns. Null when unknown (no warning).
+  final ValueListenable<bool>? blockingActive;
+
+  /// Opens the system settings to switch app blocking back on.
+  final VoidCallback? onTurnBlockingOn;
 
   /// Called once with the outcome when the session was completed or ended.
   final ValueChanged<SessionOutcome> onDone;
@@ -150,6 +159,13 @@ class _SessionScreenState extends State<SessionScreen> {
                       ),
                     ),
                   ),
+                  if (widget.blockingActive case final blockingActive?)
+                    ValueListenableBuilder<bool>(
+                      valueListenable: blockingActive,
+                      builder: (context, active, _) => active
+                          ? const SizedBox.shrink()
+                          : _BlockingOffCard(onTurnOn: widget.onTurnBlockingOn),
+                    ),
                   Row(
                     children: [
                       Expanded(
@@ -171,6 +187,56 @@ class _SessionScreenState extends State<SessionScreen> {
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Clear but calm warning that paused apps can be opened right now.
+class _BlockingOffCard extends StatelessWidget {
+  const _BlockingOffCard({required this.onTurnOn});
+
+  final VoidCallback? onTurnOn;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    return Card(
+      margin: const EdgeInsets.only(bottom: 16),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 12, 8, 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.shield_outlined, color: theme.colorScheme.error),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    l10n.blockingOffTitle,
+                    style: theme.textTheme.titleMedium,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Text(
+              l10n.blockingOffBody,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: onTurnOn,
+                child: Text(l10n.turnBlockingBackOn),
+              ),
+            ),
+          ],
         ),
       ),
     );

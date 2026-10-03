@@ -106,6 +106,10 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
   var _blockedAppCount = 0;
   var _blockerEnabled = true;
   var _notificationGateEnabled = true;
+
+  /// False while apps are paused but the blocker is switched off; the
+  /// session screen warns then.
+  final _blockingActive = ValueNotifier(true);
   StreamSubscription<List<FocusLabel>>? _labelChanges;
   StreamSubscription<String>? _blockedApps;
   StreamSubscription<void>? _startRequests;
@@ -145,6 +149,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
     _startRequests?.cancel();
     _sessionChanges?.cancel();
     _focusTimeChanges?.cancel();
+    _blockingActive.dispose();
     super.dispose();
   }
 
@@ -176,6 +181,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
       _blockerEnabled = blockerEnabled;
       _notificationGateEnabled = notificationGateEnabled;
     });
+    _blockingActive.value = blockerEnabled || blockList.length == 0;
     await _publishWidget();
   }
 
@@ -418,6 +424,8 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
         timer: widget.timer,
         clock: widget.clock,
         labelName: labelName,
+        blockingActive: _blockingActive,
+        onTurnBlockingOn: widget.appBlocker.openBlockerSettings,
         onDone: (outcome) => _afterSession(context, outcome),
       ),
     );
