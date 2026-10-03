@@ -4,4 +4,9 @@
     <string name="blocker_service_description">Focus uses this service only to notice when an app you paused is opened during a focus session and to bring you back to Focus. It never reads what is on your screen.</string>
     <string name="notification_gate_label">Focus notification hold</string>
     <string name="widget_description">Start a focus session with one tap and see the time left.</string>
+    <string name="warning_channel">Focus warnings</string>
+    <string name="blocker_off_title">App blocking is off</string>
+    <string name="blocker_off_text">Turn “Focus app pause” back on to keep paused apps closed.</string>
+    <string name="gate_off_title">Notification hold is off</string>
+    <string name="gate_off_text">Turn “Focus notification hold” back on to hold back notifications of paused apps.</string>
 </resources>
