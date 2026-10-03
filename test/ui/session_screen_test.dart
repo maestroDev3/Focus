@@ -126,5 +126,34 @@ void main() {
 
       expect(find.text('Focusing · Study'), findsOneWidget);
     });
-  });
+  
+    testWidgets('warns while app blocking is off', (tester) async {
+      final blockingActive = ValueNotifier(false);
+      var turnOnCalls = 0;
+      await timer.start(const Duration(minutes: 25));
+      await tester.pumpApp(
+        SessionScreen(
+          timer: timer,
+          clock: () => now,
+          onDone: (_) {},
+          blockingActive: blockingActive,
+          onTurnBlockingOn: () => turnOnCalls++,
+        ),
+      );
+
+      expect(find.text('App blocking is off'), findsOneWidget);
+      await tester.tap(find.text('Turn back on'));
+      expect(turnOnCalls, 1);
+
+      blockingActive.value = true;
+      await tester.pump();
+      expect(find.text('App blocking is off'), findsNothing);
+    });
+
+    testWidgets('shows no warning without blocking info', (tester) async {
+      await pumpSession(tester);
+
+      expect(find.text('App blocking is off'), findsNothing);
+    });
+});
 }

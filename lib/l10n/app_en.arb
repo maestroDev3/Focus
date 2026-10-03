@@ -612,5 +612,17 @@
       "list": {"type": "String"},
       "time": {"type": "String"}
     }
+  },
+  "blockingOffTitle": "App blocking is off",
+  "@blockingOffTitle": {
+    "description": "Warning title in the session screen when the accessibility service was switched off."
+  },
+  "blockingOffBody": "Paused apps can be opened until you turn “Focus app pause” back on.",
+  "@blockingOffBody": {
+    "description": "Warning text in the session screen when app blocking is switched off."
+  },
+  "turnBlockingBackOn": "Turn back on",
+  "@turnBlockingBackOn": {
+    "description": "Button that opens the settings to switch app blocking back on."
   }
 }
