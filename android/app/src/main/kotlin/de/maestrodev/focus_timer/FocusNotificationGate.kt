@@ -13,7 +13,14 @@ import android.service.notification.StatusBarNotification
 class FocusNotificationGate : NotificationListenerService() {
     override fun onListenerConnected() {
         super.onListenerConnected()
+        TamperWarning.dismiss(this, TamperWarning.Kind.GATE)
         activeNotifications?.forEach(::holdIfPaused)
+    }
+
+    /** Access revoked (or unbound): warn if focus is running. */
+    override fun onListenerDisconnected() {
+        TamperWarning.showIfSwitchedOff(this, TamperWarning.Kind.GATE)
+        super.onListenerDisconnected()
     }
 
     override fun onNotificationPosted(notification: StatusBarNotification?) {

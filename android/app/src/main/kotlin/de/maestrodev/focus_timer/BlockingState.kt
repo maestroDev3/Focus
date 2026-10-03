@@ -60,6 +60,10 @@ data class BlockingState(
     private fun activeFocusTime(nowMillis: Long): FocusTimeRule? =
         focusTimes.firstOrNull { it.isActiveAt(nowMillis) }
 
+    /** Whether a session or a focus time runs at [nowMillis]. */
+    fun focusing(nowMillis: Long): Boolean =
+        sessionBlocks(nowMillis) || activeFocusTime(nowMillis) != null
+
     /**
      * Whether [packageName] must be blocked at [nowMillis]. Mirrors `blocksAt`
      * in lib/domain/blocking.dart.

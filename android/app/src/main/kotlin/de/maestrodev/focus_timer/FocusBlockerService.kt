@@ -29,4 +29,15 @@ class FocusBlockerService : AccessibilityService() {
     }
 
     override fun onInterrupt() = Unit
+
+    override fun onServiceConnected() {
+        super.onServiceConnected()
+        TamperWarning.dismiss(this, TamperWarning.Kind.BLOCKER)
+    }
+
+    /** Switched off in the settings (or unbound): warn if focus is running. */
+    override fun onUnbind(intent: Intent?): Boolean {
+        TamperWarning.showIfSwitchedOff(this, TamperWarning.Kind.BLOCKER)
+        return super.onUnbind(intent)
+    }
 }
