@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:focus_timer/domain/blocking.dart';
 import 'package:focus_timer/domain/focus_time.dart';
+import 'package:focus_timer/domain/named_block_list.dart';
 import 'package:focus_timer/ui/focus_times_screen.dart';
 
 import '../support/fake_focus_time_repository.dart';
+import '../support/fake_named_block_list_repository.dart';
 import '../support/pump_app.dart';
 
 void main() {
@@ -148,6 +151,55 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
       expect(find.text('Save'), findsOneWidget);
+    });
+  });
+
+  group('FocusTimesScreen block lists', () {
+    late FakeNamedBlockListRepository lists;
+
+    setUp(() {
+      lists = FakeNamedBlockListRepository([
+        NamedBlockList(
+          id: 'list-1',
+          name: 'Morning',
+          apps: const BlockList().add('com.instagram.android'),
+        ),
+      ]);
+    });
+
+    Future<void> pumpWithLists(WidgetTester tester) async {
+      await tester.pumpApp(
+        FocusTimesScreen(
+          focusTimes: repository,
+          namedLists: lists,
+          clock: () => now,
+        ),
+      );
+      await tester.pump();
+    }
+
+    testWidgets('saves the chosen block list with a new focus time', (
+      tester,
+    ) async {
+      await pumpWithLists(tester);
+      await openEditor(tester);
+
+      await tester.tap(find.text('Default list'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Morning').last);
+      await tester.pumpAndSettle();
+      await save(tester);
+
+      expect(repository.times.single.blockListId, 'list-1');
+      expect(find.text('Morning'), findsOneWidget);
+    });
+
+    testWidgets('keeps the default list without a choice', (tester) async {
+      await pumpWithLists(tester);
+      await openEditor(tester);
+      await save(tester);
+
+      expect(repository.times.single.blockListId, isNull);
     });
   });
 }

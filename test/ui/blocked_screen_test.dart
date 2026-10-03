@@ -62,5 +62,25 @@ void main() {
 
       expect(returned, 1);
     });
-  });
+  
+    testWidgets('names the block list of the focus time', (tester) async {
+      await tester.pumpApp(
+        BlockedScreen(
+          appLabel: 'Instagram',
+          remaining: null,
+          focusTime: FocusTime(
+            id: 'focus-time-1',
+            weekdays: const {1, 2, 3, 4, 5},
+            startMinute: 8 * 60,
+            endMinute: 10 * 60,
+            blockListId: 'list-1',
+          ),
+          blockListName: 'Morning',
+          onReturn: () {},
+        ),
+      );
+
+      expect(find.text('Morning · until 10:00'), findsOneWidget);
+    });
+});
 }

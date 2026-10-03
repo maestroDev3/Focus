@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../domain/backup.dart';
 import '../domain/daily_goal.dart';
 import '../domain/focus_time_repository.dart';
+import '../domain/named_block_list.dart';
 import '../domain/pomodoro.dart';
 import '../domain/settings_repository.dart';
 import '../l10n/app_localizations.dart';
@@ -18,7 +19,11 @@ class SettingsScreen extends StatefulWidget {
     required this.settings,
     required this.focusTimes,
     required this.backupFiles,
+    this.namedBlockLists,
   });
+
+  /// Named block lists focus times can use.
+  final NamedBlockListRepository? namedBlockLists;
 
   final SettingsRepository settings;
 
@@ -191,7 +196,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute<void>(
                       builder: (context) =>
-                          FocusTimesScreen(focusTimes: widget.focusTimes),
+                          FocusTimesScreen(
+                            focusTimes: widget.focusTimes,
+                            namedLists: widget.namedBlockLists,
+                          ),
                     ),
                   ),
                 ),
