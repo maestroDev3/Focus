@@ -8,8 +8,8 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- #105 Live countdown in the notification bar – tested; #173 makes the remaining time larger.
-- #120 Home screen widget – tested; #174 aligns its countdown with the app.
+- #105 Live countdown in the notification bar – larger remaining time merged (#173); waiting for your check.
+- #120 Home screen widget – countdown aligned with the app (#174); waiting for your check.
 
 ## Up next
 
