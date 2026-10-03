@@ -8,16 +8,16 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- #144 Choose a block list per focus time – tasks #181, #182, #183 merged; waiting for your test on the phone.
+- #144 Choose a block list per focus time – waiting for your test (tomorrow morning).
+- #190 Warn when blocking is switched off during focus – tasks #197, #198 merged; waiting for your test.
+- #192 German translation – in work.
 
 ## Up next
 
-1. #190 Warn when blocking is switched off during focus.
-2. #192 German translation.
-3. #96 Include paused apps in backups.
-4. #119 Mindful opening of paused apps.
-5. Epic #123 Session ritual: #121 Intention and reflection → #122 Ambient sounds.
-6. Later: #196 Quick settings tile, #194 Google Play release.
+1. #96 Include paused apps in backups.
+2. #119 Mindful opening of paused apps.
+3. Epic #123 Session ritual: #121 Intention and reflection → #122 Ambient sounds.
+4. Later: #196 Quick settings tile, #194 Google Play release.
 
 ## Backlog by initiative → epic
 
@@ -36,7 +36,7 @@ The GitHub issues are authoritative; this file is the summary.
 | #141 Mindful access to paused apps | 0 of 1 closed | #119 Mindful opening of paused apps (`backlog`) |
 | #143 Named block lists for focus times and labels | 1 of 2 closed | #144 Choose a block list per focus time (`in-progress`); #145 not planned |
 | #187 Block list per session | 0 of 1 closed | #188 Choose a block list when starting a session (`backlog`, parked – only on real need) |
-| #189 Blocking can't be switched off unnoticed | 0 of 1 closed | #190 Warn when blocking is switched off during focus (`backlog`) |
+| #189 Blocking can't be switched off unnoticed | 0 of 1 closed | #190 Warn when blocking is switched off during focus (`in-progress`) |
 
 
 **#140 Release & platform**
