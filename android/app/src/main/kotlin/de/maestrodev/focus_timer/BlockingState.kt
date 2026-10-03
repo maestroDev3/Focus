@@ -9,7 +9,13 @@ import java.util.Calendar
  * start/end as minutes of the day. Mirrors `FocusTime` in
  * lib/domain/focus_time.dart.
  */
-data class FocusTimeRule(val weekdays: Set<Int>, val startMinute: Int, val endMinute: Int) {
+data class FocusTimeRule(
+    val weekdays: Set<Int>,
+    val startMinute: Int,
+    val endMinute: Int,
+    /** Apps of the focus time's own list (#144); null = the default list. */
+    val packages: Set<String>? = null,
+) {
     /** Whether this focus time runs at [nowMillis] in the phone's time zone. */
     fun isActiveAt(nowMillis: Long): Boolean {
         val (weekday, minute) = localWeekdayAndMinute(nowMillis)
@@ -58,9 +64,14 @@ data class BlockingState(
      * Whether [packageName] must be blocked at [nowMillis]. Mirrors `blocksAt`
      * in lib/domain/blocking.dart.
      */
-    fun blocks(packageName: String, nowMillis: Long): Boolean =
-        packageName in packages &&
-            (sessionBlocks(nowMillis) || activeFocusTime(nowMillis) != null)
+    fun blocks(packageName: String, nowMillis: Long): Boolean {
+        if (sessionBlocks(nowMillis) && packageName in packages) return true
+        val focusTime = activeFocusTime(nowMillis) ?: return false
+        return packageName in packagesDuring(focusTime)
+    }
+
+    /** The apps [time] blocks: its own list, or the default list. */
+    private fun packagesDuring(time: FocusTimeRule): Set<String> = time.packages ?: packages
 
     /**
      * How long to snooze a notification of [packageName], or null to show it.
@@ -69,13 +80,13 @@ data class BlockingState(
      * time ends.
      */
     fun snoozeMillis(packageName: String, nowMillis: Long): Long? {
-        if (packageName !in packages) return null
-        if (active) {
+        if (active && packageName in packages) {
             val end = plannedEndMillis ?: return SNOOZE_STEP_MILLIS
             val left = end - nowMillis
             if (left > 0) return minOf(left, SNOOZE_STEP_MILLIS)
         }
         val focusTime = activeFocusTime(nowMillis) ?: return null
+        if (packageName !in packagesDuring(focusTime)) return null
         val left = focusTime.millisUntilEnd(nowMillis)
         if (left <= 0) return null
         return minOf(left, SNOOZE_STEP_MILLIS)
@@ -117,10 +128,12 @@ data class BlockingState(
             return (0 until times.length()).map { index ->
                 val time = times.getJSONObject(index)
                 val days = time.getJSONArray("weekdays")
+                val apps = time.optJSONArray("packages")
                 FocusTimeRule(
                     weekdays = (0 until days.length()).map { days.getInt(it) }.toSet(),
                     startMinute = time.getInt("start"),
                     endMinute = time.getInt("end"),
+                    packages = apps?.let { list -> (0 until list.length()).map { list.getString(it) }.toSet() },
                 )
             }
         }
