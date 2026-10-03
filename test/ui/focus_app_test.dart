@@ -710,4 +710,30 @@ void main() {
       expect(find.text('Default list'), findsOneWidget);
     });
   });
+
+  group('FocusApp blocking switched off', () {
+    testWidgets('warns in the session and opens the settings', (tester) async {
+      blockList.blockList = const BlockList().add('org.telegram.messenger');
+      blocker.enabled = false;
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+
+      await beginFocus(tester);
+      expect(find.text('App blocking is off'), findsOneWidget);
+
+      await tester.tap(find.text('Turn back on'));
+      await tester.pump();
+      expect(blocker.openedSettings, 1);
+    });
+
+    testWidgets('does not warn without paused apps', (tester) async {
+      blocker.enabled = false;
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+
+      await beginFocus(tester);
+
+      expect(find.text('App blocking is off'), findsNothing);
+    });
+  });
 }
