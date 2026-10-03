@@ -250,3 +250,6 @@ commit comment).
 - 2026-10-03 – Labels don't carry block lists (#145 dropped as over-engineered;
   replaces the label part of the 2026-10-02 decision). A block list choice
   at session start is parked (#188) and only built on real need.
+- 2026-10-03 – Next: warn when blocking is switched off during focus (#190),
+  then German translation (#192). Backlog: Google Play release (#194),
+  quick settings tile (#196).

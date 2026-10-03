@@ -12,9 +12,12 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## Up next
 
-1. #96 Include paused apps in backups (after #143, so the backup format changes only once).
-2. #119 Mindful opening of paused apps.
-3. Epic #123 Session ritual: #121 Intention and reflection → #122 Ambient sounds.
+1. #190 Warn when blocking is switched off during focus.
+2. #192 German translation.
+3. #96 Include paused apps in backups.
+4. #119 Mindful opening of paused apps.
+5. Epic #123 Session ritual: #121 Intention and reflection → #122 Ambient sounds.
+6. Later: #196 Quick settings tile, #194 Google Play release.
 
 ## Backlog by initiative → epic
 
@@ -23,19 +26,25 @@ The GitHub issues are authoritative; this file is the summary.
 | Epic | State | Stories (in order) |
 |---|---|---|
 | #123 Session ritual | 0 of 2 closed | #121 Intention and reflection → #122 Ambient sounds (both `backlog`) |
+| #195 Quick settings tile | 0 of 1 closed | #196 Start a session from the quick settings (`backlog`) |
 
 **#139 Distraction blocking**
 
 | Epic | State | Stories (in order) |
 |---|---|---|
-| #20 Distraction blocking | 7 of 8 closed | #96 Include paused apps in backups (`backlog`, after #143) |
+| #20 Distraction blocking | 7 of 8 closed | #96 Include paused apps in backups (`backlog`) |
 | #141 Mindful access to paused apps | 0 of 1 closed | #119 Mindful opening of paused apps (`backlog`) |
 | #143 Named block lists for focus times and labels | 1 of 2 closed | #144 Choose a block list per focus time (`in-progress`); #145 not planned |
 | #187 Block list per session | 0 of 1 closed | #188 Choose a block list when starting a session (`backlog`, parked – only on real need) |
+| #189 Blocking can't be switched off unnoticed | 0 of 1 closed | #190 Warn when blocking is switched off during focus (`backlog`) |
 
-## Dormant
 
-- #140 Release & platform – all epics done (#1 Foundation, #15 Data safety)
+**#140 Release & platform**
+
+| Epic | State | Stories (in order) |
+|---|---|---|
+| #191 Focus in German | 0 of 1 closed | #192 German translation (`backlog`) |
+| #193 Focus on Google Play | 0 of 1 closed | #194 Publish Focus on Google Play (`backlog`) |
 
 ## Recently done
 
