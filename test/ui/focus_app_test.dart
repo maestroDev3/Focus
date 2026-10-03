@@ -406,13 +406,15 @@ void main() {
       expect(find.text('1 app paused'), findsOneWidget);
 
       await tester.tap(find.text('1 app paused'));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Default list'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('YouTube'));
       await tester.pump();
       await tester.pageBack();
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.pumpAndSettle();
+      await tester.pageBack();
+      await tester.pumpAndSettle();
 
       expect(find.text('2 apps paused'), findsOneWidget);
     });
