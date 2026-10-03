@@ -16,10 +16,11 @@ import '../domain/focus_timer.dart';
 import '../domain/home_widget.dart';
 import '../domain/installed_apps_source.dart';
 import '../domain/label_repository.dart';
+import '../domain/named_block_list.dart';
 import '../domain/pomodoro.dart';
 import '../domain/settings_repository.dart';
 import '../l10n/app_localizations.dart';
-import 'blocked_apps_screen.dart';
+import 'block_lists_screen.dart';
 import 'blocked_screen.dart';
 import 'break_screen.dart';
 import 'home_screen.dart';
@@ -41,6 +42,7 @@ class FocusApp extends StatefulWidget {
     required this.labels,
     required this.backupFiles,
     required this.blockList,
+    required this.namedBlockLists,
     required this.installedApps,
     required this.appBlocker,
     required this.focusTimes,
@@ -64,6 +66,9 @@ class FocusApp extends StatefulWidget {
 
   /// The apps paused during sessions.
   final BlockListRepository blockList;
+
+  /// Block lists with a name, next to the default list.
+  final NamedBlockListRepository namedBlockLists;
 
   /// The apps on the phone that can be paused.
   final InstalledAppsSource installedApps;
@@ -337,9 +342,10 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
 
   Future<void> _openBlockedApps() async {
     await _push(
-      (context) => BlockedAppsScreen(
+      (context) => BlockListsScreen(
         apps: widget.installedApps,
-        blockList: widget.blockList,
+        defaultList: widget.blockList,
+        namedLists: widget.namedBlockLists,
         activeSession: widget.timer.current,
         inFocusTime: activeFocusTime(_focusTimes, widget.clock()) != null,
       ),
