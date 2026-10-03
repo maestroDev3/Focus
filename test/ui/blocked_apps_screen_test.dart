@@ -183,6 +183,29 @@ void main() {
       expect(find.text('Telegram'), findsNothing);
     });
 
+    testWidgets('keys every app row by its package', (tester) async {
+      await pumpScreen(tester);
+
+      expect(find.byKey(const ValueKey('app-$telegram')), findsOneWidget);
+      expect(find.byKey(const ValueKey('app-$youtube')), findsOneWidget);
+    });
+
+    testWidgets('shows unpaused apps unchecked right after switching back', (
+      tester,
+    ) async {
+      await pumpScreen(tester, initial: const BlockList().add(youtube));
+      await tester.tap(find.text('Paused (1)'));
+      await tester.pump();
+
+      await tester.tap(find.text('All'));
+      await tester.pump();
+
+      final telegramRow = tester.widget<CheckboxListTile>(
+        find.byKey(const ValueKey('app-$telegram')),
+      );
+      expect(telegramRow.value, isFalse);
+    });
+
     testWidgets('shows app icons and a placeholder without icon', (
       tester,
     ) async {
