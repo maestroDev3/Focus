@@ -41,6 +41,7 @@ object HomeWidget {
     private const val FLUTTER_PREFERENCES = "FlutterSharedPreferences"
     private const val BLOCKING_KEY = "flutter.blocking.state.v1"
     private const val DEFAULT_FOCUS_MINUTES = 25
+    private const val ROUND_UP_MILLIS = 999L
 
     /** Stores the snapshot Focus published and redraws all widgets. */
     fun publish(
@@ -139,9 +140,11 @@ object HomeWidget {
             if (running && end != null) {
                 views.setViewVisibility(R.id.widget_countdown, View.VISIBLE)
                 views.setViewVisibility(R.id.widget_paused, View.GONE)
+                // +999 ms: the chronometer drops partial seconds, Focus rounds
+                // them up – this way widget and app show the same second.
                 views.setChronometer(
                     R.id.widget_countdown,
-                    SystemClock.elapsedRealtime() + (end - now),
+                    SystemClock.elapsedRealtime() + (end - now) + ROUND_UP_MILLIS,
                     null,
                     true,
                 )
