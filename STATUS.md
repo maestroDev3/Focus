@@ -10,7 +10,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 - #144 Choose a block list per focus time – waiting for your test (tomorrow morning).
 - #190 Warn when blocking is switched off during focus – tasks #197, #198 merged; waiting for your test.
-- #192 German translation – in work.
+- #192 German translation – merged (#201); waiting for your check on a German phone.
 
 ## Up next
 
@@ -43,7 +43,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 | Epic | State | Stories (in order) |
 |---|---|---|
-| #191 Focus in German | 0 of 1 closed | #192 German translation (`backlog`) |
+| #191 Focus in German | 0 of 1 closed | #192 German translation (`in-progress`) |
 | #193 Focus on Google Play | 0 of 1 closed | #194 Publish Focus on Google Play (`backlog`) |
 
 ## Recently done
