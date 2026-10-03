@@ -22,6 +22,7 @@ import '../support/fake_focus_time_repository.dart';
 import '../support/fake_home_widget_bridge.dart';
 import '../support/fake_installed_apps_source.dart';
 import '../support/fake_label_repository.dart';
+import '../support/fake_named_block_list_repository.dart';
 import '../support/fake_session_repository.dart';
 import '../support/fake_settings_repository.dart';
 import '../support/pump_app.dart';
@@ -51,6 +52,7 @@ void main() {
       documents: FakeDocumentStore(),
     ),
     blockList: blockList,
+    namedBlockLists: FakeNamedBlockListRepository(),
     installedApps: FakeInstalledAppsSource(),
     appBlocker: blocker,
     focusTimes: focusTimes ?? FakeFocusTimeRepository(),
@@ -404,13 +406,15 @@ void main() {
       expect(find.text('1 app paused'), findsOneWidget);
 
       await tester.tap(find.text('1 app paused'));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Default list'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('YouTube'));
       await tester.pump();
       await tester.pageBack();
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.pumpAndSettle();
+      await tester.pageBack();
+      await tester.pumpAndSettle();
 
       expect(find.text('2 apps paused'), findsOneWidget);
     });
@@ -691,6 +695,19 @@ void main() {
           dailyGoal: const DailyGoal().duration,
         ),
       );
+    });
+  });
+
+  group('FocusApp block lists', () {
+    testWidgets('opens the block lists from home', (tester) async {
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+
+      await tester.tap(find.text('Choose apps to pause'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Block lists'), findsOneWidget);
+      expect(find.text('Default list'), findsOneWidget);
     });
   });
 }

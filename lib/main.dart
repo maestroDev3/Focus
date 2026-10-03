@@ -13,6 +13,7 @@ import 'data/shared_preferences_block_list_repository.dart';
 import 'data/shared_preferences_blocking_state_writer.dart';
 import 'data/shared_preferences_focus_time_repository.dart';
 import 'data/shared_preferences_label_repository.dart';
+import 'data/shared_preferences_named_block_list_repository.dart';
 import 'data/shared_preferences_session_repository.dart';
 import 'data/shared_preferences_settings_repository.dart';
 import 'domain/backup.dart';
@@ -79,6 +80,7 @@ Future<void> main() async {
         codec: const JsonBackupCodec(),
       ),
       blockList: blockList,
+      namedBlockLists: SharedPreferencesNamedBlockListRepository(preferences),
       installedApps: const MethodChannelInstalledAppsSource(),
       appBlocker: MethodChannelAppBlocker(),
       focusTimes: focusTimes,

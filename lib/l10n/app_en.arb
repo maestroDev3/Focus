@@ -551,5 +551,54 @@
       "today": {"type": "String"},
       "goal": {"type": "String"}
     }
+  },
+  "blockListsTitle": "Block lists",
+  "@blockListsTitle": {
+    "description": "Title of the screen listing the default and the named block lists."
+  },
+  "defaultBlockList": "Default list",
+  "@defaultBlockList": {
+    "description": "Name of the default block list used by sessions and focus times."
+  },
+  "defaultBlockListSummary": "{count, plural, =1{1 app} other{{count} apps}} · sessions and focus times",
+  "@defaultBlockListSummary": {
+    "description": "Subtitle of the default block list: number of apps and where it is used.",
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "blockListAppCount": "{count, plural, =0{No apps} =1{1 app} other{{count} apps}}",
+  "@blockListAppCount": {
+    "description": "Number of apps in a named block list.",
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "newBlockList": "New list",
+  "@newBlockList": {
+    "description": "Button that creates a named block list."
+  },
+  "blockListName": "List name",
+  "@blockListName": {
+    "description": "Title of the dialog for naming a block list."
+  },
+  "blockListNameInvalid": "Use 1–30 characters and a name that isn't taken.",
+  "@blockListNameInvalid": {
+    "description": "Shown when a block list name is empty, too long or already used."
+  },
+  "blockListOptions": "Options for {name}",
+  "@blockListOptions": {
+    "description": "Tooltip of the menu button of a named block list.",
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "renameBlockList": "Rename",
+  "@renameBlockList": {
+    "description": "Menu entry that renames a named block list."
+  },
+  "deleteBlockList": "Delete",
+  "@deleteBlockList": {
+    "description": "Menu entry that deletes a named block list."
   }
 }

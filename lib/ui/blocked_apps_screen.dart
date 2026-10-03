@@ -18,7 +18,11 @@ class BlockedAppsScreen extends StatefulWidget {
     required this.blockList,
     required this.activeSession,
     this.inFocusTime = false,
+    this.title,
   });
+
+  /// The list's name; “Paused apps” when not given.
+  final String? title;
 
   final InstalledAppsSource apps;
   final BlockListRepository blockList;
@@ -94,7 +98,7 @@ class _BlockedAppsScreenState extends State<BlockedAppsScreen> {
     ].length;
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.blockedAppsTitle)),
+      appBar: AppBar(title: Text(widget.title ?? l10n.blockedAppsTitle)),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
