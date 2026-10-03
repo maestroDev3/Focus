@@ -9,6 +9,7 @@ extension PumpApp on WidgetTester {
   Future<void> pumpApp(
     Widget widget, {
     Brightness brightness = Brightness.light,
+    Locale locale = const Locale('en'),
   }) async {
     view.physicalSize = const Size(1080, 2340);
     view.devicePixelRatio = 3;
@@ -19,7 +20,7 @@ extension PumpApp on WidgetTester {
         theme: focusTheme(brightness),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('en'),
+        locale: locale,
         home: widget,
       ),
     );
