@@ -10,6 +10,7 @@ abstract interface class FocusTimeRepository {
     required Set<int> weekdays,
     required int startMinute,
     required int endMinute,
+    String? blockListId,
   });
 
   /// Replaces the focus time with the same id; throws [ArgumentError] if it

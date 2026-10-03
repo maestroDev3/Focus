@@ -23,12 +23,14 @@ class FakeFocusTimeRepository implements FocusTimeRepository {
     required Set<int> weekdays,
     required int startMinute,
     required int endMinute,
+    String? blockListId,
   }) async {
     final time = FocusTime(
       id: 'focus-time-${_nextId++}',
       weekdays: weekdays,
       startMinute: startMinute,
       endMinute: endMinute,
+      blockListId: blockListId,
     );
     checkNoOverlap(times, time);
     times.add(time);
