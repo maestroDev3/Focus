@@ -87,6 +87,38 @@ void main() {
       );
     });
 
+    test('persists the block list of a focus time', () async {
+      final added = await repository.addFocusTime(
+        weekdays: {1},
+        startMinute: 480,
+        endMinute: 600,
+        blockListId: 'list-1',
+      );
+
+      final reloaded = await SharedPreferencesFocusTimeRepository(
+        preferences,
+      ).watchFocusTimes().first;
+
+      expect(reloaded.single.blockListId, 'list-1');
+      expect(reloaded, [added]);
+    });
+
+    test('loads stored focus times without block list', () async {
+      SharedPreferences.setMockInitialValues({
+        'flutter.focus_times.v1':
+            '{"v":1,"nextId":2,"times":[{"id":"focus-time-1",'
+            '"weekdays":[1,2],"start":540,"end":720}]}',
+      });
+      final old = SharedPreferencesFocusTimeRepository(
+        await SharedPreferences.getInstance(),
+      );
+
+      final times = await old.watchFocusTimes().first;
+
+      expect(times.single.id, 'focus-time-1');
+      expect(times.single.blockListId, isNull);
+    });
+
     test('rejects an unknown stored version', () async {
       SharedPreferences.setMockInitialValues({'focus_times.v1': '{"v":9}'});
       final broken = SharedPreferencesFocusTimeRepository(

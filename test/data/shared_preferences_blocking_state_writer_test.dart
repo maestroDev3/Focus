@@ -80,5 +80,40 @@ void main() {
         ],
       });
     });
-  });
+  
+    test('stores the apps of a focus time with its own list', () async {
+      SharedPreferences.setMockInitialValues({});
+      final preferences = await SharedPreferences.getInstance();
+
+      await SharedPreferencesBlockingStateWriter(preferences).write(
+        BlockingState(
+          active: false,
+          packageNames: const {'org.telegram.messenger'},
+          focusTimes: [
+            FocusTime(
+              id: 'focus-time-1',
+              weekdays: const {1},
+              startMinute: 480,
+              endMinute: 600,
+              blockListId: 'list-1',
+            ),
+          ],
+          focusTimePackages: const {
+            'focus-time-1': {'com.instagram.android', 'com.b.c'},
+          },
+        ),
+      );
+
+      final stored =
+          jsonDecode(preferences.getString('blocking.state.v1') ?? '') as Map;
+      expect(stored['focusTimes'], [
+        {
+          'weekdays': [1],
+          'start': 480,
+          'end': 600,
+          'packages': ['com.b.c', 'com.instagram.android'],
+        },
+      ]);
+    });
+});
 }
