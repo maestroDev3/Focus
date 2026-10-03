@@ -1,5 +1,6 @@
 package de.maestrodev.focus_timer
 
+import android.annotation.TargetApi
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -7,6 +8,8 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.os.SystemClock
+import android.widget.RemoteViews
 
 /**
  * Ongoing, silent notification with the remaining focus time. While the
@@ -19,6 +22,7 @@ object SessionCountdown {
     private const val CHANNEL_ID = "session_countdown"
     private const val NOTIFICATION_ID = 7304
     private const val PREFERENCES = "session_countdown"
+    private const val ROUND_UP_MILLIS = 999L
 
     /** Stores and shows a notice; [endMillis] is null while paused. */
     fun show(
@@ -74,6 +78,24 @@ object SessionCountdown {
         )
     }
 
+    /**
+     * Title plus a live countdown. Android's chronometer drops partial
+     * seconds while the app rounds them up, so the base gets +999 ms to show
+     * the same second as Focus.
+     */
+    @TargetApi(Build.VERSION_CODES.N)
+    private fun countdownViews(context: Context, layout: Int, title: String, leftMillis: Long): RemoteViews =
+        RemoteViews(context.packageName, layout).apply {
+            setTextViewText(R.id.countdown_title, title)
+            setChronometer(
+                R.id.countdown_time,
+                SystemClock.elapsedRealtime() + leftMillis + ROUND_UP_MILLIS,
+                null,
+                true,
+            )
+            setChronometerCountDown(R.id.countdown_time, true)
+        }
+
     private fun post(
         context: Context,
         channelName: String,
@@ -108,13 +130,23 @@ object SessionCountdown {
             .setOngoing(true)
             .setOnlyAlertOnce(true)
         if (!paused && endMillis != null) {
-            builder.setWhen(endMillis).setShowWhen(true).setUsesChronometer(true)
+            val left = endMillis - System.currentTimeMillis()
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                builder.setChronometerCountDown(true)
+                // The remaining time is the main thing (user test 2026-10-03):
+                // own views with a large live chronometer instead of the small
+                // one in the header.
+                builder
+                    .setShowWhen(false)
+                    .setStyle(Notification.DecoratedCustomViewStyle())
+                    .setCustomContentView(countdownViews(context, R.layout.notification_countdown, title, left))
+                    .setCustomBigContentView(
+                        countdownViews(context, R.layout.notification_countdown_big, title, left),
+                    )
+            } else {
+                builder.setWhen(endMillis).setShowWhen(true).setUsesChronometer(true)
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val left = endMillis - System.currentTimeMillis()
-                if (left > 0) builder.setTimeoutAfter(left)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && left > 0) {
+                builder.setTimeoutAfter(left)
             }
         } else {
             builder.setShowWhen(false).setContentText(text)
