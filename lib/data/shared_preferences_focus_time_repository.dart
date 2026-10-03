@@ -109,7 +109,7 @@ class SharedPreferencesFocusTimeRepository implements FocusTimeRepository {
               'weekdays': time.weekdays.toList()..sort(),
               'start': time.startMinute,
               'end': time.endMinute,
-              if (time.blockListId case final listId?) 'blockList': listId,
+              'blockList': ?time.blockListId,
             },
         ],
       }),
