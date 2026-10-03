@@ -160,6 +160,9 @@ class _BlockedAppsScreenState extends State<BlockedAppsScreen> {
                       final blocked = _blockList.contains(app.packageName);
                       final locked = strict && blocked;
                       return CheckboxListTile(
+                        // Keyed by app, so a row keeps its state when the
+                        // filter changes instead of animating a stale check.
+                        key: ValueKey('app-${app.packageName}'),
                         value: blocked,
                         title: Text(app.label),
                         subtitle: locked ? Text(lockedText) : null,
