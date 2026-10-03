@@ -247,3 +247,6 @@ commit comment).
   (break countdown later as its own story). Widget: one tap starts the
   session in the background (app stays closed) with the defaults and the
   label of the last session (none if there is none).
+- 2026-10-03 – Labels don't carry block lists (#145 dropped as over-engineered;
+  replaces the label part of the 2026-10-02 decision). A block list choice
+  at session start is parked (#188) and only built on real need.
