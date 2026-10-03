@@ -8,7 +8,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- Epic #143 Named block lists: #144 Choose a block list per focus time (next).
+- #144 Choose a block list per focus time – tasks #181, #182, #183 merged; waiting for your test on the phone.
 
 ## Up next
 
@@ -31,7 +31,7 @@ The GitHub issues are authoritative; this file is the summary.
 |---|---|---|
 | #20 Distraction blocking | 7 of 8 closed | #96 Include paused apps in backups (`backlog`, after #143) |
 | #141 Mindful access to paused apps | 0 of 1 closed | #119 Mindful opening of paused apps (`backlog`) |
-| #143 Named block lists for focus times and labels | 1 of 3 closed | #144 Choose a block list per focus time → #145 Labels block additional apps (`backlog`) |
+| #143 Named block lists for focus times and labels | 1 of 3 closed | #144 Choose a block list per focus time (`in-progress`) → #145 Labels block additional apps (`backlog`) |
 
 ## Dormant
 
