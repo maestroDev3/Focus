@@ -324,6 +324,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
         settings: widget.settings,
         focusTimes: widget.focusTimes,
         backupFiles: widget.backupFiles,
+        namedBlockLists: widget.namedBlockLists,
       ),
     );
     await _loadState();
@@ -347,7 +348,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
         defaultList: widget.blockList,
         namedLists: widget.namedBlockLists,
         activeSession: widget.timer.current,
-        inFocusTime: activeFocusTime(_focusTimes, widget.clock()) != null,
+        activeFocusTime: activeFocusTime(_focusTimes, widget.clock()),
       ),
     );
     await widget.timer.refreshBlocking();
@@ -435,6 +436,11 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
           )
         : null;
     if (session == null && focusTime == null) return;
+    final lists = await widget.namedBlockLists.watchLists().first;
+    final listName = [
+      for (final list in lists)
+        if (list.id == focusTime?.blockListId) list.name,
+    ].firstOrNull;
     final apps = await widget.installedApps.installedApps();
     final label = [
       for (final app in apps)
@@ -449,6 +455,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
           _ => null,
         },
         focusTime: focusTime,
+        blockListName: listName,
         onReturn: () => Navigator.of(context).pop(),
       ),
     );

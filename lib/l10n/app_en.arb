@@ -600,5 +600,17 @@
   "deleteBlockList": "Delete",
   "@deleteBlockList": {
     "description": "Menu entry that deletes a named block list."
+  },
+  "focusTimeBlockList": "Block list",
+  "@focusTimeBlockList": {
+    "description": "Label of the block list choice when editing a focus time."
+  },
+  "blockListUntil": "{list} · until {time}",
+  "@blockListUntil": {
+    "description": "Blocked screen during a focus time with its own block list.",
+    "placeholders": {
+      "list": {"type": "String"},
+      "time": {"type": "String"}
+    }
   }
 }

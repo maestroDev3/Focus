@@ -15,6 +15,7 @@ class BlockedScreen extends StatelessWidget {
     required this.remaining,
     required this.onReturn,
     this.focusTime,
+    this.blockListName,
   });
 
   final String appLabel;
@@ -26,6 +27,9 @@ class BlockedScreen extends StatelessWidget {
   /// The running focus time when no session blocks the app.
   final FocusTime? focusTime;
 
+  /// Name of the focus time's own block list, if it has one.
+  final String? blockListName;
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -34,9 +38,13 @@ class BlockedScreen extends StatelessWidget {
     final focusTime = this.focusTime;
     final locale = Localizations.localeOf(context).toLanguageTag();
     final reason = switch ((focusTime, remaining)) {
-      (final time?, _) => l10n.focusTimeUntil(
-        minuteOfDayText(time.endMinute, locale),
-      ),
+      (final time?, _) => switch (blockListName) {
+        final name? => l10n.blockListUntil(
+          name,
+          minuteOfDayText(time.endMinute, locale),
+        ),
+        null => l10n.focusTimeUntil(minuteOfDayText(time.endMinute, locale)),
+      },
       (null, null) => l10n.blockedSessionPaused,
       (null, final left?) => l10n.blockedRemaining(formatCountdown(left)),
     };

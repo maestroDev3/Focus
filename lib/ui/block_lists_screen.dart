@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../domain/block_list_repository.dart';
+import '../domain/blocking.dart';
 import '../domain/focus_session.dart';
+import '../domain/focus_time.dart';
 import '../domain/installed_apps_source.dart';
 import '../domain/named_block_list.dart';
 import '../l10n/app_localizations.dart';
@@ -16,16 +18,16 @@ class BlockListsScreen extends StatefulWidget {
     required this.defaultList,
     required this.namedLists,
     required this.activeSession,
-    this.inFocusTime = false,
+    this.activeFocusTime,
   });
 
   final InstalledAppsSource apps;
   final BlockListRepository defaultList;
   final NamedBlockListRepository namedLists;
 
-  /// Make the default list strict while a session or focus time runs.
+  /// Decide which list is in use and therefore strict.
   final FocusSession? activeSession;
-  final bool inFocusTime;
+  final FocusTime? activeFocusTime;
 
   @override
   State<BlockListsScreen> createState() => _BlockListsScreenState();
@@ -46,7 +48,15 @@ class _BlockListsScreenState extends State<BlockListsScreen> {
     setState(() => _defaultCount = list.length);
   }
 
-  Future<void> _openDefault() async {
+  /// The running focus time's list, or null when it uses the default list
+  /// (also when its list was deleted).
+  String? _runningListId(List<NamedBlockList> lists) {
+    final id = widget.activeFocusTime?.blockListId;
+    return lists.any((list) => list.id == id) ? id : null;
+  }
+
+  Future<void> _openDefault(List<NamedBlockList> lists) async {
+    final focusTime = widget.activeFocusTime;
     await Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (context) => BlockedAppsScreen(
@@ -54,7 +64,7 @@ class _BlockListsScreenState extends State<BlockListsScreen> {
           apps: widget.apps,
           blockList: widget.defaultList,
           activeSession: widget.activeSession,
-          inFocusTime: widget.inFocusTime,
+          inFocusTime: focusTime != null && _runningListId(lists) == null,
         ),
       ),
     );
@@ -62,8 +72,12 @@ class _BlockListsScreenState extends State<BlockListsScreen> {
   }
 
   Future<void> _openNamed(NamedBlockList list) async {
-    // Named lists aren't used by sessions or focus times yet (#144), so
-    // they are never strict here.
+    // Strict while the running focus time uses this list (sessions only use
+    // the default list).
+    final inUse = isBlockListInUse(
+      listId: list.id,
+      activeFocusTime: widget.activeFocusTime,
+    );
     await Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (context) => BlockedAppsScreen(
@@ -74,6 +88,7 @@ class _BlockListsScreenState extends State<BlockListsScreen> {
             listId: list.id,
           ),
           activeSession: null,
+          inFocusTime: inUse,
         ),
       ),
     );
@@ -118,10 +133,11 @@ class _BlockListsScreenState extends State<BlockListsScreen> {
                   title: Text(l10n.defaultBlockList),
                   subtitle: Text(l10n.defaultBlockListSummary(_defaultCount)),
                   trailing: const Icon(Icons.chevron_right),
-                  onTap: _openDefault,
+                  onTap: () => _openDefault(lists),
                 );
               }
               final list = lists[index - 1];
+              final inUse = _runningListId(lists) == list.id;
               return ListTile(
                 key: ValueKey('block-list-${list.id}'),
                 leading: const Icon(Icons.list_alt),
@@ -141,6 +157,8 @@ class _BlockListsScreenState extends State<BlockListsScreen> {
                     ),
                     PopupMenuItem(
                       value: _ListAction.delete,
+                      // A list the running focus time uses can't go away.
+                      enabled: !inUse,
                       child: Text(l10n.deleteBlockList),
                     ),
                   ],
