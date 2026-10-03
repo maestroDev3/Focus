@@ -3,6 +3,7 @@ import 'clock.dart';
 import 'focus_session.dart';
 import 'focus_time.dart';
 import 'focus_time_repository.dart';
+import 'named_block_list.dart';
 
 /// Android package name of Focus itself, which can never be blocked.
 const focusPackageName = 'de.maestrodev.focus_timer';
@@ -61,6 +62,23 @@ bool canRemoveFromBlockList({
   bool inFocusTime = false,
 }) => !inFocusTime && (activeSession == null || activeSession.isFinished);
 
+/// Whether the list [listId] (null = default list) blocks right now, so it
+/// can't be reduced or deleted: the default list while a session runs or a
+/// focus time without own list runs; a named list while a focus time using
+/// it runs.
+bool isBlockListInUse({
+  required String? listId,
+  FocusSession? activeSession,
+  FocusTime? activeFocusTime,
+}) {
+  if (listId == null) {
+    final sessionRuns = activeSession != null && !activeSession.isFinished;
+    return sessionRuns ||
+        (activeFocusTime != null && activeFocusTime.blockListId == null);
+  }
+  return activeFocusTime?.blockListId == listId;
+}
+
 /// Whether [packageName] must be blocked right now: only while a session
 /// runs or is paused, and only for apps on the block list.
 bool shouldBlock({
@@ -80,13 +98,15 @@ class BlockingState {
     required this.packageNames,
     this.plannedEnd,
     this.focusTimes = const [],
+    this.focusTimePackages = const {},
   });
 
   const BlockingState.inactive()
     : active = false,
       packageNames = const {},
       plannedEnd = null,
-      focusTimes = const [];
+      focusTimes = const [],
+      focusTimePackages = const {};
 
   /// Derives the state from the active session; [plannedEnd] is null while
   /// paused because the end is not known then. With [focusTimes] the block
@@ -97,6 +117,7 @@ class BlockingState {
     required BlockList blockList,
     required DateTime now,
     List<FocusTime> focusTimes = const [],
+    Map<String, Set<String>> focusTimePackages = const {},
   }) {
     if (session == null || session.isFinished) {
       if (focusTimes.isEmpty) return const BlockingState.inactive();
@@ -104,6 +125,7 @@ class BlockingState {
         active: false,
         packageNames: blockList.packageNames,
         focusTimes: focusTimes,
+        focusTimePackages: focusTimePackages,
       );
     }
     return BlockingState(
@@ -111,6 +133,7 @@ class BlockingState {
       packageNames: blockList.packageNames,
       plannedEnd: session.isPaused ? null : now.add(session.remaining(now)),
       focusTimes: focusTimes,
+      focusTimePackages: focusTimePackages,
     );
   }
 
@@ -119,8 +142,16 @@ class BlockingState {
   final Set<String> packageNames;
   final DateTime? plannedEnd;
 
-  /// Recurring focus times during which [packageNames] are blocked as well.
+  /// Recurring focus times; each blocks its own apps from
+  /// [focusTimePackages], or [packageNames] (the default list) without one.
   final List<FocusTime> focusTimes;
+
+  /// Apps of the named list of a focus time, by focus time id.
+  final Map<String, Set<String>> focusTimePackages;
+
+  /// The apps [time] blocks.
+  Set<String> packagesDuring(FocusTime time) =>
+      focusTimePackages[time.id] ?? packageNames;
 
   @override
   bool operator ==(Object other) =>
@@ -128,6 +159,7 @@ class BlockingState {
       other.active == active &&
       other.plannedEnd == plannedEnd &&
       _sameFocusTimes(other.focusTimes, focusTimes) &&
+      _samePackagesByTime(other.focusTimePackages, focusTimePackages) &&
       other.packageNames.length == packageNames.length &&
       other.packageNames.containsAll(packageNames);
 
@@ -138,6 +170,22 @@ class BlockingState {
     Object.hashAllUnordered(packageNames),
     Object.hashAll(focusTimes),
   );
+}
+
+bool _samePackagesByTime(
+  Map<String, Set<String>> a,
+  Map<String, Set<String>> b,
+) {
+  if (a.length != b.length) return false;
+  for (final MapEntry(:key, :value) in a.entries) {
+    final other = b[key];
+    if (other == null ||
+        other.length != value.length ||
+        !other.containsAll(value)) {
+      return false;
+    }
+  }
+  return true;
 }
 
 bool _sameFocusTimes(List<FocusTime> a, List<FocusTime> b) {
@@ -156,10 +204,15 @@ bool blocksAt({
   required String packageName,
   required DateTime now,
 }) {
-  if (!state.packageNames.contains(packageName)) return false;
   final end = state.plannedEnd;
-  final sessionBlocks = state.active && (end == null || now.isBefore(end));
-  return sessionBlocks || activeFocusTime(state.focusTimes, now) != null;
+  final sessionBlocks =
+      state.active &&
+      (end == null || now.isBefore(end)) &&
+      state.packageNames.contains(packageName);
+  if (sessionBlocks) return true;
+  final focusTime = activeFocusTime(state.focusTimes, now);
+  return focusTime != null &&
+      state.packagesDuring(focusTime).contains(packageName);
 }
 
 /// Publishes the [BlockingState] where the native blocker can read it.
@@ -174,6 +227,7 @@ class BlockingSync {
     required this._writer,
     required this._clock,
     this._focusTimes,
+    this._namedLists,
   });
 
   final BlockListRepository _blockList;
@@ -181,15 +235,26 @@ class BlockingSync {
   final Clock _clock;
   final FocusTimeRepository? _focusTimes;
 
+  /// Resolves the named lists of focus times; unknown lists fall back to
+  /// the default list.
+  final NamedBlockListRepository? _namedLists;
+
   Future<void> update(FocusSession? session) async {
     final blockList = await _blockList.loadBlockList();
-    final focusTimes = await _focusTimes?.watchFocusTimes().first;
+    final focusTimes = await _focusTimes?.watchFocusTimes().first ?? const [];
+    final lists = await _namedLists?.watchLists().first ?? const [];
+    final appsById = {for (final list in lists) list.id: list.apps};
     await _writer.write(
       BlockingState.from(
         session: session,
         blockList: blockList,
         now: _clock(),
-        focusTimes: focusTimes ?? const [],
+        focusTimes: focusTimes,
+        focusTimePackages: {
+          for (final time in focusTimes)
+            if (appsById[time.blockListId] case final apps?)
+              time.id: apps.packageNames,
+        },
       ),
     );
   }
@@ -208,8 +273,7 @@ Duration? snoozeFor({
   required String packageName,
   required DateTime now,
 }) {
-  if (!state.packageNames.contains(packageName)) return null;
-  if (state.active) {
+  if (state.active && state.packageNames.contains(packageName)) {
     final end = state.plannedEnd;
     if (end == null) return notificationSnoozeStep;
     final left = end.difference(now);
@@ -218,7 +282,10 @@ Duration? snoozeFor({
     }
   }
   final focusTime = activeFocusTime(state.focusTimes, now);
-  if (focusTime == null) return null;
+  if (focusTime == null ||
+      !state.packagesDuring(focusTime).contains(packageName)) {
+    return null;
+  }
   final left = focusTime.endOn(now).difference(now);
   return left < notificationSnoozeStep ? left : notificationSnoozeStep;
 }

@@ -5,6 +5,7 @@ class FocusTime {
     required Set<int> weekdays,
     required this.startMinute,
     required this.endMinute,
+    this.blockListId,
   }) : weekdays = Set.unmodifiable(weekdays) {
     if (weekdays.isEmpty || weekdays.any((day) => day < 1 || day > 7)) {
       throw ArgumentError.value(weekdays, 'weekdays', 'must be 1–7, not empty');
@@ -23,6 +24,9 @@ class FocusTime {
   static const minutesPerDay = 24 * 60;
 
   final String id;
+
+  /// The named block list this focus time blocks; null = the default list.
+  final String? blockListId;
 
   /// ISO weekdays: Monday = 1 … Sunday = 7 (as [DateTime.weekday]).
   final Set<int> weekdays;
@@ -48,12 +52,19 @@ class FocusTime {
       other.id == id &&
       other.startMinute == startMinute &&
       other.endMinute == endMinute &&
+      other.blockListId == blockListId &&
       other.weekdays.length == weekdays.length &&
       other.weekdays.containsAll(weekdays);
 
   @override
   int get hashCode =>
-      Object.hash(id, startMinute, endMinute, Object.hashAllUnordered(weekdays));
+      Object.hash(
+        id,
+        startMinute,
+        endMinute,
+        blockListId,
+        Object.hashAllUnordered(weekdays),
+      );
 }
 
 /// The focus time running at [now], if any.

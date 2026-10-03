@@ -31,6 +31,9 @@ Future<void> main() async {
   final labels = SharedPreferencesLabelRepository(preferences);
   final blockList = SharedPreferencesBlockListRepository(preferences);
   final focusTimes = SharedPreferencesFocusTimeRepository(preferences);
+  final namedBlockLists = SharedPreferencesNamedBlockListRepository(
+    preferences,
+  );
   final l10n = lookupAppLocalizations(
     basicLocaleListResolution(
       WidgetsBinding.instance.platformDispatcher.locales,
@@ -45,6 +48,7 @@ Future<void> main() async {
       writer: SharedPreferencesBlockingStateWriter(preferences),
       clock: DateTime.now,
       focusTimes: focusTimes,
+      namedLists: namedBlockLists,
     ),
     sessionEndAlarm: MethodChannelSessionEndAlarm(
       texts: (
@@ -80,7 +84,7 @@ Future<void> main() async {
         codec: const JsonBackupCodec(),
       ),
       blockList: blockList,
-      namedBlockLists: SharedPreferencesNamedBlockListRepository(preferences),
+      namedBlockLists: namedBlockLists,
       installedApps: const MethodChannelInstalledAppsSource(),
       appBlocker: MethodChannelAppBlocker(),
       focusTimes: focusTimes,

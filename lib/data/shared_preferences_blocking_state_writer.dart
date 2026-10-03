@@ -29,6 +29,8 @@ class SharedPreferencesBlockingStateWriter implements BlockingStateWriter {
               'weekdays': time.weekdays.toList()..sort(),
               'start': time.startMinute,
               'end': time.endMinute,
+              if (state.focusTimePackages[time.id] case final packages?)
+                'packages': packages.toList()..sort(),
             },
         ],
       }),

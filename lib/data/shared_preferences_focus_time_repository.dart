@@ -27,6 +27,7 @@ class SharedPreferencesFocusTimeRepository implements FocusTimeRepository {
     required Set<int> weekdays,
     required int startMinute,
     required int endMinute,
+    String? blockListId,
   }) async {
     final (:times, :nextId) = _load();
     final time = FocusTime(
@@ -34,6 +35,7 @@ class SharedPreferencesFocusTimeRepository implements FocusTimeRepository {
       weekdays: weekdays,
       startMinute: startMinute,
       endMinute: endMinute,
+      blockListId: blockListId,
     );
     checkNoOverlap(times, time);
     await _save([...times, time], nextId + 1);
@@ -82,6 +84,8 @@ class SharedPreferencesFocusTimeRepository implements FocusTimeRepository {
                     weekdays: weekdays.cast<int>().toSet(),
                     startMinute: start,
                     endMinute: end,
+                    // Optional since #144; older focus times have none.
+                    blockListId: (item as Map)['blockList'] as String?,
                   ),
                 _ => throw FormatException('Malformed focus time: $item'),
               },
@@ -105,6 +109,7 @@ class SharedPreferencesFocusTimeRepository implements FocusTimeRepository {
               'weekdays': time.weekdays.toList()..sort(),
               'start': time.startMinute,
               'end': time.endMinute,
+              if (time.blockListId case final listId?) 'blockList': listId,
             },
         ],
       }),
