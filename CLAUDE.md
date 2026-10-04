@@ -191,7 +191,9 @@ configuration, load and follow the skill `.claude/skills/flutter-dart/SKILL.md`
   `NotificationListenerService` (hold back notifications) – both approved by
   the user. App list via a launcher-intent `<queries>` entry, not
   `QUERY_ALL_PACKAGES`. Exact alarm (`USE_EXACT_ALARM`, Android 12:
-  `SCHEDULE_EXACT_ALARM`) only for the on-time session-end notification. No
+  `SCHEDULE_EXACT_ALARM`) only for the on-time session-end notification.
+  `POST_PROMOTED_NOTIFICATIONS` (Android 16) only for the countdown as a Live
+  Update on the lock screen. No
   foreground service as long as the timestamp-based approach is enough.
 - `flutter analyze` must report no issues.
 
@@ -261,3 +263,6 @@ commit comment).
 - 2026-10-04 – In-app language switch (epic #214, story #215) in the
   settings next to backup: System, English, Deutsch, Русский; synced with
   Android's per-app language. Then #96.
+- 2026-10-04 – Lock screen countdown (epic #219, story #220): label and
+  remaining time on the lock screen, Live Update on Android 16 where allowed;
+  setting “Show on lock screen”, default on. Built before #119.
