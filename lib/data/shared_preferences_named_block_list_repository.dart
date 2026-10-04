@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../domain/blocking.dart';
+import '../domain/id_counter.dart';
 import '../domain/named_block_list.dart';
 
 /// Stores named block lists as versioned JSON (`blocking.lists.v1`) with a
@@ -58,6 +59,15 @@ class SharedPreferencesNamedBlockListRepository
     await _save([
       for (final list in lists) list.id == id ? list.copyWith(apps: apps) : list,
     ], nextId);
+  }
+
+  @override
+  Future<void> replaceAll(List<NamedBlockList> lists) async {
+    final (lists: _, :nextId) = _load();
+    await _save(
+      List.of(lists),
+      nextFreeIdNumber(nextId, [for (final list in lists) list.id]),
+    );
   }
 
   ({List<NamedBlockList> lists, int nextId}) _load() {

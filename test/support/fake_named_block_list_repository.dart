@@ -43,6 +43,14 @@ class FakeNamedBlockListRepository implements NamedBlockListRepository {
   Future<void> saveApps(String id, BlockList apps) async =>
       _replace(id, (list) => list.copyWith(apps: apps));
 
+  @override
+  Future<void> replaceAll(List<NamedBlockList> lists) async {
+    this.lists
+      ..clear()
+      ..addAll(lists);
+    _changes.add(List.of(this.lists));
+  }
+
   void _replace(String id, NamedBlockList Function(NamedBlockList) change) {
     final index = lists.indexWhere((list) => list.id == id);
     if (index < 0) throw StateError('Unknown block list $id');

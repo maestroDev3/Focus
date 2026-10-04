@@ -1,9 +1,14 @@
+import 'block_list_repository.dart';
+import 'blocking.dart';
 import 'clock.dart';
 import 'daily_goal.dart';
 import 'document_store.dart';
 import 'focus_label.dart';
 import 'focus_session.dart';
+import 'focus_time.dart';
+import 'focus_time_repository.dart';
 import 'label_repository.dart';
+import 'named_block_list.dart';
 import 'pomodoro.dart';
 import 'session_repository.dart';
 import 'settings_repository.dart';
@@ -16,6 +21,7 @@ class Backup {
     required this.labels,
     required this.pomodoro,
     required this.dailyGoal,
+    this.blocking,
   });
 
   final DateTime createdAt;
@@ -24,9 +30,14 @@ class Backup {
   final PomodoroSettings pomodoro;
   final DailyGoal dailyGoal;
 
+  /// Block lists and focus times; null in backups made before they were
+  /// included – restoring those leaves blocking as it is.
+  final BlockingBackup? blocking;
+
   @override
   bool operator ==(Object other) =>
       other is Backup &&
+      other.blocking == blocking &&
       other.createdAt == createdAt &&
       _listEquals(other.sessions, sessions) &&
       _listEquals(other.labels, labels) &&
@@ -40,6 +51,35 @@ class Backup {
     Object.hashAll(labels),
     pomodoro,
     dailyGoal,
+    blocking,
+  );
+}
+
+/// What is blocked and when: the default list, the named lists and the
+/// focus times.
+class BlockingBackup {
+  const BlockingBackup({
+    required this.defaultList,
+    required this.lists,
+    required this.focusTimes,
+  });
+
+  final BlockList defaultList;
+  final List<NamedBlockList> lists;
+  final List<FocusTime> focusTimes;
+
+  @override
+  bool operator ==(Object other) =>
+      other is BlockingBackup &&
+      other.defaultList == defaultList &&
+      _listEquals(other.lists, lists) &&
+      _listEquals(other.focusTimes, focusTimes);
+
+  @override
+  int get hashCode => Object.hash(
+    defaultList,
+    Object.hashAll(lists),
+    Object.hashAll(focusTimes),
   );
 }
 
@@ -49,12 +89,18 @@ class BackupService {
     required this._sessions,
     required this._labels,
     required this._settings,
+    required this._blockList,
+    required this._namedLists,
+    required this._focusTimes,
     required this._clock,
   });
 
   final SessionRepository _sessions;
   final LabelRepository _labels;
   final SettingsRepository _settings;
+  final BlockListRepository _blockList;
+  final NamedBlockListRepository _namedLists;
+  final FocusTimeRepository _focusTimes;
   final Clock _clock;
 
   Future<Backup> create() async => Backup(
@@ -63,14 +109,26 @@ class BackupService {
     labels: await _labels.watchLabels().first,
     pomodoro: await _settings.loadPomodoro(),
     dailyGoal: await _settings.loadDailyGoal(),
+    blocking: BlockingBackup(
+      defaultList: await _blockList.loadBlockList(),
+      lists: await _namedLists.watchLists().first,
+      focusTimes: await _focusTimes.watchFocusTimes().first,
+    ),
   );
 
-  /// Replaces sessions, labels and settings with the content of [backup].
+  /// Replaces sessions, labels, settings and – if the backup has them –
+  /// block lists and focus times with the content of [backup].
   Future<void> restore(Backup backup) async {
     await _sessions.replaceFinished(backup.sessions);
     await _labels.replaceAll(backup.labels);
     await _settings.savePomodoro(backup.pomodoro);
     await _settings.saveDailyGoal(backup.dailyGoal);
+    if (backup.blocking case final blocking?) {
+      // Lists first, so focus times never point to a missing list.
+      await _namedLists.replaceAll(blocking.lists);
+      await _blockList.saveBlockList(blocking.defaultList);
+      await _focusTimes.replaceAll(blocking.focusTimes);
+    }
   }
 }
 
