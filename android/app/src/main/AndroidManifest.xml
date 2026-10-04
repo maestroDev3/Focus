@@ -1,6 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Reminder when a focus time starts (story #118). -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <!-- The session countdown as a Live Update on Android 16 (story #220);
+         a normal permission without a prompt. -->
+    <uses-permission android:name="android.permission.POST_PROMOTED_NOTIFICATIONS"/>
     <!-- Reschedules focus time reminders and the session-end notification
          after a restart. -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
