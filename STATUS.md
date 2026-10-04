@@ -8,7 +8,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- #190 Warn when blocking is switched off during focus – tasks #197, #198 merged; waiting for your test.
+- #215 Choose the app language in the settings – tasks #216 → #217.
 
 ## Up next
 
@@ -34,7 +34,6 @@ The GitHub issues are authoritative; this file is the summary.
 | #20 Distraction blocking | 7 of 8 closed | #96 Include paused apps in backups (`backlog`) |
 | #141 Mindful access to paused apps | 0 of 1 closed | #119 Mindful opening of paused apps (`backlog`) |
 | #187 Block list per session | 0 of 1 closed | #188 Choose a block list when starting a session (`backlog`, parked – only on real need) |
-| #189 Blocking can't be switched off unnoticed | 0 of 1 closed | #190 Warn when blocking is switched off during focus (`in-progress`) |
 
 
 **#140 Release & platform**
@@ -42,17 +41,16 @@ The GitHub issues are authoritative; this file is the summary.
 | Epic | State | Stories (in order) |
 |---|---|---|
 | #193 Focus on Google Play | 0 of 1 closed | #194 Publish Focus on Google Play (`backlog`) |
-| #214 Choose your app language | 0 of 1 closed | #215 Choose the app language in the settings (`backlog`) |
+| #214 Choose your app language | 0 of 1 closed | #215 Choose the app language in the settings (`in-progress`) |
 
 ## Recently done
 
+- #190 Warning when blocking is switched off during focus – confirmed on the phone; epic #189 closed
 - #209 Russian translation; epic #208 closed
 - #206 Explorable statistics – tap a day, week/month switch at the top
 - #192 German translation (blocked screen: “Instagram ruht, während du im Fokus bist.”); epic #191 closed
 - #144 Block list per focus time – confirmed on the phone; epic #143 Named block lists closed
-- Decision: no block lists on labels (#145 not planned); per-session list choice parked (#188)
 
 ## Open decisions (user only)
 
 - New epic #187 Block list per session (parked idea #188) – created, please confirm or re-sort.
-- New epic #214 Choose your app language (in #140 Release & platform) – created, please confirm or re-sort.

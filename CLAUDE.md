@@ -258,3 +258,6 @@ commit comment).
   release; focus insights (#207) in the backlog.
 - 2026-10-04 – Russian translation (epic #208, story #209) besides English
   and German; the user reviews the wording on his phone.
+- 2026-10-04 – In-app language switch (epic #214, story #215) in the
+  settings next to backup: System, English, Deutsch, Русский; synced with
+  Android's per-app language. Then #96.
