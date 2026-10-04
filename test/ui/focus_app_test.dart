@@ -803,5 +803,28 @@ void main() {
         expect(find.text('Fokus beginnen'), findsOneWidget);
       });
     });
+
+    testWidgets('locks restoring a backup during a focus time', (
+      tester,
+    ) async {
+      // 2026-09-29 20:00 is a Tuesday.
+      final focusTimes = FakeFocusTimeRepository([
+        FocusTime(
+          id: 'focus-time-1',
+          weekdays: const {2},
+          startMinute: 19 * 60,
+          endMinute: 21 * 60,
+        ),
+      ]);
+      await tester.pumpWidget(buildApp(focusTimes: focusTimes));
+      await tester.pump();
+
+      await tester.tap(find.byTooltip('Settings'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      await tester.scrollUntilVisible(find.text('Restore backup'), 200);
+
+      expect(find.text('Locked during this focus time'), findsOneWidget);
+    });
   });
 }

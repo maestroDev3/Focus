@@ -14,6 +14,12 @@ import 'app_locale.dart';
 import 'focus_time_text.dart';
 import 'focus_times_screen.dart';
 
+/// Why restoring a backup is not possible right now: blocking is strict
+/// during a session or focus time, and a restore could shrink the lists.
+enum RestoreLock { none, session, focusTime }
+
+RestoreLock _unlocked() => RestoreLock.none;
+
 /// Lets the user tune the Pomodoro rhythm; every change is saved at once.
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({
@@ -24,7 +30,12 @@ class SettingsScreen extends StatefulWidget {
     this.namedBlockLists,
     this.language,
     this.onLanguageChanged,
+    this.restoreLock = _unlocked,
   });
+
+  /// Asked on every build and before restoring, so a focus time that starts
+  /// while the settings are open still locks the restore.
+  final RestoreLock Function() restoreLock;
 
   /// The chosen app language; without it the settings offer no language.
   final AppLanguageSetting? language;
@@ -140,6 +151,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _restore() async {
+    if (widget.restoreLock() != RestoreLock.none) {
+      setState(() {});
+      return;
+    }
     final messenger = ScaffoldMessenger.of(context);
     final l10n = AppLocalizations.of(context);
     final locale = Localizations.localeOf(context).toLanguageTag();
@@ -257,6 +272,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ListTile(
                   leading: const Icon(Icons.restore_outlined),
                   title: Text(l10n.restoreBackup),
+                  subtitle: switch (widget.restoreLock()) {
+                    RestoreLock.none => null,
+                    RestoreLock.session => Text(l10n.lockedDuringSession),
+                    RestoreLock.focusTime => Text(l10n.lockedDuringFocusTime),
+                  },
+                  enabled: widget.restoreLock() == RestoreLock.none,
                   onTap: _restore,
                 ),
               ],
