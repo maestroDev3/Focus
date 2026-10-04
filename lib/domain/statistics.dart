@@ -44,6 +44,17 @@ List<Duration> weekFocus(
   ).values.toList();
 }
 
+/// Focus time for every day of the month containing [today], first day
+/// first.
+List<Duration> monthFocus(
+  List<FocusSession> sessions, {
+  required DateTime today,
+}) => focusByDay(
+  sessions,
+  from: DateTime(today.year, today.month),
+  to: DateTime(today.year, today.month + 1, 0),
+).values.toList();
+
 /// Focus time of one label (`labelId` null = unlabeled).
 typedef LabelFocus = ({String? labelId, Duration focused});
 

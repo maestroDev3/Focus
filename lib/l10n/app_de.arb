@@ -123,5 +123,7 @@
   "blockListUntil": "{list} · bis {time}",
   "blockingOffTitle": "App-Sperre ist aus",
   "blockingOffBody": "Gesperrte Apps lassen sich öffnen, bis du „Focus App-Sperre“ wieder einschaltest.",
-  "turnBlockingBackOn": "Wieder einschalten"
+  "turnBlockingBackOn": "Wieder einschalten",
+  "thisMonth": "Dieser Monat",
+  "dayFocusOfGoal": "{day} · {focus} von {goal}"
 }
