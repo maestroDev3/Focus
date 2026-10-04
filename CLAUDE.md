@@ -256,3 +256,5 @@ commit comment).
 - 2026-10-04 – Blocked screen sentence names the app (“Instagram ruht, während
   du im Fokus bist.”). Explorable statistics (#206) come before the store
   release; focus insights (#207) in the backlog.
+- 2026-10-04 – Russian translation (epic #208, story #209) besides English
+  and German; the user reviews the wording on his phone.
