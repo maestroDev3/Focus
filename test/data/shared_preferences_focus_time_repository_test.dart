@@ -30,10 +30,14 @@ void main() {
         ),
       ];
 
-      final emitted = repository.watchFocusTimes().skip(1).first;
+      final emitted = <List<FocusTime>>[];
+      final subscription = repository.watchFocusTimes().listen(emitted.add);
+      addTearDown(subscription.cancel);
+      await pumpEventQueue();
       await repository.replaceAll(restored);
+      await pumpEventQueue();
 
-      expect(await emitted, restored);
+      expect(emitted.last, restored);
       expect(await repository.watchFocusTimes().first, restored);
       final added = await repository.addFocusTime(
         weekdays: {1},

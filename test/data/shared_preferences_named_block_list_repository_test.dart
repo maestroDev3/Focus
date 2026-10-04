@@ -29,10 +29,14 @@ void main() {
         ),
       ];
 
-      final emitted = repository.watchLists().skip(1).first;
+      final emitted = <List<NamedBlockList>>[];
+      final subscription = repository.watchLists().listen(emitted.add);
+      addTearDown(subscription.cancel);
+      await pumpEventQueue();
       await repository.replaceAll(restored);
+      await pumpEventQueue();
 
-      expect(await emitted, restored);
+      expect(emitted.last, restored);
       expect(await repository.watchLists().first, restored);
       expect((await repository.addList('Evening')).id, 'list-6');
     });
