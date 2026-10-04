@@ -5,8 +5,7 @@ import 'package:focus_timer/l10n/app_localizations.dart';
 void main() {
   test('offers exactly one app language per translation', () {
     final codes = [
-      for (final language in AppLanguage.values)
-        if (language.languageCode case final code?) code,
+      for (final language in AppLanguage.values) ?language.languageCode,
     ];
 
     expect(codes.toSet(), hasLength(codes.length));

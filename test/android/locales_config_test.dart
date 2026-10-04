@@ -24,11 +24,7 @@ void main() {
       };
       final translated = {
         for (final file in Directory('lib/l10n').listSync())
-          if (RegExp(
-                r'app_(\w+)\.arb$',
-              ).firstMatch(file.path)?.group(1)
-              case final code?)
-            code,
+          ?RegExp(r'app_(\w+)\.arb$').firstMatch(file.path)?.group(1),
       };
 
       expect(listed, translated);
