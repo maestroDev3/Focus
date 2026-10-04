@@ -166,6 +166,8 @@ it at the start of every conversation (see below). It must always match the issu
   is green. Never merge with red or running CI.
 - Larger epics may be collected on a branch `epic/<name>`; it is merged into
   `main` only after green CI and a test by the user (APK on the phone).
+  Task PRs target the epic branch; the epic PR (title with `[apk]`) publishes
+  the test APK as pre-release “preview”.
 - No direct push to `main` except for repo infrastructure (CI, this file,
   `STATUS.md`).
 - Delete the branch after merging.
@@ -266,3 +268,8 @@ commit comment).
 - 2026-10-04 – Lock screen countdown (epic #219, story #220): label and
   remaining time on the lock screen, Live Update on Android 16 where allowed;
   setting “Show on lock screen”, default on. Built before #119.
+- 2026-10-05 – Mindful opening (epic #141, story #119), built on branch
+  `epic/mindful-access` for a test on the phone: outside sessions and focus
+  times a paused app first shows a 5-second breathing pause, then “open” or
+  “go back”; after opening, the app stays free for 5 minutes; a calm line
+  says how often it was opened today; switch in the settings, default off.

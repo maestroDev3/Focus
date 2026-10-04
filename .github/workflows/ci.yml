@@ -75,7 +75,7 @@ jobs:
       # Only APKs signed with the Focus release key may be published, otherwise
       # phones refuse the update (“App not installed”).
       - name: Check release signature
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' || startsWith(github.head_ref, 'epic/')
         run: |
           if [ ! -f android/app/focus-release.sha256 ]; then
             echo "::error::No release key yet. Set the secret FOCUS_KEYSTORE_PASSWORD and run the workflow 'Create release key'."
@@ -108,3 +108,16 @@ jobs:
           gh release delete latest --yes --cleanup-tag || true
           gh release create latest focus_timer.apk --target "$GITHUB_SHA" \
             --title "Focus (latest) · build ${{ github.run_number }}" --notes "$NOTES"
+      # Epic branches (collected for a user test, CLAUDE.md “Merging”): publish
+      # the APK as pre-release “preview”, so it installs on the phone over the
+      # current version (…/releases/download/preview/focus_timer.apk).
+      - name: Release preview
+        if: startsWith(github.head_ref, 'epic/')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cp build/app/outputs/flutter-apk/app-release.apk focus_timer.apk
+          NOTES="Preview of ${GITHUB_HEAD_REF} (build ${{ github.run_number }}) for testing before it is merged. Download focus_timer.apk on your phone and open it."
+          gh release delete preview --yes --cleanup-tag || true
+          gh release create preview focus_timer.apk --prerelease --target "${{ github.event.pull_request.head.sha }}" \
+            --title "Focus (preview) · ${GITHUB_HEAD_REF} · build ${{ github.run_number }}" --notes "$NOTES"
