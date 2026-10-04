@@ -65,6 +65,8 @@ void main() {
         FakeAppLanguageSetting(AppLanguage.german),
       );
       await tester.scrollUntilVisible(find.text('Language'), 200);
+      await tester.ensureVisible(find.text('Language'));
+      await tester.pump();
 
       expect(find.text('Language'), findsOneWidget);
       expect(find.text('Deutsch'), findsOneWidget);
@@ -80,6 +82,8 @@ void main() {
         changes.add,
       );
       await tester.scrollUntilVisible(find.text('Language'), 200);
+      await tester.ensureVisible(find.text('Language'));
+      await tester.pump();
       expect(find.text('System default'), findsOneWidget);
 
       await tester.tap(find.text('Language'));
@@ -118,6 +122,8 @@ void main() {
           ),
         );
         await tester.scrollUntilVisible(find.text('Restore backup'), 100);
+        await tester.ensureVisible(find.text('Restore backup'));
+        await tester.pump();
         expect(find.text(text), findsOneWidget);
 
         await tester.tap(find.text('Restore backup'));
@@ -142,6 +148,8 @@ void main() {
       );
       final lockScreen = find.byKey(const Key('show-on-lock-screen'));
       await tester.scrollUntilVisible(lockScreen, 200);
+      await tester.ensureVisible(lockScreen);
+      await tester.pump();
       expect(find.text('Show on lock screen'), findsOneWidget);
       expect(
         find.text('Label and remaining time while a session runs'),
@@ -169,6 +177,8 @@ void main() {
       );
       final lockScreen = find.byKey(const Key('show-on-lock-screen'));
       await tester.scrollUntilVisible(lockScreen, 200);
+      await tester.ensureVisible(lockScreen);
+      await tester.pump();
 
       expect(tester.widget<SwitchListTile>(lockScreen).value, isFalse);
     });
@@ -276,6 +286,8 @@ void main() {
       await pumpSettings(tester);
 
       await tester.scrollUntilVisible(find.text('Export backup'), 100);
+      await tester.ensureVisible(find.text('Export backup'));
+      await tester.pump();
       await tester.tap(find.text('Export backup'));
       await tester.pump();
       await tester.pump();
@@ -303,6 +315,8 @@ void main() {
       );
 
       await tester.scrollUntilVisible(find.text('Restore backup'), 100);
+      await tester.ensureVisible(find.text('Restore backup'));
+      await tester.pump();
       await tester.tap(find.text('Restore backup'));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
@@ -336,6 +350,8 @@ void main() {
       );
 
       await tester.scrollUntilVisible(find.text('Restore backup'), 100);
+      await tester.ensureVisible(find.text('Restore backup'));
+      await tester.pump();
       await tester.tap(find.text('Restore backup'));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
@@ -351,6 +367,8 @@ void main() {
       documents.textToOpen = '{"hello":"world"}';
 
       await tester.scrollUntilVisible(find.text('Restore backup'), 100);
+      await tester.ensureVisible(find.text('Restore backup'));
+      await tester.pump();
       await tester.tap(find.text('Restore backup'));
       await tester.pump();
       await tester.pump();
@@ -362,6 +380,8 @@ void main() {
       await pumpSettings(tester);
 
       await tester.scrollUntilVisible(find.text('Focus times'), 100);
+      await tester.ensureVisible(find.text('Focus times'));
+      await tester.pump();
       await tester.tap(find.text('Focus times'));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
