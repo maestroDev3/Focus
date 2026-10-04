@@ -28,6 +28,16 @@ class MainActivity : FlutterActivity() {
         super.configureFlutterEngine(flutterEngine)
         val messenger = flutterEngine.dartExecutor.binaryMessenger
         documents = DocumentChannel(this, messenger)
+        MethodChannel(messenger, LANGUAGE_CHANNEL).setMethodCallHandler { call, result ->
+            when (call.method) {
+                "get" -> result.success(AppLanguage.get(this))
+                "set" -> {
+                    AppLanguage.set(this, call.arguments as? String)
+                    result.success(null)
+                }
+                else -> result.notImplemented()
+            }
+        }
         MethodChannel(messenger, APPS_CHANNEL).setMethodCallHandler { call, result ->
             when (call.method) {
                 "installedApps" -> result.success(installedApps())
@@ -290,6 +300,7 @@ class MainActivity : FlutterActivity() {
         const val EXTRA_BLOCKED_PACKAGE = "blockedPackage"
         private const val ICON_SIZE = 96
         private const val APPS_CHANNEL = "de.maestrodev.focus_timer/apps"
+        private const val LANGUAGE_CHANNEL = "de.maestrodev.focus_timer/language"
         private const val BLOCKING_CHANNEL = "de.maestrodev.focus_timer/blocking"
         private const val REMINDERS_CHANNEL = "de.maestrodev.focus_timer/reminders"
         private const val SESSION_END_CHANNEL = "de.maestrodev.focus_timer/session_end"
