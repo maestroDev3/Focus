@@ -655,5 +655,24 @@
   "turnBlockingBackOn": "Turn back on",
   "@turnBlockingBackOn": {
     "description": "Button that opens the settings to switch app blocking back on."
+  },
+  "thisMonth": "This month",
+  "dayFocusOfGoal": "{day} · {focus} of {goal}",
+  "@thisMonth": {
+    "description": "Statistics tile with the focus time of the current month."
+  },
+  "@dayFocusOfGoal": {
+    "description": "Line under the statistics chart for the selected day.",
+    "placeholders": {
+      "day": {
+        "type": "String"
+      },
+      "focus": {
+        "type": "String"
+      },
+      "goal": {
+        "type": "String"
+      }
+    }
   }
 }
