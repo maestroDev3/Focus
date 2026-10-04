@@ -6,6 +6,22 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   group('SharedPreferencesSettingsRepository', () {
+    test('keeps mindful opening off until it is switched on', () async {
+      SharedPreferences.setMockInitialValues({});
+      final preferences = await SharedPreferences.getInstance();
+      final repository = SharedPreferencesSettingsRepository(preferences);
+      expect(await repository.loadMindfulOpening(), isFalse);
+
+      await repository.saveMindfulOpening(true);
+
+      expect(
+        await SharedPreferencesSettingsRepository(
+          preferences,
+        ).loadMindfulOpening(),
+        isTrue,
+      );
+    });
+
     test('shows the countdown on the lock screen by default', () async {
       SharedPreferences.setMockInitialValues({});
       final repository = SharedPreferencesSettingsRepository(
