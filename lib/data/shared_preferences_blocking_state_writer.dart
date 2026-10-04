@@ -33,6 +33,8 @@ class SharedPreferencesBlockingStateWriter implements BlockingStateWriter {
                 'packages': packages.toList()..sort(),
             },
         ],
+        // Optional since #119; read as false when missing.
+        if (state.mindfulOpening) 'mindful': true,
       }),
     );
   }

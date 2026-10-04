@@ -23,4 +23,10 @@ abstract interface class SettingsRepository {
   Future<bool> loadShowOnLockScreen();
 
   Future<void> saveShowOnLockScreen(bool show);
+
+  /// Whether paused apps open after a breathing pause outside sessions and
+  /// focus times; off unless switched on.
+  Future<bool> loadMindfulOpening();
+
+  Future<void> saveMindfulOpening(bool on);
 }
