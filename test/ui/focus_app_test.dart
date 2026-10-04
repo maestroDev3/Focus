@@ -459,8 +459,7 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
 
-      expect(find.text('Telegram'), findsOneWidget);
-      expect(find.text('Resting while you focus.'), findsOneWidget);
+      expect(find.text('Telegram is resting while you focus.'), findsOneWidget);
       expect(find.text('Focus time until 21:00'), findsOneWidget);
     });
 

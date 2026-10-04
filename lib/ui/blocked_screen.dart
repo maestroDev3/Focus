@@ -76,17 +76,9 @@ class BlockedScreen extends StatelessWidget {
                           color: theme.colorScheme.primary,
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 24),
                       Text(
-                        appLabel,
-                        style: theme.textTheme.labelLarge?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                          letterSpacing: 3,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        l10n.blockedResting,
+                        l10n.blockedResting(appLabel),
                         textAlign: TextAlign.center,
                         style: theme.textTheme.displaySmall,
                       ),

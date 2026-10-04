@@ -66,7 +66,7 @@
   "blockedAppsStrictNote": "Während du fokussierst, kannst du Apps hinzufügen, aber nicht entfernen.",
   "chooseAppsToPause": "Apps zum Sperren wählen",
   "appsPaused": "{count, plural, =1{1 App gesperrt} other{{count} Apps gesperrt}}",
-  "blockedResting": "Ruht, während du fokussierst.",
+  "blockedResting": "{app} ruht, während du im Fokus bist.",
   "blockedRemaining": "Noch {time} in dieser Session.",
   "blockedSessionPaused": "Deine Session ist pausiert.",
   "returnToFocus": "Zurück zum Fokus",
