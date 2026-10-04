@@ -32,7 +32,11 @@ class SettingsScreen extends StatefulWidget {
     this.onLanguageChanged,
     this.restoreLock = _unlocked,
     this.onLockScreenChanged,
+    this.onMindfulChanged,
   });
+
+  /// Called after “Mindful opening” changed, so the blocker learns it.
+  final VoidCallback? onMindfulChanged;
 
   /// Called after “Show on lock screen” changed, so a running countdown
   /// follows at once.
@@ -68,6 +72,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   var _dailyGoal = const DailyGoal();
   AppLanguage? _language;
   var _showOnLockScreen = true;
+  var _mindfulOpening = false;
 
   @override
   void initState() {
@@ -80,13 +85,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final dailyGoal = await widget.settings.loadDailyGoal();
     final language = await widget.language?.load();
     final showOnLockScreen = await widget.settings.loadShowOnLockScreen();
+    final mindfulOpening = await widget.settings.loadMindfulOpening();
     if (!mounted) return;
     setState(() {
       _pomodoro = pomodoro;
       _dailyGoal = dailyGoal;
       _language = language;
       _showOnLockScreen = showOnLockScreen;
+      _mindfulOpening = mindfulOpening;
     });
+  }
+
+  Future<void> _setMindfulOpening(bool on) async {
+    setState(() => _mindfulOpening = on);
+    await widget.settings.saveMindfulOpening(on);
+    widget.onMindfulChanged?.call();
   }
 
   Future<void> _setShowOnLockScreen(bool show) async {
@@ -277,6 +290,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   subtitle: Text(l10n.showOnLockScreenDetails),
                   value: _showOnLockScreen,
                   onChanged: _setShowOnLockScreen,
+                ),
+                SwitchListTile(
+                  key: const Key('mindful-opening'),
+                  secondary: const Icon(Icons.self_improvement),
+                  title: Text(l10n.mindfulOpening),
+                  subtitle: Text(l10n.mindfulOpeningDetails),
+                  value: _mindfulOpening,
+                  onChanged: _setMindfulOpening,
                 ),
                 const Divider(height: 32),
                 if (_language case final language?)
