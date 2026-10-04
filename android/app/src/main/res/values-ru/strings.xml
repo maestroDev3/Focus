@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="blocker_service_label">Focus — пауза приложений</string>
+    <string name="blocker_service_description">Focus использует эту службу только для того, чтобы заметить, когда во время фокус-сессии открывается приложение на паузе, и вернуть тебя в Focus. Он никогда не читает, что у тебя на экране.</string>
+    <string name="notification_gate_label">Focus — удержание уведомлений</string>
+    <string name="widget_description">Начни фокус-сессию одним нажатием и смотри, сколько осталось.</string>
+    <string name="warning_channel">Предупреждения Focus</string>
+    <string name="blocker_off_title">Блокировка приложений выключена</string>
+    <string name="blocker_off_text">Снова включи «Focus — пауза приложений», чтобы приложения на паузе оставались закрытыми.</string>
+    <string name="gate_off_title">Удержание уведомлений выключено</string>
+    <string name="gate_off_text">Снова включи «Focus — удержание уведомлений», чтобы удерживать уведомления приложений на паузе.</string>
+</resources>
