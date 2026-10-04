@@ -8,14 +8,13 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- Nothing – next: #96.
+- #96 Include paused apps in backups – tasks #222 → #223.
 
 ## Up next
 
-1. #96 Include paused apps in backups.
-2. #119 Mindful opening of paused apps.
-3. Epic #123 Session ritual: #121 Intention and reflection → #122 Ambient sounds.
-4. Later: #207 Focus insights, #196 Quick settings tile, #194 Google Play release.
+1. #119 Mindful opening of paused apps.
+2. Epic #123 Session ritual: #121 Intention and reflection → #122 Ambient sounds.
+3. Later: #207 Focus insights, #196 Quick settings tile, #194 Google Play release.
 
 ## Backlog by initiative → epic
 
@@ -32,7 +31,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 | Epic | State | Stories (in order) |
 |---|---|---|
-| #20 Distraction blocking | 7 of 8 closed | #96 Include paused apps in backups (`backlog`) |
+| #20 Distraction blocking | 7 of 8 closed | #96 Include paused apps in backups (`in-progress`) |
 | #141 Mindful access to paused apps | 0 of 1 closed | #119 Mindful opening of paused apps (`backlog`) |
 | #187 Block list per session | 0 of 1 closed | #188 Choose a block list when starting a session (`backlog`, parked – only on real need) |
 
