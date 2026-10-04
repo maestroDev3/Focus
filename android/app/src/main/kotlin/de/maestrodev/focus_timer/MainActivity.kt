@@ -21,6 +21,7 @@ class MainActivity : FlutterActivity() {
     private var blockingChannel: MethodChannel? = null
     private var documents: DocumentChannel? = null
     private var pendingBlockedPackage: String? = null
+    private var pendingMindfulRequest: Map<String, Any>? = null
     private var remindersChannel: MethodChannel? = null
     private var pendingStartRequest = false
 
@@ -131,6 +132,7 @@ class MainActivity : FlutterActivity() {
             }
         }
         pendingBlockedPackage = intent?.getStringExtra(EXTRA_BLOCKED_PACKAGE)
+        pendingMindfulRequest = intent?.let(::mindfulRequest)
         blockingChannel = MethodChannel(messenger, BLOCKING_CHANNEL).apply {
             setMethodCallHandler { call, result ->
                 when (call.method) {
@@ -157,6 +159,22 @@ class MainActivity : FlutterActivity() {
                         result.success(pendingBlockedPackage)
                         pendingBlockedPackage = null
                     }
+                    "initialMindfulRequest" -> {
+                        result.success(pendingMindfulRequest)
+                        pendingMindfulRequest = null
+                    }
+                    "openMindfully" -> {
+                        (call.arguments as? String)?.let(::openMindfully)
+                        result.success(null)
+                    }
+                    "goHome" -> {
+                        startActivity(
+                            Intent(Intent.ACTION_MAIN)
+                                .addCategory(Intent.CATEGORY_HOME)
+                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                        )
+                        result.success(null)
+                    }
                     else -> result.notImplemented()
                 }
             }
@@ -176,9 +194,25 @@ class MainActivity : FlutterActivity() {
         intent.getStringExtra(EXTRA_BLOCKED_PACKAGE)?.let { app ->
             blockingChannel?.invokeMethod("blockedAppOpened", app)
         }
+        mindfulRequest(intent)?.let { request ->
+            blockingChannel?.invokeMethod("mindfulOpenRequested", request)
+        }
         if (intent.getBooleanExtra(FocusTimeReminder.EXTRA_START_SESSION, false)) {
             remindersChannel?.invokeMethod("startRequested", null)
         }
+    }
+
+    /** The breathing pause Focus was opened for: `{package, openedToday}`. */
+    private fun mindfulRequest(intent: Intent): Map<String, Any>? {
+        val app = intent.getStringExtra(EXTRA_MINDFUL_PACKAGE) ?: return null
+        return mapOf("package" to app, "openedToday" to intent.getIntExtra(EXTRA_MINDFUL_COUNT, 1))
+    }
+
+    /** “Open” after the pause: free for five minutes, then launch the app. */
+    private fun openMindfully(app: String) {
+        MindfulOpening.release(this, app, System.currentTimeMillis())
+        val launch = packageManager.getLaunchIntentForPackage(app) ?: return
+        startActivity(launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
     }
 
     /** Asks once for POST_NOTIFICATIONS (Android 13+) so reminders and the session end can show. */
@@ -298,6 +332,8 @@ class MainActivity : FlutterActivity() {
 
     companion object {
         const val EXTRA_BLOCKED_PACKAGE = "blockedPackage"
+        const val EXTRA_MINDFUL_PACKAGE = "mindfulPackage"
+        const val EXTRA_MINDFUL_COUNT = "mindfulCount"
         private const val ICON_SIZE = 96
         private const val APPS_CHANNEL = "de.maestrodev.focus_timer/apps"
         private const val LANGUAGE_CHANNEL = "de.maestrodev.focus_timer/language"
