@@ -345,9 +345,14 @@
       }
     }
   },
-  "blockedResting": "Resting while you focus.",
+  "blockedResting": "{app} is resting while you focus.",
   "@blockedResting": {
-    "description": "Headline of the screen shown instead of a paused app during a session."
+    "description": "Headline of the screen shown instead of a paused app during a session.",
+    "placeholders": {
+      "app": {
+        "type": "String"
+      }
+    }
   },
   "blockedRemaining": "{time} remain in this session.",
   "@blockedRemaining": {
@@ -492,15 +497,21 @@
   "@settingRange": {
     "description": "Helper text in the dialog for typing a setting value.",
     "placeholders": {
-      "min": {"type": "int"},
-      "max": {"type": "int"}
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
     }
   },
   "editSetting": "Change {name}",
   "@editSetting": {
     "description": "Semantics hint for tapping a setting value to type it.",
     "placeholders": {
-      "name": {"type": "String"}
+      "name": {
+        "type": "String"
+      }
     }
   },
   "filterAllApps": "All",
@@ -511,7 +522,9 @@
   "@filterPausedApps": {
     "description": "Filter on the paused-apps screen showing only paused apps, with their number.",
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "noPausedApps": "No paused apps yet.",
@@ -530,14 +543,18 @@
   "@countdownFocusingWithLabel": {
     "description": "Title of the ongoing countdown notification; label is the session's label.",
     "placeholders": {
-      "label": {"type": "String"}
+      "label": {
+        "type": "String"
+      }
     }
   },
   "countdownPaused": "Paused · {time} left",
   "@countdownPaused": {
     "description": "Text of the countdown notification while the session is paused; time is the remaining time (mm:ss).",
     "placeholders": {
-      "time": {"type": "String"}
+      "time": {
+        "type": "String"
+      }
     }
   },
   "widgetStart": "Focus",
@@ -548,8 +565,12 @@
   "@widgetProgress": {
     "description": "Today's focus time towards the daily goal on the home screen widget.",
     "placeholders": {
-      "today": {"type": "String"},
-      "goal": {"type": "String"}
+      "today": {
+        "type": "String"
+      },
+      "goal": {
+        "type": "String"
+      }
     }
   },
   "blockListsTitle": "Block lists",
@@ -564,14 +585,18 @@
   "@defaultBlockListSummary": {
     "description": "Subtitle of the default block list: number of apps and where it is used.",
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "blockListAppCount": "{count, plural, =0{No apps} =1{1 app} other{{count} apps}}",
   "@blockListAppCount": {
     "description": "Number of apps in a named block list.",
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "newBlockList": "New list",
@@ -590,7 +615,9 @@
   "@blockListOptions": {
     "description": "Tooltip of the menu button of a named block list.",
     "placeholders": {
-      "name": {"type": "String"}
+      "name": {
+        "type": "String"
+      }
     }
   },
   "renameBlockList": "Rename",
@@ -609,8 +636,12 @@
   "@blockListUntil": {
     "description": "Blocked screen during a focus time with its own block list.",
     "placeholders": {
-      "list": {"type": "String"},
-      "time": {"type": "String"}
+      "list": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
     }
   },
   "blockingOffTitle": "App blocking is off",

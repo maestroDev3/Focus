@@ -431,7 +431,7 @@ void main() {
       blocker.emit('org.telegram.messenger');
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
-      expect(find.text('Telegram'), findsOneWidget);
+      expect(find.text('Telegram is resting while you focus.'), findsOneWidget);
       expect(find.text('25:00 remain in this session.'), findsOneWidget);
 
       await tester.tap(find.text('Return to focus'));
@@ -459,8 +459,7 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
 
-      expect(find.text('Telegram'), findsOneWidget);
-      expect(find.text('Resting while you focus.'), findsOneWidget);
+      expect(find.text('Telegram is resting while you focus.'), findsOneWidget);
       expect(find.text('Focus time until 21:00'), findsOneWidget);
     });
 

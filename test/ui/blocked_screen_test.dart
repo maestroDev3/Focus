@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:focus_timer/domain/focus_time.dart';
 import 'package:focus_timer/ui/blocked_screen.dart';
@@ -15,8 +16,8 @@ void main() {
         ),
       );
 
-      expect(find.text('Telegram'), findsOneWidget);
-      expect(find.text('Resting while you focus.'), findsOneWidget);
+      expect(find.text('Telegram is resting while you focus.'), findsOneWidget);
+      expect(find.text('Telegram'), findsNothing);
       expect(find.text('18:00 remain in this session.'), findsOneWidget);
     });
 
@@ -81,6 +82,22 @@ void main() {
       );
 
       expect(find.text('Morning · until 10:00'), findsOneWidget);
+    });
+
+    testWidgets('names the app in German', (tester) async {
+      await tester.pumpApp(
+        BlockedScreen(
+          appLabel: 'Instagram',
+          remaining: const Duration(minutes: 18),
+          onReturn: () {},
+        ),
+        locale: const Locale('de'),
+      );
+
+      expect(
+        find.text('Instagram ruht, während du im Fokus bist.'),
+        findsOneWidget,
+      );
     });
 });
 }
