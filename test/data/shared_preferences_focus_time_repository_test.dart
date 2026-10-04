@@ -14,6 +14,35 @@ void main() {
   });
 
   group('SharedPreferencesFocusTimeRepository', () {
+    test('replaces all focus times and keeps their ids', () async {
+      await repository.addFocusTime(
+        weekdays: {1},
+        startMinute: 540,
+        endMinute: 720,
+      );
+      final restored = [
+        FocusTime(
+          id: 'focus-time-7',
+          weekdays: const {6, 7},
+          startMinute: 480,
+          endMinute: 600,
+          blockListId: 'list-3',
+        ),
+      ];
+
+      final emitted = repository.watchFocusTimes().skip(1).first;
+      await repository.replaceAll(restored);
+
+      expect(await emitted, restored);
+      expect(await repository.watchFocusTimes().first, restored);
+      final added = await repository.addFocusTime(
+        weekdays: {1},
+        startMinute: 540,
+        endMinute: 720,
+      );
+      expect(added.id, 'focus-time-8');
+    });
+
     test('adds, updates and deletes focus times', () async {
       final added = await repository.addFocusTime(
         weekdays: {1, 2, 3, 4, 5},
