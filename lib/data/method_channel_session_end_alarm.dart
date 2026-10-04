@@ -12,17 +12,20 @@ class MethodChannelSessionEndAlarm implements SessionEndAlarm {
 
   static const channel = MethodChannel('de.maestrodev.focus_timer/session_end');
 
-  /// Sent with every schedule call, so the notification needs no Flutter.
-  final SessionEndTexts texts;
+  /// Read with every schedule call (so a new app language applies) and sent
+  /// along, so the notification needs no Flutter.
+  final SessionEndTexts Function() texts;
 
   @override
-  Future<void> scheduleAt(DateTime end) =>
-      channel.invokeMethod<void>('schedule', {
-        'endMillis': end.millisecondsSinceEpoch,
-        'channelName': texts.channelName,
-        'title': texts.title,
-        'body': texts.body,
-      });
+  Future<void> scheduleAt(DateTime end) {
+    final texts = this.texts();
+    return channel.invokeMethod<void>('schedule', {
+      'endMillis': end.millisecondsSinceEpoch,
+      'channelName': texts.channelName,
+      'title': texts.title,
+      'body': texts.body,
+    });
+  }
 
   @override
   Future<void> cancel() => channel.invokeMethod<void>('cancel');

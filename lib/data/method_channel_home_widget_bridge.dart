@@ -24,26 +24,29 @@ class MethodChannelHomeWidgetBridge implements HomeWidgetBridge {
     'de.maestrodev.focus_timer/home_widget',
   );
 
-  final HomeWidgetTexts texts;
+  /// Read with every publish, so a new app language applies.
+  final HomeWidgetTexts Function() texts;
 
   /// Formats today's focus time and the goal like the app does.
   final String Function(Duration duration) formatDuration;
 
   @override
-  Future<void> publish(WidgetSnapshot snapshot) =>
-      channel.invokeMethod<void>('publish', {
-        'focusMinutes': snapshot.focus.inMinutes,
-        'labelId': snapshot.labelId,
-        'progress': texts.progress
-            .replaceAll('{today}', formatDuration(snapshot.focusedToday))
-            .replaceAll('{goal}', formatDuration(snapshot.dailyGoal)),
-        'start': texts.start,
-        'countdownTitle': switch (snapshot.labelName) {
-          final label? => texts.focusingWithLabel.replaceAll('{label}', label),
-          null => texts.focusing,
-        },
-        'countdownChannel': texts.countdownChannel,
-      });
+  Future<void> publish(WidgetSnapshot snapshot) {
+    final texts = this.texts();
+    return channel.invokeMethod<void>('publish', {
+      'focusMinutes': snapshot.focus.inMinutes,
+      'labelId': snapshot.labelId,
+      'progress': texts.progress
+          .replaceAll('{today}', formatDuration(snapshot.focusedToday))
+          .replaceAll('{goal}', formatDuration(snapshot.dailyGoal)),
+      'start': texts.start,
+      'countdownTitle': switch (snapshot.labelName) {
+        final label? => texts.focusingWithLabel.replaceAll('{label}', label),
+        null => texts.focusing,
+      },
+      'countdownChannel': texts.countdownChannel,
+    });
+  }
 
   @override
   Future<ExternalStart?> takePendingStart() async {

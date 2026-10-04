@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../domain/app_blocker.dart';
+import '../domain/app_language.dart';
 import '../domain/backup.dart';
 import '../domain/block_list_repository.dart';
 import '../domain/clock.dart';
@@ -20,6 +21,7 @@ import '../domain/named_block_list.dart';
 import '../domain/pomodoro.dart';
 import '../domain/settings_repository.dart';
 import '../l10n/app_localizations.dart';
+import 'app_locale.dart';
 import 'block_lists_screen.dart';
 import 'blocked_screen.dart';
 import 'break_screen.dart';
@@ -48,6 +50,8 @@ class FocusApp extends StatefulWidget {
     required this.focusTimes,
     required this.reminders,
     this.homeWidget,
+    this.language,
+    this.onLanguageChanged,
     this.clock = DateTime.now,
     this.showIntro = false,
   });
@@ -85,6 +89,13 @@ class FocusApp extends StatefulWidget {
   /// The home screen widget; optional because not every test needs it.
   final HomeWidgetBridge? homeWidget;
 
+  /// The chosen app language; optional because not every test needs it.
+  final AppLanguageSetting? language;
+
+  /// Called when the language changed in the settings, so texts sent to
+  /// native code follow it.
+  final ValueChanged<AppLanguage>? onLanguageChanged;
+
   /// Source of the current time for every screen.
   final Clock clock;
 
@@ -106,6 +117,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
   var _blockedAppCount = 0;
   var _blockerEnabled = true;
   var _notificationGateEnabled = true;
+  var _language = AppLanguage.system;
 
   /// False while apps are paused but the blocker is switched off; the
   /// session screen warns then.
@@ -171,7 +183,9 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
     final blockerEnabled = await widget.appBlocker.isBlockerEnabled();
     final notificationGateEnabled = await widget.appBlocker
         .isNotificationGateEnabled();
+    final language = await widget.language?.load() ?? _language;
     if (!mounted) return;
+    final languageChanged = language != _language;
     setState(() {
       _pomodoro = pomodoro;
       _selectedLabelId = selectedLabelId;
@@ -180,8 +194,23 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
       _blockedAppCount = blockList.length;
       _blockerEnabled = blockerEnabled;
       _notificationGateEnabled = notificationGateEnabled;
+      _language = language;
     });
     _blockingActive.value = blockerEnabled || blockList.length == 0;
+    if (languageChanged) {
+      // E.g. changed in the Android settings while Focus was away.
+      widget.onLanguageChanged?.call(language);
+      await _publishReminders();
+    }
+    await _publishWidget();
+  }
+
+  /// The settings saved a new language: switch now and republish the texts
+  /// shown by native code.
+  Future<void> _onLanguageChanged(AppLanguage language) async {
+    setState(() => _language = language);
+    widget.onLanguageChanged?.call(language);
+    await _publishReminders();
     await _publishWidget();
   }
 
@@ -253,18 +282,18 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
   Future<void> _onFocusTimesChanged(List<FocusTime> times) async {
     if (mounted) setState(() => _focusTimes = times);
     await widget.timer.refreshBlocking();
-    final l10n = lookupAppLocalizations(
-      basicLocaleListResolution(
-        WidgetsBinding.instance.platformDispatcher.locales,
-        AppLocalizations.supportedLocales,
-      ),
-    );
+    await _publishReminders();
+    if (times.isNotEmpty) await widget.reminders.requestPermission();
+  }
+
+  /// Schedules the focus time reminders with texts in the app language.
+  Future<void> _publishReminders() async {
+    final l10n = localizationsFor(_language);
     await widget.reminders.reschedule((
       channelName: l10n.focusTimeReminderChannel,
       title: l10n.focusTimeUntil('{time}'),
       body: l10n.focusTimeReminderBody,
     ));
-    if (times.isNotEmpty) await widget.reminders.requestPermission();
   }
 
   /// The label with [id], if it still exists.
@@ -283,6 +312,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
       themeMode: ThemeMode.system,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
+      locale: localeOf(_language),
       home: AnimatedSwitcher(
         duration: const Duration(milliseconds: 600),
         child: _introDone
@@ -331,6 +361,8 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
         focusTimes: widget.focusTimes,
         backupFiles: widget.backupFiles,
         namedBlockLists: widget.namedBlockLists,
+        language: widget.language,
+        onLanguageChanged: _onLanguageChanged,
       ),
     );
     await _loadState();

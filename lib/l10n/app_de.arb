@@ -125,5 +125,10 @@
   "blockingOffBody": "Gesperrte Apps lassen sich öffnen, bis du „Focus App-Sperre“ wieder einschaltest.",
   "turnBlockingBackOn": "Wieder einschalten",
   "thisMonth": "Dieser Monat",
-  "dayFocusOfGoal": "{day} · {focus} von {goal}"
+  "dayFocusOfGoal": "{day} · {focus} von {goal}",
+  "language": "Sprache",
+  "languageSystem": "Systemsprache",
+  "languageEnglish": "English",
+  "languageGerman": "Deutsch",
+  "languageRussian": "Русский"
 }

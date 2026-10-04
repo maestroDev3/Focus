@@ -674,5 +674,25 @@
         "type": "String"
       }
     }
+  },
+  "language": "Language",
+  "languageSystem": "System default",
+  "languageEnglish": "English",
+  "languageGerman": "Deutsch",
+  "languageRussian": "Русский",
+  "@language": {
+    "description": "Settings entry to choose the app language."
+  },
+  "@languageSystem": {
+    "description": "Language choice that follows the phone language."
+  },
+  "@languageEnglish": {
+    "description": "Name of the language in itself; the same in every translation."
+  },
+  "@languageGerman": {
+    "description": "Name of the language in itself; the same in every translation."
+  },
+  "@languageRussian": {
+    "description": "Name of the language in itself; the same in every translation."
   }
 }
