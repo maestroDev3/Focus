@@ -846,6 +846,7 @@ void main() {
 
         blocker.emitMindful(telegram);
         await tester.pump();
+        await tester.pump();
         await tester.pump(const Duration(milliseconds: 500));
         expect(
           find.text('Do you really want to open Telegram?'),
