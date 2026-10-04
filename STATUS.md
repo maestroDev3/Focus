@@ -8,7 +8,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- #220 Follow the session on the lock screen – tasks #226 → #227.
+- Nothing – next: #119.
 
 ## Up next
 
@@ -25,7 +25,6 @@ The GitHub issues are authoritative; this file is the summary.
 | #123 Session ritual | 0 of 2 closed | #121 Intention and reflection → #122 Ambient sounds (both `backlog`) |
 | #195 Quick settings tile | 0 of 1 closed | #196 Start a session from the quick settings (`backlog`) |
 | #205 Statistics you can explore | 1 of 2 closed | #207 Focus insights (`backlog`) |
-| #219 Session at a glance on the lock screen | 0 of 1 closed | #220 Follow the session on the lock screen (`in-progress`) |
 
 **#139 Distraction blocking**
 
@@ -43,11 +42,11 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## Recently done
 
+- #220 Session on the lock screen (Live Update on Android 16, setting “Show on lock screen”); epic #219 closed
 - #96 Backups include block lists and focus times (restore locked while focusing); epic #20 closed
 - #215 Language in the settings (System, English, Deutsch, Русский), synced with Android's app language; epic #214 closed
 - #190 Warning when blocking is switched off during focus – confirmed on the phone; epic #189 closed
 - #209 Russian translation; epic #208 closed
-- #206 Explorable statistics – tap a day, week/month switch at the top
 
 ## Open decisions (user only)
 
