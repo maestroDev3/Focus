@@ -18,6 +18,10 @@ abstract interface class FocusTimeRepository {
   Future<void> updateFocusTime(FocusTime time);
 
   Future<void> deleteFocusTime(String id);
+
+  /// Replaces all focus times with [times], keeping their ids (restoring a
+  /// backup).
+  Future<void> replaceAll(List<FocusTime> times);
 }
 
 /// Throws [ArgumentError] if [time] overlaps any other focus time in [times]

@@ -19,6 +19,28 @@ void main() {
   ];
 
   group('SharedPreferencesNamedBlockListRepository', () {
+    test('replaces all lists and keeps their ids', () async {
+      await repository.addList('Old');
+      final restored = [
+        NamedBlockList(
+          id: 'list-5',
+          name: 'Morning',
+          apps: const BlockList({'com.instagram.android'}),
+        ),
+      ];
+
+      final emitted = <List<NamedBlockList>>[];
+      final subscription = repository.watchLists().listen(emitted.add);
+      addTearDown(subscription.cancel);
+      await pumpEventQueue();
+      await repository.replaceAll(restored);
+      await pumpEventQueue();
+
+      expect(emitted.last, restored);
+      expect(await repository.watchLists().first, restored);
+      expect((await repository.addList('Evening')).id, 'list-6');
+    });
+
     test('emits added lists in insertion order', () async {
       final emitted = <List<String>>[];
       final subscription = repository.watchLists().listen(

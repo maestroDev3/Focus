@@ -51,4 +51,12 @@ class FakeFocusTimeRepository implements FocusTimeRepository {
     times.removeWhere((time) => time.id == id);
     _changes.add(List.of(times));
   }
+
+  @override
+  Future<void> replaceAll(List<FocusTime> times) async {
+    this.times
+      ..clear()
+      ..addAll(times);
+    _changes.add(List.of(this.times));
+  }
 }

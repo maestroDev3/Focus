@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../domain/focus_time.dart';
 import '../domain/focus_time_repository.dart';
+import '../domain/id_counter.dart';
 
 /// Stores focus times as versioned JSON (`focus_times.v1`).
 class SharedPreferencesFocusTimeRepository implements FocusTimeRepository {
@@ -58,6 +59,15 @@ class SharedPreferencesFocusTimeRepository implements FocusTimeRepository {
       for (final time in times)
         if (time.id != id) time,
     ], nextId);
+  }
+
+  @override
+  Future<void> replaceAll(List<FocusTime> times) async {
+    final (times: _, :nextId) = _load();
+    await _save(
+      List.of(times),
+      nextFreeIdNumber(nextId, [for (final time in times) time.id]),
+    );
   }
 
   ({List<FocusTime> times, int nextId}) _load() {

@@ -67,6 +67,9 @@ abstract interface class NamedBlockListRepository {
 
   /// Replaces the apps of the list with [id].
   Future<void> saveApps(String id, BlockList apps);
+
+  /// Replaces all lists with [lists], keeping their ids (restoring a backup).
+  Future<void> replaceAll(List<NamedBlockList> lists);
 }
 
 /// One named list seen as a [BlockListRepository], so the app picker can
