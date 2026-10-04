@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:focus_timer/domain/app_language.dart';
 import 'package:focus_timer/domain/blocking.dart';
 import 'package:focus_timer/domain/daily_goal.dart';
 import 'package:focus_timer/domain/focus_label.dart';
@@ -13,6 +14,7 @@ import 'package:focus_timer/ui/focus_app.dart';
 import 'package:focus_timer/ui/theme.dart';
 
 import '../support/backup_files_for_tests.dart';
+import '../support/fake_app_language_setting.dart';
 import '../support/fake_app_blocker.dart';
 import '../support/fake_block_list_repository.dart';
 import '../support/fake_blocking_state_writer.dart';
@@ -40,7 +42,11 @@ void main() {
     FocusTimer? timer,
     FakeFocusTimeRepository? focusTimes,
     FakeHomeWidgetBridge? homeWidget,
+    FakeAppLanguageSetting? language,
+    ValueChanged<AppLanguage>? onLanguageChanged,
   }) => FocusApp(
+    language: language,
+    onLanguageChanged: onLanguageChanged,
     showIntro: showIntro,
     timer: timer ?? FocusTimer(repository: repository, clock: () => now),
     settings: settings,
@@ -733,6 +739,69 @@ void main() {
       await beginFocus(tester);
 
       expect(find.text('App blocking is off'), findsNothing);
+    });
+
+    group('app language', () {
+      testWidgets('starts in the saved language', (tester) async {
+        await tester.pumpWidget(
+          buildApp(language: FakeAppLanguageSetting(AppLanguage.russian)),
+        );
+        await tester.pump();
+        await tester.pump();
+
+        expect(find.text('Начать фокус'), findsOneWidget);
+      });
+
+      testWidgets('follows the device with the system choice', (tester) async {
+        await tester.pumpWidget(buildApp(language: FakeAppLanguageSetting()));
+        await tester.pump();
+        await tester.pump();
+
+        expect(find.text('Begin focus'), findsOneWidget);
+      });
+
+      testWidgets('switches at once when a language is chosen', (
+        tester,
+      ) async {
+        final changes = <AppLanguage>[];
+        await tester.pumpWidget(
+          buildApp(
+            language: FakeAppLanguageSetting(),
+            onLanguageChanged: changes.add,
+          ),
+        );
+        await tester.pump();
+        await tester.tap(find.byTooltip('Settings'));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+        await tester.scrollUntilVisible(find.text('Language'), 200);
+
+        await tester.tap(find.text('Language'));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+        await tester.tap(find.text('Deutsch'));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+
+        expect(find.text('Einstellungen'), findsOneWidget);
+        expect(changes, [AppLanguage.german]);
+      });
+
+      testWidgets('reloads the language when Focus returns', (tester) async {
+        final language = FakeAppLanguageSetting();
+        await tester.pumpWidget(buildApp(language: language));
+        await tester.pump();
+        // Changed in the Android settings while Focus was in the background.
+        language.language = AppLanguage.german;
+
+        tester.binding.handleAppLifecycleStateChanged(
+          AppLifecycleState.resumed,
+        );
+        await tester.pump();
+        await tester.pump();
+
+        expect(find.text('Fokus beginnen'), findsOneWidget);
+      });
     });
   });
 }

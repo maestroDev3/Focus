@@ -10,14 +10,15 @@ void main() {
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
   final calls = <MethodCall>[];
   Object? pendingAnswer;
+  var texts = (
+    start: 'Focus',
+    progress: '{today} of {goal}',
+    focusing: 'Focusing',
+    focusingWithLabel: 'Focusing · {label}',
+    countdownChannel: 'Session countdown',
+  );
   final bridge = MethodChannelHomeWidgetBridge(
-    texts: (
-      start: 'Focus',
-      progress: '{today} of {goal}',
-      focusing: 'Focusing',
-      focusingWithLabel: 'Focusing · {label}',
-      countdownChannel: 'Session countdown',
-    ),
+    texts: () => texts,
     formatDuration: (duration) => '${duration.inMinutes} min',
   );
 
@@ -33,6 +34,30 @@ void main() {
   tearDown(() => messenger.setMockMethodCallHandler(channel, null));
 
   group('MethodChannelHomeWidgetBridge', () {
+    test('reads the texts when publishing, so a new language applies', () async {
+      final english = texts;
+      texts = (
+        start: 'Фокус',
+        progress: '{today} из {goal}',
+        focusing: 'Фокус',
+        focusingWithLabel: 'Фокус · {label}',
+        countdownChannel: 'Обратный отсчёт',
+      );
+      addTearDown(() => texts = english);
+
+      await bridge.publish(
+        const WidgetSnapshot(
+          focus: Duration(minutes: 25),
+          labelId: null,
+          labelName: null,
+          focusedToday: Duration.zero,
+          dailyGoal: Duration(minutes: 120),
+        ),
+      );
+
+      expect((calls.single.arguments as Map)['start'], 'Фокус');
+    });
+
     test('publishes the defaults and the formatted progress', () async {
       await bridge.publish(
         const WidgetSnapshot(
