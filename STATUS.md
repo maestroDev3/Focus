@@ -42,6 +42,7 @@ The GitHub issues are authoritative; this file is the summary.
 | Epic | State | Stories (in order) |
 |---|---|---|
 | #193 Focus on Google Play | 0 of 1 closed | #194 Publish Focus on Google Play (`backlog`) |
+| #214 Choose your app language | 0 of 1 closed | #215 Choose the app language in the settings (`backlog`) |
 
 ## Recently done
 
@@ -54,3 +55,4 @@ The GitHub issues are authoritative; this file is the summary.
 ## Open decisions (user only)
 
 - New epic #187 Block list per session (parked idea #188) – created, please confirm or re-sort.
+- New epic #214 Choose your app language (in #140 Release & platform) – created, please confirm or re-sort.
