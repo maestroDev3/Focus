@@ -33,13 +33,17 @@ void main() {
       FakeAppLanguageSetting? language,
       ValueChanged<AppLanguage>? onLanguageChanged,
       RestoreLock Function()? restoreLock,
+      VoidCallback? onLockScreenChanged,
+      bool showOnLockScreen = true,
     ]) async {
-      final repository = FakeSettingsRepository(pomodoro);
+      final repository = FakeSettingsRepository(pomodoro)
+        ..showOnLockScreen = showOnLockScreen;
       await tester.pumpApp(
         SettingsScreen(
           language: language,
           onLanguageChanged: onLanguageChanged,
           restoreLock: restoreLock ?? () => RestoreLock.none,
+          onLockScreenChanged: onLockScreenChanged,
           settings: repository,
           focusTimes: FakeFocusTimeRepository(),
           backupFiles: backupFilesForTests(
@@ -61,6 +65,8 @@ void main() {
         FakeAppLanguageSetting(AppLanguage.german),
       );
       await tester.scrollUntilVisible(find.text('Language'), 200);
+      await tester.ensureVisible(find.text('Language'));
+      await tester.pump();
 
       expect(find.text('Language'), findsOneWidget);
       expect(find.text('Deutsch'), findsOneWidget);
@@ -76,6 +82,8 @@ void main() {
         changes.add,
       );
       await tester.scrollUntilVisible(find.text('Language'), 200);
+      await tester.ensureVisible(find.text('Language'));
+      await tester.pump();
       expect(find.text('System default'), findsOneWidget);
 
       await tester.tap(find.text('Language'));
@@ -114,6 +122,8 @@ void main() {
           ),
         );
         await tester.scrollUntilVisible(find.text('Restore backup'), 100);
+        await tester.ensureVisible(find.text('Restore backup'));
+        await tester.pump();
         expect(find.text(text), findsOneWidget);
 
         await tester.tap(find.text('Restore backup'));
@@ -123,6 +133,55 @@ void main() {
         expect(find.text('Replace'), findsNothing);
       });
     }
+
+    testWidgets('switches the countdown on the lock screen off', (
+      tester,
+    ) async {
+      var changes = 0;
+      final repository = await pumpSettings(
+        tester,
+        const PomodoroSettings(),
+        null,
+        null,
+        null,
+        () => changes++,
+      );
+      final lockScreen = find.byKey(const Key('show-on-lock-screen'));
+      await tester.scrollUntilVisible(lockScreen, 200);
+      await tester.ensureVisible(lockScreen);
+      await tester.pump();
+      expect(find.text('Show on lock screen'), findsOneWidget);
+      expect(
+        find.text('Label and remaining time while a session runs'),
+        findsOneWidget,
+      );
+      expect(tester.widget<SwitchListTile>(lockScreen).value, isTrue);
+
+      await tester.tap(lockScreen);
+      await tester.pump();
+
+      expect(repository.showOnLockScreen, isFalse);
+      expect(tester.widget<SwitchListTile>(lockScreen).value, isFalse);
+      expect(changes, 1);
+    });
+
+    testWidgets('shows a stored lock screen choice', (tester) async {
+      await pumpSettings(
+        tester,
+        const PomodoroSettings(),
+        null,
+        null,
+        null,
+        null,
+        false,
+      );
+      final lockScreen = find.byKey(const Key('show-on-lock-screen'));
+      await tester.scrollUntilVisible(lockScreen, 200);
+      await tester.ensureVisible(lockScreen);
+      await tester.pump();
+
+      expect(tester.widget<SwitchListTile>(lockScreen).value, isFalse);
+    });
 
     testWidgets('shows the stored values', (tester) async {
       await pumpSettings(
@@ -227,6 +286,8 @@ void main() {
       await pumpSettings(tester);
 
       await tester.scrollUntilVisible(find.text('Export backup'), 100);
+      await tester.ensureVisible(find.text('Export backup'));
+      await tester.pump();
       await tester.tap(find.text('Export backup'));
       await tester.pump();
       await tester.pump();
@@ -254,6 +315,8 @@ void main() {
       );
 
       await tester.scrollUntilVisible(find.text('Restore backup'), 100);
+      await tester.ensureVisible(find.text('Restore backup'));
+      await tester.pump();
       await tester.tap(find.text('Restore backup'));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
@@ -269,6 +332,7 @@ void main() {
       expect(sessions.finished, hasLength(3));
       expect(repository.pomodoro.focus, const Duration(minutes: 45));
       expect(find.text('Backup restored.'), findsOneWidget);
+      await tester.scrollUntilVisible(find.text('45 min'), -200);
       expect(find.text('45 min'), findsOneWidget);
     });
 
@@ -287,6 +351,8 @@ void main() {
       );
 
       await tester.scrollUntilVisible(find.text('Restore backup'), 100);
+      await tester.ensureVisible(find.text('Restore backup'));
+      await tester.pump();
       await tester.tap(find.text('Restore backup'));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
@@ -302,6 +368,8 @@ void main() {
       documents.textToOpen = '{"hello":"world"}';
 
       await tester.scrollUntilVisible(find.text('Restore backup'), 100);
+      await tester.ensureVisible(find.text('Restore backup'));
+      await tester.pump();
       await tester.tap(find.text('Restore backup'));
       await tester.pump();
       await tester.pump();
@@ -313,6 +381,8 @@ void main() {
       await pumpSettings(tester);
 
       await tester.scrollUntilVisible(find.text('Focus times'), 100);
+      await tester.ensureVisible(find.text('Focus times'));
+      await tester.pump();
       await tester.tap(find.text('Focus times'));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));

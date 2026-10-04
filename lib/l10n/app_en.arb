@@ -694,5 +694,13 @@
   },
   "@languageRussian": {
     "description": "Name of the language in itself; the same in every translation."
+  },
+  "showOnLockScreen": "Show on lock screen",
+  "showOnLockScreenDetails": "Label and remaining time while a session runs",
+  "@showOnLockScreen": {
+    "description": "Settings switch: show the session countdown on the lock screen."
+  },
+  "@showOnLockScreenDetails": {
+    "description": "Subtitle of the lock screen switch."
   }
 }

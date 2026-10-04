@@ -775,6 +775,8 @@ void main() {
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 500));
         await tester.scrollUntilVisible(find.text('Language'), 200);
+        await tester.ensureVisible(find.text('Language'));
+        await tester.pump();
 
         await tester.tap(find.text('Language'));
         await tester.pump();
@@ -823,6 +825,8 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
       await tester.scrollUntilVisible(find.text('Restore backup'), 200);
+      await tester.ensureVisible(find.text('Restore backup'));
+      await tester.pump();
 
       expect(find.text('Locked during this focus time'), findsOneWidget);
     });

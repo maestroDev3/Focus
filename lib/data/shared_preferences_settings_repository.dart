@@ -13,6 +13,9 @@ class SharedPreferencesSettingsRepository implements SettingsRepository {
   static const pomodoroKey = 'settings.pomodoro.v1';
   static const selectedLabelKey = 'settings.selectedLabel.v1';
   static const dailyGoalKey = 'settings.goal.v1';
+
+  /// Read by the native countdown as `flutter.settings.lockScreen.v1`.
+  static const lockScreenKey = 'settings.lockScreen.v1';
   static const _version = 1;
 
   final SharedPreferences _preferences;
@@ -85,5 +88,14 @@ class SharedPreferencesSettingsRepository implements SettingsRepository {
       dailyGoalKey,
       jsonEncode({'v': _version, 'minutes': goal.minutes}),
     );
+  }
+
+  @override
+  Future<bool> loadShowOnLockScreen() async =>
+      _preferences.getBool(lockScreenKey) ?? true;
+
+  @override
+  Future<void> saveShowOnLockScreen(bool show) async {
+    await _preferences.setBool(lockScreenKey, show);
   }
 }
