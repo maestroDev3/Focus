@@ -26,6 +26,7 @@ The GitHub issues are authoritative; this file is the summary.
 | #123 Session ritual | 0 of 2 closed | #121 Intention and reflection → #122 Ambient sounds (both `backlog`) |
 | #195 Quick settings tile | 0 of 1 closed | #196 Start a session from the quick settings (`backlog`) |
 | #205 Statistics you can explore | 1 of 2 closed | #207 Focus insights (`backlog`) |
+| #219 Session at a glance on the lock screen | 0 of 1 closed | #220 Follow the session on the lock screen (`backlog`) |
 
 **#139 Distraction blocking**
 
@@ -54,3 +55,4 @@ The GitHub issues are authoritative; this file is the summary.
 ## Open decisions (user only)
 
 - New epic #187 Block list per session (parked idea #188) – created, please confirm or re-sort.
+- New epic #219 Session at a glance on the lock screen (in #138 Focus experience) – created, please confirm or re-sort; open: setting “Show on lock screen”, default on?
