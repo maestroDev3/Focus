@@ -57,7 +57,7 @@ void main() {
       for (final day in ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']) {
         expect(find.text(day), findsOneWidget);
       }
-      expect(find.byKey(const ValueKey('week-bar-2')), findsOneWidget);
+      expect(find.byKey(const ValueKey('day-bar-2')), findsOneWidget);
     });
 
     testWidgets('shows zero without sessions', (tester) async {
@@ -130,5 +130,52 @@ void main() {
 
       expect(find.text('Current streak · 0 days'), findsOneWidget);
     });
-  });
+  
+    testWidgets('shows today with the daily goal by default', (tester) async {
+      await pumpStatistics(tester, [
+        completed(DateTime(2026, 9, 30, 9), 30, 'study'),
+      ]);
+
+      expect(find.text('Wed, Sep 30 · 30 min of 2h'), findsOneWidget);
+    });
+
+    testWidgets('shows the focus of a tapped day', (tester) async {
+      await pumpStatistics(tester, [
+        completed(DateTime(2026, 9, 28, 9), 140, 'study'),
+      ]);
+
+      await tester.tap(find.byKey(const ValueKey('day-bar-0')));
+      await tester.pump();
+
+      expect(find.text('Mon, Sep 28 · 2h 20 of 2h'), findsOneWidget);
+    });
+
+    testWidgets('shows every day of the month on Month', (tester) async {
+      await pumpStatistics(tester, [
+        completed(DateTime(2026, 9, 2, 9), 45, 'study'),
+        completed(DateTime(2026, 9, 30, 9), 30, 'study'),
+      ]);
+
+      await tester.tap(find.text('Month'));
+      await tester.pump();
+
+      expect(find.byKey(const ValueKey('day-bar-29')), findsOneWidget);
+      expect(find.byKey(const ValueKey('day-bar-30')), findsNothing);
+      expect(find.text('This month'), findsOneWidget);
+      expect(find.text('1h 15'), findsWidgets);
+    });
+
+    testWidgets('places the period switch above the chart', (tester) async {
+      await pumpStatistics(tester, const []);
+
+      expect(
+        tester.getTopLeft(find.text('Month')).dy,
+        lessThan(tester.getTopLeft(find.byKey(const ValueKey('day-bar-0'))).dy),
+      );
+      expect(
+        tester.getTopLeft(find.text('Week')).dy,
+        lessThan(tester.getTopLeft(find.text('Today')).dy),
+      );
+    });
+});
 }

@@ -87,6 +87,29 @@ void main() {
     });
   });
 
+  group('monthFocus', () {
+    test('has one value per day of the current month', () {
+      final october = monthFocus(const [], today: DateTime(2026, 10, 4));
+      final february = monthFocus(const [], today: DateTime(2026, 2, 10));
+
+      expect(october, hasLength(31));
+      expect(february, hasLength(28));
+      expect(october.every((day) => day == Duration.zero), isTrue);
+    });
+
+    test('puts focus on its day of the month', () {
+      final session = FocusSession(
+        start: DateTime(2026, 10, 3, 9),
+        planned: const Duration(minutes: 31),
+      ).complete();
+
+      final october = monthFocus([session], today: DateTime(2026, 10, 4));
+
+      expect(october[2], const Duration(minutes: 31));
+      expect(october[3], Duration.zero);
+    });
+  });
+
   group('focusByLabel', () {
     FocusSession labelled(DateTime start, int minutes, String? labelId) =>
         FocusSession(
