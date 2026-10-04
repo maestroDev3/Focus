@@ -31,7 +31,12 @@ class SettingsScreen extends StatefulWidget {
     this.language,
     this.onLanguageChanged,
     this.restoreLock = _unlocked,
+    this.onLockScreenChanged,
   });
+
+  /// Called after “Show on lock screen” changed, so a running countdown
+  /// follows at once.
+  final VoidCallback? onLockScreenChanged;
 
   /// Asked on every build and before restoring, so a focus time that starts
   /// while the settings are open still locks the restore.
@@ -62,6 +67,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   PomodoroSettings? _pomodoro;
   var _dailyGoal = const DailyGoal();
   AppLanguage? _language;
+  var _showOnLockScreen = true;
 
   @override
   void initState() {
@@ -73,12 +79,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final pomodoro = await widget.settings.loadPomodoro();
     final dailyGoal = await widget.settings.loadDailyGoal();
     final language = await widget.language?.load();
+    final showOnLockScreen = await widget.settings.loadShowOnLockScreen();
     if (!mounted) return;
     setState(() {
       _pomodoro = pomodoro;
       _dailyGoal = dailyGoal;
       _language = language;
+      _showOnLockScreen = showOnLockScreen;
     });
+  }
+
+  Future<void> _setShowOnLockScreen(bool show) async {
+    setState(() => _showOnLockScreen = show);
+    await widget.settings.saveShowOnLockScreen(show);
+    widget.onLockScreenChanged?.call();
   }
 
   Future<void> _chooseLanguage() async {
@@ -255,6 +269,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                     ),
                   ),
+                ),
+                SwitchListTile(
+                  key: const Key('show-on-lock-screen'),
+                  secondary: const Icon(Icons.screen_lock_portrait_outlined),
+                  title: Text(l10n.showOnLockScreen),
+                  subtitle: Text(l10n.showOnLockScreenDetails),
+                  value: _showOnLockScreen,
+                  onChanged: _setShowOnLockScreen,
                 ),
                 const Divider(height: 32),
                 if (_language case final language?)

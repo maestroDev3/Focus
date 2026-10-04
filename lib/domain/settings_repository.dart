@@ -17,4 +17,10 @@ abstract interface class SettingsRepository {
   Future<DailyGoal> loadDailyGoal();
 
   Future<void> saveDailyGoal(DailyGoal goal);
+
+  /// Whether the countdown shows its label and time on the lock screen;
+  /// on unless switched off.
+  Future<bool> loadShowOnLockScreen();
+
+  Future<void> saveShowOnLockScreen(bool show);
 }

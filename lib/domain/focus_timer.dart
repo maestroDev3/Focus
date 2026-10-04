@@ -133,6 +133,10 @@ class FocusTimer {
   /// Publishes the blocking state again, e.g. after the block list changed.
   Future<void> refreshBlocking() async => _blocking?.update(_current);
 
+  /// Shows the countdown notice again, e.g. after the lock screen setting
+  /// changed.
+  Future<void> refreshCountdown() => _syncCountdown(_current);
+
   Future<void> _setActive(FocusSession? session) async {
     _current = session;
     await _repository.saveActive(session);

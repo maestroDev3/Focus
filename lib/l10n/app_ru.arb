@@ -130,5 +130,7 @@
   "languageSystem": "Как в системе",
   "languageEnglish": "English",
   "languageGerman": "Deutsch",
-  "languageRussian": "Русский"
+  "languageRussian": "Русский",
+  "showOnLockScreen": "Показывать на экране блокировки",
+  "showOnLockScreenDetails": "Метка и оставшееся время, пока идёт сессия"
 }

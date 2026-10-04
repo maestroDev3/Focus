@@ -130,5 +130,7 @@
   "languageSystem": "Systemsprache",
   "languageEnglish": "English",
   "languageGerman": "Deutsch",
-  "languageRussian": "Русский"
+  "languageRussian": "Русский",
+  "showOnLockScreen": "Auf dem Sperrbildschirm anzeigen",
+  "showOnLockScreenDetails": "Label und Restzeit, solange eine Session läuft"
 }
