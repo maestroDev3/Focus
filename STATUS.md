@@ -12,7 +12,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## Up next
 
-1. #206 Tap a day and switch week/month in the statistics (before the store release).
+1. #209 Russian translation (epic #208).
 2. #96 Include paused apps in backups.
 3. #119 Mindful opening of paused apps.
 4. Epic #123 Session ritual: #121 Intention and reflection → #122 Ambient sounds.
@@ -26,7 +26,7 @@ The GitHub issues are authoritative; this file is the summary.
 |---|---|---|
 | #123 Session ritual | 0 of 2 closed | #121 Intention and reflection → #122 Ambient sounds (both `backlog`) |
 | #195 Quick settings tile | 0 of 1 closed | #196 Start a session from the quick settings (`backlog`) |
-| #205 Statistics you can explore | 0 of 2 closed | #206 Tap a day and switch week/month (`backlog`) → #207 Focus insights (`backlog`) |
+| #205 Statistics you can explore | 1 of 2 closed | #207 Focus insights (`backlog`) |
 
 **#139 Distraction blocking**
 
@@ -43,14 +43,15 @@ The GitHub issues are authoritative; this file is the summary.
 | Epic | State | Stories (in order) |
 |---|---|---|
 | #193 Focus on Google Play | 0 of 1 closed | #194 Publish Focus on Google Play (`backlog`) |
+| #208 Focus in Russian | 0 of 1 closed | #209 Russian translation (`backlog`) |
 
 ## Recently done
 
+- #206 Explorable statistics – tap a day, week/month switch at the top
 - #192 German translation (blocked screen: “Instagram ruht, während du im Fokus bist.”); epic #191 closed
 - #144 Block list per focus time – confirmed on the phone; epic #143 Named block lists closed
 - Decision: no block lists on labels (#145 not planned); per-session list choice parked (#188)
 - #146 Named block lists – block lists screen with default and named lists
-- #105 Live countdown and #120 home screen widget – confirmed on the phone; epics #4 Focus timer and #142 Home screen widget closed
 
 ## Open decisions (user only)
 
