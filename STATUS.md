@@ -8,7 +8,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- #215 Choose the app language in the settings – tasks #216 → #217.
+- Nothing – next: #96.
 
 ## Up next
 
@@ -42,15 +42,14 @@ The GitHub issues are authoritative; this file is the summary.
 | Epic | State | Stories (in order) |
 |---|---|---|
 | #193 Focus on Google Play | 0 of 1 closed | #194 Publish Focus on Google Play (`backlog`) |
-| #214 Choose your app language | 0 of 1 closed | #215 Choose the app language in the settings (`in-progress`) |
 
 ## Recently done
 
+- #215 Language in the settings (System, English, Deutsch, Русский), synced with Android's app language; epic #214 closed
 - #190 Warning when blocking is switched off during focus – confirmed on the phone; epic #189 closed
 - #209 Russian translation; epic #208 closed
 - #206 Explorable statistics – tap a day, week/month switch at the top
 - #192 German translation (blocked screen: “Instagram ruht, während du im Fokus bist.”); epic #191 closed
-- #144 Block list per focus time – confirmed on the phone; epic #143 Named block lists closed
 
 ## Open decisions (user only)
 

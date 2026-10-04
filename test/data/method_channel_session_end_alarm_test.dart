@@ -28,7 +28,7 @@ void main() {
     test('schedules the end as epoch milliseconds with the texts', () async {
       final end = DateTime.utc(2026, 10, 2, 10, 25);
 
-      await const MethodChannelSessionEndAlarm(texts: texts).scheduleAt(end);
+      await MethodChannelSessionEndAlarm(texts: () => texts).scheduleAt(end);
 
       expect(calls.single.method, 'schedule');
       expect(calls.single.arguments, {
@@ -39,8 +39,18 @@ void main() {
       });
     });
 
+    test('reads the texts when scheduling, so a new language applies', () async {
+      var current = texts;
+      final alarm = MethodChannelSessionEndAlarm(texts: () => current);
+      current = (channelName: 'Конец сессии', title: 'Готово', body: 'Перерыв.');
+
+      await alarm.scheduleAt(DateTime.utc(2026, 10, 4, 10));
+
+      expect((calls.single.arguments as Map)['title'], 'Готово');
+    });
+
     test('cancels the pending end notification', () async {
-      await const MethodChannelSessionEndAlarm(texts: texts).cancel();
+      await MethodChannelSessionEndAlarm(texts: () => texts).cancel();
 
       expect(calls.single.method, 'cancel');
     });

@@ -19,10 +19,12 @@ class MethodChannelSessionCountdown implements SessionCountdown {
 
   static const channel = MethodChannel('de.maestrodev.focus_timer/countdown');
 
-  final CountdownTexts texts;
+  /// Read with every update, so a new app language applies.
+  final CountdownTexts Function() texts;
 
   @override
   Future<void> show(CountdownNotice notice) {
+    final texts = this.texts();
     final title = switch (notice.labelName) {
       final label? => texts.focusingWithLabel.replaceAll('{label}', label),
       null => texts.focusing,

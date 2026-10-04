@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
+import '../domain/app_language.dart';
 import '../domain/backup.dart';
 import '../domain/daily_goal.dart';
 import '../domain/focus_time_repository.dart';
@@ -9,6 +10,7 @@ import '../domain/named_block_list.dart';
 import '../domain/pomodoro.dart';
 import '../domain/settings_repository.dart';
 import '../l10n/app_localizations.dart';
+import 'app_locale.dart';
 import 'focus_time_text.dart';
 import 'focus_times_screen.dart';
 
@@ -20,7 +22,15 @@ class SettingsScreen extends StatefulWidget {
     required this.focusTimes,
     required this.backupFiles,
     this.namedBlockLists,
+    this.language,
+    this.onLanguageChanged,
   });
+
+  /// The chosen app language; without it the settings offer no language.
+  final AppLanguageSetting? language;
+
+  /// Called after a new language was saved, so the app switches at once.
+  final ValueChanged<AppLanguage>? onLanguageChanged;
 
   /// Named block lists focus times can use.
   final NamedBlockListRepository? namedBlockLists;
@@ -40,6 +50,7 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   PomodoroSettings? _pomodoro;
   var _dailyGoal = const DailyGoal();
+  AppLanguage? _language;
 
   @override
   void initState() {
@@ -50,11 +61,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _load() async {
     final pomodoro = await widget.settings.loadPomodoro();
     final dailyGoal = await widget.settings.loadDailyGoal();
+    final language = await widget.language?.load();
     if (!mounted) return;
     setState(() {
       _pomodoro = pomodoro;
       _dailyGoal = dailyGoal;
+      _language = language;
     });
+  }
+
+  Future<void> _chooseLanguage() async {
+    final setting = widget.language;
+    if (setting == null) return;
+    final l10n = AppLocalizations.of(context);
+    final chosen = await showDialog<AppLanguage>(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: Text(l10n.language),
+        children: [
+          for (final language in AppLanguage.values)
+            ListTile(
+              title: Text(languageName(l10n, language)),
+              trailing: language == _language ? const Icon(Icons.check) : null,
+              onTap: () => Navigator.of(context).pop(language),
+            ),
+        ],
+      ),
+    );
+    if (chosen == null || chosen == _language) return;
+    await setting.save(chosen);
+    if (!mounted) return;
+    setState(() => _language = chosen);
+    widget.onLanguageChanged?.call(chosen);
   }
 
   Future<void> _step(PomodoroField field, {required bool up}) async {
@@ -204,6 +242,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                 ),
                 const Divider(height: 32),
+                if (_language case final language?)
+                  ListTile(
+                    leading: const Icon(Icons.translate),
+                    title: Text(l10n.language),
+                    subtitle: Text(languageName(l10n, language)),
+                    onTap: _chooseLanguage,
+                  ),
                 ListTile(
                   leading: const Icon(Icons.upload_file_outlined),
                   title: Text(l10n.exportBackup),

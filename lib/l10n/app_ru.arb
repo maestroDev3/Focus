@@ -125,5 +125,10 @@
   "blockingOffBody": "Приложения на паузе можно открыть, пока ты снова не включишь «Focus — пауза приложений».",
   "turnBlockingBackOn": "Включить снова",
   "thisMonth": "Этот месяц",
-  "dayFocusOfGoal": "{day} · {focus} из {goal}"
+  "dayFocusOfGoal": "{day} · {focus} из {goal}",
+  "language": "Язык",
+  "languageSystem": "Как в системе",
+  "languageEnglish": "English",
+  "languageGerman": "Deutsch",
+  "languageRussian": "Русский"
 }

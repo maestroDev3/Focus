@@ -9,14 +9,13 @@ void main() {
   final messenger =
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
   final calls = <MethodCall>[];
-  const countdown = MethodChannelSessionCountdown(
-    texts: (
-      channelName: 'Session countdown',
-      focusing: 'Focusing',
-      focusingWithLabel: 'Focusing · {label}',
-      paused: 'Paused · {time} left',
-    ),
+  var texts = (
+    channelName: 'Session countdown',
+    focusing: 'Focusing',
+    focusingWithLabel: 'Focusing · {label}',
+    paused: 'Paused · {time} left',
   );
+  final countdown = MethodChannelSessionCountdown(texts: () => texts);
 
   setUp(() {
     calls.clear();
@@ -29,6 +28,23 @@ void main() {
   tearDown(() => messenger.setMockMethodCallHandler(channel, null));
 
   group('MethodChannelSessionCountdown', () {
+    test('reads the texts when showing, so a new language applies', () async {
+      final english = texts;
+      texts = (
+        channelName: 'Обратный отсчёт',
+        focusing: 'Фокус',
+        focusingWithLabel: 'Фокус · {label}',
+        paused: 'Пауза · осталось {time}',
+      );
+      addTearDown(() => texts = english);
+
+      await countdown.show(
+        CountdownRunning(end: DateTime.utc(2026, 10, 4, 10), labelName: null),
+      );
+
+      expect((calls.single.arguments as Map)['title'], 'Фокус');
+    });
+
     test('sends the end and the title with the label', () async {
       final end = DateTime.utc(2026, 10, 3, 10, 25);
 
