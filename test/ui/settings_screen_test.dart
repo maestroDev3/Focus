@@ -332,6 +332,7 @@ void main() {
       expect(sessions.finished, hasLength(3));
       expect(repository.pomodoro.focus, const Duration(minutes: 45));
       expect(find.text('Backup restored.'), findsOneWidget);
+      await tester.scrollUntilVisible(find.text('45 min'), -200);
       expect(find.text('45 min'), findsOneWidget);
     });
 
