@@ -363,6 +363,11 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
         namedBlockLists: widget.namedBlockLists,
         language: widget.language,
         onLanguageChanged: _onLanguageChanged,
+        restoreLock: () => widget.timer.current != null
+            ? RestoreLock.session
+            : activeFocusTime(_focusTimes, widget.clock()) != null
+            ? RestoreLock.focusTime
+            : RestoreLock.none,
       ),
     );
     await _loadState();

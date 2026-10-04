@@ -8,7 +8,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- #96 Include paused apps in backups – tasks #222 → #223.
+- Nothing – next: #119.
 
 ## Up next
 
@@ -31,7 +31,6 @@ The GitHub issues are authoritative; this file is the summary.
 
 | Epic | State | Stories (in order) |
 |---|---|---|
-| #20 Distraction blocking | 7 of 8 closed | #96 Include paused apps in backups (`in-progress`) |
 | #141 Mindful access to paused apps | 0 of 1 closed | #119 Mindful opening of paused apps (`backlog`) |
 | #187 Block list per session | 0 of 1 closed | #188 Choose a block list when starting a session (`backlog`, parked – only on real need) |
 
@@ -44,11 +43,11 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## Recently done
 
+- #96 Backups include block lists and focus times (restore locked while focusing); epic #20 closed
 - #215 Language in the settings (System, English, Deutsch, Русский), synced with Android's app language; epic #214 closed
 - #190 Warning when blocking is switched off during focus – confirmed on the phone; epic #189 closed
 - #209 Russian translation; epic #208 closed
 - #206 Explorable statistics – tap a day, week/month switch at the top
-- #192 German translation (blocked screen: “Instagram ruht, während du im Fokus bist.”); epic #191 closed
 
 ## Open decisions (user only)
 
