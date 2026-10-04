@@ -32,12 +32,14 @@ void main() {
       PomodoroSettings pomodoro = const PomodoroSettings(),
       FakeAppLanguageSetting? language,
       ValueChanged<AppLanguage>? onLanguageChanged,
+      RestoreLock Function()? restoreLock,
     ]) async {
       final repository = FakeSettingsRepository(pomodoro);
       await tester.pumpApp(
         SettingsScreen(
           language: language,
           onLanguageChanged: onLanguageChanged,
+          restoreLock: restoreLock ?? () => RestoreLock.none,
           settings: repository,
           focusTimes: FakeFocusTimeRepository(),
           backupFiles: backupFilesForTests(
@@ -89,6 +91,38 @@ void main() {
       expect(changes, [AppLanguage.russian]);
       expect(find.text('Русский'), findsOneWidget);
     });
+
+    for (final (lock, text) in [
+      (RestoreLock.session, 'Locked during this session'),
+      (RestoreLock.focusTime, 'Locked during this focus time'),
+    ]) {
+      testWidgets('locks restoring: $text', (tester) async {
+        await pumpSettings(
+          tester,
+          const PomodoroSettings(),
+          null,
+          null,
+          () => lock,
+        );
+        documents.textToOpen = const JsonBackupCodec().encode(
+          Backup(
+            createdAt: DateTime(2026, 9, 29),
+            sessions: const [],
+            labels: const [],
+            pomodoro: const PomodoroSettings(),
+            dailyGoal: const DailyGoal(),
+          ),
+        );
+        await tester.scrollUntilVisible(find.text('Restore backup'), 100);
+        expect(find.text(text), findsOneWidget);
+
+        await tester.tap(find.text('Restore backup'));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+
+        expect(find.text('Replace'), findsNothing);
+      });
+    }
 
     testWidgets('shows the stored values', (tester) async {
       await pumpSettings(
