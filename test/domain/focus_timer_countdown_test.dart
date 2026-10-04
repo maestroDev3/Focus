@@ -31,6 +31,25 @@ void main() {
   });
 
   group('FocusTimer countdown notice', () {
+    test('shows the countdown again on refresh, e.g. after a setting', () async {
+      await timer.start(planned, labelId: 'study');
+      await countdown.hide();
+      advance(const Duration(minutes: 5));
+
+      await timer.refreshCountdown();
+
+      expect(
+        countdown.shown,
+        CountdownRunning(end: tenOClock.add(planned), labelName: 'Study'),
+      );
+    });
+
+    test('shows nothing on refresh without a session', () async {
+      await timer.refreshCountdown();
+
+      expect(countdown.shown, isNull);
+    });
+
     test('shows the planned end and the label when a session starts', () async {
       await timer.start(planned, labelId: 'study');
 

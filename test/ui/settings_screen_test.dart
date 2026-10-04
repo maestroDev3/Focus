@@ -33,13 +33,17 @@ void main() {
       FakeAppLanguageSetting? language,
       ValueChanged<AppLanguage>? onLanguageChanged,
       RestoreLock Function()? restoreLock,
+      VoidCallback? onLockScreenChanged,
+      bool showOnLockScreen = true,
     ]) async {
-      final repository = FakeSettingsRepository(pomodoro);
+      final repository = FakeSettingsRepository(pomodoro)
+        ..showOnLockScreen = showOnLockScreen;
       await tester.pumpApp(
         SettingsScreen(
           language: language,
           onLanguageChanged: onLanguageChanged,
           restoreLock: restoreLock ?? () => RestoreLock.none,
+          onLockScreenChanged: onLockScreenChanged,
           settings: repository,
           focusTimes: FakeFocusTimeRepository(),
           backupFiles: backupFilesForTests(
@@ -123,6 +127,51 @@ void main() {
         expect(find.text('Replace'), findsNothing);
       });
     }
+
+    testWidgets('switches the countdown on the lock screen off', (
+      tester,
+    ) async {
+      var changes = 0;
+      final repository = await pumpSettings(
+        tester,
+        const PomodoroSettings(),
+        null,
+        null,
+        null,
+        () => changes++,
+      );
+      final lockScreen = find.byKey(const Key('show-on-lock-screen'));
+      await tester.scrollUntilVisible(lockScreen, 200);
+      expect(find.text('Show on lock screen'), findsOneWidget);
+      expect(
+        find.text('Label and remaining time while a session runs'),
+        findsOneWidget,
+      );
+      expect(tester.widget<SwitchListTile>(lockScreen).value, isTrue);
+
+      await tester.tap(lockScreen);
+      await tester.pump();
+
+      expect(repository.showOnLockScreen, isFalse);
+      expect(tester.widget<SwitchListTile>(lockScreen).value, isFalse);
+      expect(changes, 1);
+    });
+
+    testWidgets('shows a stored lock screen choice', (tester) async {
+      await pumpSettings(
+        tester,
+        const PomodoroSettings(),
+        null,
+        null,
+        null,
+        null,
+        false,
+      );
+      final lockScreen = find.byKey(const Key('show-on-lock-screen'));
+      await tester.scrollUntilVisible(lockScreen, 200);
+
+      expect(tester.widget<SwitchListTile>(lockScreen).value, isFalse);
+    });
 
     testWidgets('shows the stored values', (tester) async {
       await pumpSettings(

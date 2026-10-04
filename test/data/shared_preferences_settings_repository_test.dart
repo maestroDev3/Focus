@@ -6,6 +6,32 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   group('SharedPreferencesSettingsRepository', () {
+    test('shows the countdown on the lock screen by default', () async {
+      SharedPreferences.setMockInitialValues({});
+      final repository = SharedPreferencesSettingsRepository(
+        await SharedPreferences.getInstance(),
+      );
+
+      expect(await repository.loadShowOnLockScreen(), isTrue);
+    });
+
+    test('stores the lock screen choice as a bool the native side reads', () async {
+      SharedPreferences.setMockInitialValues({});
+      final preferences = await SharedPreferences.getInstance();
+
+      await SharedPreferencesSettingsRepository(
+        preferences,
+      ).saveShowOnLockScreen(false);
+
+      expect(preferences.getBool('settings.lockScreen.v1'), isFalse);
+      expect(
+        await SharedPreferencesSettingsRepository(
+          preferences,
+        ).loadShowOnLockScreen(),
+        isFalse,
+      );
+    });
+
     test('returns the defaults without stored data', () async {
       SharedPreferences.setMockInitialValues({});
       final repository = SharedPreferencesSettingsRepository(

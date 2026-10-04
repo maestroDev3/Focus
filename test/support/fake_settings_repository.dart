@@ -9,6 +9,7 @@ class FakeSettingsRepository implements SettingsRepository {
   PomodoroSettings pomodoro;
   String? selectedLabelId;
   DailyGoal dailyGoal = const DailyGoal();
+  bool showOnLockScreen = true;
 
   @override
   Future<PomodoroSettings> loadPomodoro() async => pomodoro;
@@ -28,4 +29,10 @@ class FakeSettingsRepository implements SettingsRepository {
 
   @override
   Future<void> saveDailyGoal(DailyGoal goal) async => dailyGoal = goal;
+
+  @override
+  Future<bool> loadShowOnLockScreen() async => showOnLockScreen;
+
+  @override
+  Future<void> saveShowOnLockScreen(bool show) async => showOnLockScreen = show;
 }
