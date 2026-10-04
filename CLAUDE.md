@@ -253,3 +253,6 @@ commit comment).
 - 2026-10-03 – Next: warn when blocking is switched off during focus (#190),
   then German translation (#192). Backlog: Google Play release (#194),
   quick settings tile (#196).
+- 2026-10-04 – Blocked screen sentence names the app (“Instagram ruht, während
+  du im Fokus bist.”). Explorable statistics (#206) come before the store
+  release; focus insights (#207) in the backlog.
