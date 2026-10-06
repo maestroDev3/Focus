@@ -270,6 +270,7 @@ commit comment).
   setting “Show on lock screen”, default on. Built before #119.
 - 2026-10-05 – Mindful opening (epic #141, story #119), built on branch
   `epic/mindful-access` for a test on the phone: outside sessions and focus
-  times a paused app first shows a 5-second breathing pause, then “open” or
+  times a paused app (default list only – named lists keep applying only
+  during their focus times) first shows a 5-second breathing pause, then “open” or
   “go back”; after opening, the app stays free for 5 minutes; a calm line
   says how often it was opened today; switch in the settings, default off.

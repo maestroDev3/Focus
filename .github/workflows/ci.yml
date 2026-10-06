@@ -5,6 +5,9 @@ name: CI
 on:
   push:
     branches: [main]
+    # Docs and status commits build no APK: a new “latest” build would get a
+    # higher version code than an open epic preview and block its install.
+    paths-ignore: ['**.md']
   pull_request:
   workflow_dispatch:
 
