@@ -57,6 +57,7 @@ Future<void> main() async {
       clock: DateTime.now,
       focusTimes: focusTimes,
       namedLists: namedBlockLists,
+      settings: settings,
     ),
     sessionEndAlarm: MethodChannelSessionEndAlarm(
       texts: () => (

@@ -35,6 +35,7 @@ void main() {
       RestoreLock Function()? restoreLock,
       VoidCallback? onLockScreenChanged,
       bool showOnLockScreen = true,
+      VoidCallback? onMindfulChanged,
     ]) async {
       final repository = FakeSettingsRepository(pomodoro)
         ..showOnLockScreen = showOnLockScreen;
@@ -44,6 +45,7 @@ void main() {
           onLanguageChanged: onLanguageChanged,
           restoreLock: restoreLock ?? () => RestoreLock.none,
           onLockScreenChanged: onLockScreenChanged,
+          onMindfulChanged: onMindfulChanged,
           settings: repository,
           focusTimes: FakeFocusTimeRepository(),
           backupFiles: backupFilesForTests(
@@ -162,6 +164,33 @@ void main() {
 
       expect(repository.showOnLockScreen, isFalse);
       expect(tester.widget<SwitchListTile>(lockScreen).value, isFalse);
+      expect(changes, 1);
+    });
+
+    testWidgets('switches mindful opening on', (tester) async {
+      var changes = 0;
+      final repository = await pumpSettings(
+        tester,
+        const PomodoroSettings(),
+        null,
+        null,
+        null,
+        null,
+        true,
+        () => changes++,
+      );
+      final mindful = find.byKey(const Key('mindful-opening'));
+      await tester.scrollUntilVisible(mindful, 200);
+      await tester.ensureVisible(mindful);
+      await tester.pump();
+      expect(find.text('Mindful opening'), findsOneWidget);
+      expect(tester.widget<SwitchListTile>(mindful).value, isFalse);
+
+      await tester.tap(mindful);
+      await tester.pump();
+
+      expect(repository.mindfulOpening, isTrue);
+      expect(tester.widget<SwitchListTile>(mindful).value, isTrue);
       expect(changes, 1);
     });
 

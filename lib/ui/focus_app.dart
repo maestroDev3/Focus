@@ -23,6 +23,7 @@ import '../domain/settings_repository.dart';
 import '../l10n/app_localizations.dart';
 import 'app_locale.dart';
 import 'block_lists_screen.dart';
+import 'breath_screen.dart';
 import 'blocked_screen.dart';
 import 'break_screen.dart';
 import 'home_screen.dart';
@@ -124,6 +125,10 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
   final _blockingActive = ValueNotifier(true);
   StreamSubscription<List<FocusLabel>>? _labelChanges;
   StreamSubscription<String>? _blockedApps;
+  StreamSubscription<MindfulRequest>? _mindfulRequests;
+
+  /// Whether the breathing pause is open, so it is never pushed twice.
+  var _breathShown = false;
   StreamSubscription<void>? _startRequests;
   StreamSubscription<FocusSession?>? _sessionChanges;
 
@@ -146,6 +151,9 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
       _onFocusTimesChanged,
     );
     _blockedApps = widget.appBlocker.blockedAppOpened.listen(_showBlocked);
+    _mindfulRequests = widget.appBlocker.mindfulOpenRequested.listen(
+      _showBreath,
+    );
     _startRequests = widget.reminders.startRequested.listen(
       (_) => _startFromReminder(),
     );
@@ -158,6 +166,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
     _labelChanges?.cancel();
     _blockedApps?.cancel();
+    _mindfulRequests?.cancel();
     _startRequests?.cancel();
     _sessionChanges?.cancel();
     _focusTimeChanges?.cancel();
@@ -250,8 +259,13 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
     final session = await widget.timer.restore();
     final blockedPackage = await widget.appBlocker.initialBlockedPackage();
     final startRequested = await widget.reminders.initialStartRequest();
+    final mindful = await widget.appBlocker.initialMindfulRequest();
     if (!mounted) return;
     if (session == null) {
+      if (mindful != null) {
+        await _showBreath(mindful);
+        return;
+      }
       if (await _adoptWidgetStart()) return;
       if (startRequested) await _startFromReminder();
       return;
@@ -364,6 +378,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
         language: widget.language,
         onLanguageChanged: _onLanguageChanged,
         onLockScreenChanged: widget.timer.refreshCountdown,
+        onMindfulChanged: widget.timer.refreshBlocking,
         restoreLock: () => widget.timer.current != null
             ? RestoreLock.session
             : activeFocusTime(_focusTimes, widget.clock()) != null
@@ -505,6 +520,33 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
         onReturn: () => Navigator.of(context).pop(),
       ),
     );
+  }
+
+  /// A paused app was opened with mindful opening on: breathe first, then
+  /// open it or go back to the home screen.
+  Future<void> _showBreath(MindfulRequest request) async {
+    if (_breathShown) return;
+    _breathShown = true;
+    final apps = await widget.installedApps.installedApps();
+    final label = [
+      for (final app in apps)
+        if (app.packageName == request.packageName) app.label,
+    ].firstOrNull;
+    await _push(
+      (context) => BreathScreen(
+        appLabel: label ?? request.packageName,
+        openedToday: request.openedToday,
+        onOpen: () {
+          widget.appBlocker.openMindfully(request.packageName);
+          Navigator.of(context).pop();
+        },
+        onGoBack: () {
+          widget.appBlocker.goHome();
+          Navigator.of(context).pop();
+        },
+      ),
+    );
+    _breathShown = false;
   }
 
   /// A completed session is followed by the right break; a cancelled one
