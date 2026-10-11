@@ -85,6 +85,7 @@ Future<void> main() async {
   runApp(
     FocusApp(
       showIntro: true,
+      mindfulApps: mindfulApps,
       language: languageSetting,
       onLanguageChanged: (chosen) => language = chosen,
       timer: timer,

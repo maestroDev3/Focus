@@ -754,5 +754,22 @@
   "mindfulOpeningDetails": "Outside sessions and focus times, paused apps open after a short breath",
   "@mindfulOpeningDetails": {
     "description": "Subtitle of the mindful opening switch."
+  },
+  "mindfulPauseLength": "Pause length",
+  "@mindfulPauseLength": {
+    "description": "Heading of the pause length choice for mindful opening."
+  },
+  "mindfulPauseSeconds": "{seconds} s",
+  "@mindfulPauseSeconds": {
+    "description": "One pause length option.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "mindfulApps": "Apps with a pause",
+  "@mindfulApps": {
+    "description": "The apps that get the breathing pause; entry and picker title."
   }
 }

@@ -4,8 +4,10 @@ import 'package:intl/intl.dart';
 
 import '../domain/app_language.dart';
 import '../domain/backup.dart';
+import '../domain/block_list_repository.dart';
 import '../domain/daily_goal.dart';
 import '../domain/focus_time_repository.dart';
+import '../domain/installed_apps_source.dart';
 import '../domain/named_block_list.dart';
 import '../domain/pomodoro.dart';
 import '../domain/settings_repository.dart';
@@ -13,6 +15,7 @@ import '../l10n/app_localizations.dart';
 import 'app_locale.dart';
 import 'focus_time_text.dart';
 import 'focus_times_screen.dart';
+import 'mindful_settings_screen.dart';
 
 /// Why restoring a backup is not possible right now: blocking is strict
 /// during a session or focus time, and a restore could shrink the lists.
@@ -33,7 +36,16 @@ class SettingsScreen extends StatefulWidget {
     this.restoreLock = _unlocked,
     this.onLockScreenChanged,
     this.onMindfulChanged,
+    this.installedApps,
+    this.mindfulApps,
   });
+
+  /// The phone's apps, to choose the mindful apps from.
+  final InstalledAppsSource? installedApps;
+
+  /// The apps that get the breathing pause; without them (or the installed
+  /// apps) mindful opening has no settings page.
+  final BlockListRepository? mindfulApps;
 
   /// Called after “Mindful opening” changed, so the blocker learns it.
   final VoidCallback? onMindfulChanged;
@@ -94,6 +106,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _showOnLockScreen = showOnLockScreen;
       _mindfulOpening = mindfulOpening;
     });
+  }
+
+  /// While mindful opening is on, the row opens its settings page; while
+  /// off, tapping it switches it on.
+  Future<void> _tapMindfulOpening() async {
+    final (apps, mindfulApps) = (widget.installedApps, widget.mindfulApps);
+    if (!_mindfulOpening || apps == null || mindfulApps == null) {
+      if (!_mindfulOpening) await _setMindfulOpening(true);
+      return;
+    }
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (context) => MindfulSettingsScreen(
+          settings: widget.settings,
+          mindfulApps: mindfulApps,
+          installedApps: apps,
+          onChanged: widget.onMindfulChanged,
+        ),
+      ),
+    );
   }
 
   Future<void> _setMindfulOpening(bool on) async {
@@ -291,13 +323,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   value: _showOnLockScreen,
                   onChanged: _setShowOnLockScreen,
                 ),
-                SwitchListTile(
-                  key: const Key('mindful-opening'),
-                  secondary: const Icon(Icons.self_improvement),
+                ListTile(
+                  leading: const Icon(Icons.self_improvement),
                   title: Text(l10n.mindfulOpening),
                   subtitle: Text(l10n.mindfulOpeningDetails),
-                  value: _mindfulOpening,
-                  onChanged: _setMindfulOpening,
+                  trailing: Switch(
+                    key: const Key('mindful-opening'),
+                    value: _mindfulOpening,
+                    onChanged: _setMindfulOpening,
+                  ),
+                  onTap: _tapMindfulOpening,
                 ),
                 const Divider(height: 32),
                 if (_language case final language?)

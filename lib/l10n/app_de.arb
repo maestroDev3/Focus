@@ -140,5 +140,8 @@
   "mindfulOpen": "{app} öffnen",
   "mindfulOpenIn": "Öffnen in {seconds} s",
   "mindfulOpening": "Achtsames Öffnen",
-  "mindfulOpeningDetails": "Außerhalb von Sessions und Fokuszeiten öffnen pausierte Apps erst nach einer kurzen Atempause"
+  "mindfulOpeningDetails": "Außerhalb von Sessions und Fokuszeiten öffnen pausierte Apps erst nach einer kurzen Atempause",
+  "mindfulPauseLength": "Länge der Pause",
+  "mindfulPauseSeconds": "{seconds} s",
+  "mindfulApps": "Apps mit Atempause"
 }
