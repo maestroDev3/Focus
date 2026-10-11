@@ -862,6 +862,19 @@ void main() {
         expect(find.text('Take a breath.'), findsNothing);
       });
 
+      testWidgets('waits for the chosen pause', (tester) async {
+        settings.mindfulPause = const Duration(seconds: 10);
+        await tester.pumpWidget(buildApp());
+        await tester.pump();
+
+        blocker.emitMindful(telegram);
+        await tester.pump();
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+
+        expect(find.text('Open in 10 s'), findsOneWidget);
+      });
+
       testWidgets('opens the app after the pause when launched for it', (
         tester,
       ) async {
