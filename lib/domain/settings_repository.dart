@@ -29,4 +29,10 @@ abstract interface class SettingsRepository {
   Future<bool> loadMindfulOpening();
 
   Future<void> saveMindfulOpening(bool on);
+
+  /// How long the breathing pause lasts: one of `mindfulPauseOptions`,
+  /// `mindfulPause` unless chosen otherwise.
+  Future<Duration> loadMindfulPause();
+
+  Future<void> saveMindfulPause(Duration pause);
 }

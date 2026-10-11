@@ -15,6 +15,7 @@ import 'data/shared_preferences_block_list_repository.dart';
 import 'data/shared_preferences_blocking_state_writer.dart';
 import 'data/shared_preferences_focus_time_repository.dart';
 import 'data/shared_preferences_label_repository.dart';
+import 'data/shared_preferences_mindful_apps_repository.dart';
 import 'data/shared_preferences_named_block_list_repository.dart';
 import 'data/shared_preferences_session_repository.dart';
 import 'data/shared_preferences_settings_repository.dart';
@@ -38,6 +39,10 @@ Future<void> main() async {
   final namedBlockLists = SharedPreferencesNamedBlockListRepository(
     preferences,
   );
+  final mindfulApps = SharedPreferencesMindfulAppsRepository(
+    preferences,
+    defaultList: blockList,
+  );
   const languageSetting = MethodChannelAppLanguageSetting();
   var language = AppLanguage.system;
   try {
@@ -58,6 +63,7 @@ Future<void> main() async {
       focusTimes: focusTimes,
       namedLists: namedBlockLists,
       settings: settings,
+      mindfulApps: mindfulApps,
     ),
     sessionEndAlarm: MethodChannelSessionEndAlarm(
       texts: () => (

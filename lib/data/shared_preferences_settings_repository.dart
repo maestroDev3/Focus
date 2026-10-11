@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../domain/blocking.dart';
 import '../domain/daily_goal.dart';
 import '../domain/pomodoro.dart';
 import '../domain/settings_repository.dart';
@@ -17,6 +18,7 @@ class SharedPreferencesSettingsRepository implements SettingsRepository {
   /// Read by the native countdown as `flutter.settings.lockScreen.v1`.
   static const lockScreenKey = 'settings.lockScreen.v1';
   static const mindfulKey = 'settings.mindful.v1';
+  static const mindfulPauseKey = 'settings.mindfulPause.v1';
   static const _version = 1;
 
   final SharedPreferences _preferences;
@@ -107,5 +109,19 @@ class SharedPreferencesSettingsRepository implements SettingsRepository {
   @override
   Future<void> saveMindfulOpening(bool on) async {
     await _preferences.setBool(mindfulKey, on);
+  }
+
+  @override
+  Future<Duration> loadMindfulPause() async {
+    final pause = Duration(seconds: _preferences.getInt(mindfulPauseKey) ?? 0);
+    return mindfulPauseOptions.contains(pause) ? pause : mindfulPause;
+  }
+
+  @override
+  Future<void> saveMindfulPause(Duration pause) async {
+    if (!mindfulPauseOptions.contains(pause)) {
+      throw ArgumentError.value(pause, 'pause', 'is not a pause option');
+    }
+    await _preferences.setInt(mindfulPauseKey, pause.inSeconds);
   }
 }

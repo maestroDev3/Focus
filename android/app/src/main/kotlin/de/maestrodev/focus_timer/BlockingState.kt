@@ -55,6 +55,8 @@ data class BlockingState(
     val focusTimes: List<FocusTimeRule> = emptyList(),
     /** Mindful opening outside sessions and focus times (#119). */
     val mindful: Boolean = false,
+    /** Apps that get the breathing pause (#237). */
+    val mindfulPackages: Set<String> = packages,
 ) {
     private fun sessionBlocks(nowMillis: Long): Boolean =
         active && (plannedEndMillis == null || nowMillis < plannedEndMillis)
@@ -116,14 +118,20 @@ data class BlockingState(
                 val obj = JSONObject(json)
                 if (obj.optInt("v") != 1) return INACTIVE
                 val list = obj.getJSONArray("packages")
+                val packages = (0 until list.length()).map { list.getString(it) }.toSet()
+                // Optional since #237; before, the default list got the pause.
+                val mindfulList = obj.optJSONArray("mindfulPackages")
                 BlockingState(
                     active = obj.getBoolean("active"),
-                    packages = (0 until list.length()).map { list.getString(it) }.toSet(),
+                    packages = packages,
                     plannedEndMillis =
                         if (obj.isNull("plannedEndMillis")) null else obj.getLong("plannedEndMillis"),
                     focusTimes = readFocusTimes(obj),
                     // Optional since #119.
                     mindful = obj.optBoolean("mindful", false),
+                    mindfulPackages = mindfulList
+                        ?.let { apps -> (0 until apps.length()).map { apps.getString(it) }.toSet() }
+                        ?: packages,
                 )
             } catch (error: org.json.JSONException) {
                 INACTIVE
