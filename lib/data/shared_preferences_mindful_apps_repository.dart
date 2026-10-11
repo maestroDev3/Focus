@@ -11,8 +11,8 @@ import '../domain/blocking.dart';
 class SharedPreferencesMindfulAppsRepository implements BlockListRepository {
   SharedPreferencesMindfulAppsRepository(
     this._preferences, {
-    required BlockListRepository defaultList,
-  }) : _defaultList = defaultList;
+    required this._defaultList,
+  });
 
   static const key = 'mindful.apps.v1';
   static const _version = 1;
