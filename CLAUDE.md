@@ -274,3 +274,7 @@ commit comment).
   during their focus times) first shows a 5-second breathing pause, then “open” or
   “go back”; after opening, the app stays free for 5 minutes; a calm line
   says how often it was opened today; switch in the settings, default off.
+- 2026-10-11 – Mindful opening confirmed on the phone and merged. Follow-up
+  #237: while the switch is on, tapping the entry opens its own page with the
+  pause length (3 / 5 / 10 / 20 s, default 5) and its own app list (filled
+  once with the default list, then edited freely).

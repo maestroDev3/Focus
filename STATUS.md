@@ -8,7 +8,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- #237 Choose apps and pause length for mindful opening.
+- #237 Choose apps and pause length for mindful opening – tasks #238 → #239.
 
 ## Up next
 
