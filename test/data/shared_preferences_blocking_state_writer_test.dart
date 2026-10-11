@@ -39,6 +39,7 @@ void main() {
           active: false,
           packageNames: {'org.telegram.messenger'},
           mindfulOpening: true,
+          mindfulPackages: {'com.instagram.android'},
         ),
       );
 
@@ -49,6 +50,7 @@ void main() {
         'plannedEndMillis': null,
         'focusTimes': <Object>[],
         'mindful': true,
+        'mindfulPackages': ['com.instagram.android'],
       });
     });
 

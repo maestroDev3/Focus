@@ -6,6 +6,33 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   group('SharedPreferencesSettingsRepository', () {
+    test('pauses 5 seconds before a mindful opening by default', () async {
+      SharedPreferences.setMockInitialValues({});
+      final preferences = await SharedPreferences.getInstance();
+      final repository = SharedPreferencesSettingsRepository(preferences);
+      expect(await repository.loadMindfulPause(), const Duration(seconds: 5));
+
+      await repository.saveMindfulPause(const Duration(seconds: 10));
+
+      expect(
+        await SharedPreferencesSettingsRepository(
+          preferences,
+        ).loadMindfulPause(),
+        const Duration(seconds: 10),
+      );
+    });
+
+    test('falls back to 5 seconds for an unknown stored pause', () async {
+      SharedPreferences.setMockInitialValues({
+        'flutter.settings.mindfulPause.v1': 7,
+      });
+      final repository = SharedPreferencesSettingsRepository(
+        await SharedPreferences.getInstance(),
+      );
+
+      expect(await repository.loadMindfulPause(), const Duration(seconds: 5));
+    });
+
     test('keeps mindful opening off until it is switched on', () async {
       SharedPreferences.setMockInitialValues({});
       final preferences = await SharedPreferences.getInstance();
