@@ -101,6 +101,7 @@ class BlockingState {
     this.focusTimes = const [],
     this.focusTimePackages = const {},
     this.mindfulOpening = false,
+    this.mindfulPackages = const {},
   });
 
   const BlockingState.inactive()
@@ -109,7 +110,8 @@ class BlockingState {
       plannedEnd = null,
       focusTimes = const [],
       focusTimePackages = const {},
-      mindfulOpening = false;
+      mindfulOpening = false,
+      mindfulPackages = const {};
 
   /// Derives the state from the active session; [plannedEnd] is null while
   /// paused because the end is not known then. With [focusTimes] the block
@@ -122,6 +124,7 @@ class BlockingState {
     List<FocusTime> focusTimes = const [],
     Map<String, Set<String>> focusTimePackages = const {},
     bool mindfulOpening = false,
+    Set<String> mindfulPackages = const {},
   }) {
     if (session == null || session.isFinished) {
       if (focusTimes.isEmpty && !mindfulOpening) {
@@ -133,6 +136,7 @@ class BlockingState {
         focusTimes: focusTimes,
         focusTimePackages: focusTimePackages,
         mindfulOpening: mindfulOpening,
+        mindfulPackages: mindfulPackages,
       );
     }
     return BlockingState(
@@ -142,6 +146,7 @@ class BlockingState {
       focusTimes: focusTimes,
       focusTimePackages: focusTimePackages,
       mindfulOpening: mindfulOpening,
+      mindfulPackages: mindfulPackages,
     );
   }
 
@@ -161,6 +166,9 @@ class BlockingState {
   /// breathing pause (#119).
   final bool mindfulOpening;
 
+  /// The apps that get the breathing pause (#237).
+  final Set<String> mindfulPackages;
+
   /// The apps [time] blocks.
   Set<String> packagesDuring(FocusTime time) =>
       focusTimePackages[time.id] ?? packageNames;
@@ -170,6 +178,8 @@ class BlockingState {
       other is BlockingState &&
       other.active == active &&
       other.mindfulOpening == mindfulOpening &&
+      other.mindfulPackages.length == mindfulPackages.length &&
+      other.mindfulPackages.containsAll(mindfulPackages) &&
       other.plannedEnd == plannedEnd &&
       _sameFocusTimes(other.focusTimes, focusTimes) &&
       _samePackagesByTime(other.focusTimePackages, focusTimePackages) &&
@@ -183,6 +193,7 @@ class BlockingState {
     Object.hashAllUnordered(packageNames),
     Object.hashAll(focusTimes),
     mindfulOpening,
+    Object.hashAllUnordered(mindfulPackages),
   );
 }
 
@@ -229,14 +240,23 @@ bool blocksAt({
       state.packagesDuring(focusTime).contains(packageName);
 }
 
-/// How long the breathing pause lasts before a paused app can be opened.
+/// How long the breathing pause lasts by default before an app can be
+/// opened.
 const mindfulPause = Duration(seconds: 5);
+
+/// The pause lengths the user can choose from.
+const mindfulPauseOptions = [
+  Duration(seconds: 3),
+  mindfulPause,
+  Duration(seconds: 10),
+  Duration(seconds: 20),
+];
 
 /// How long an app opened after the pause stays free of it.
 const mindfulRelease = Duration(minutes: 5);
 
 /// Whether opening [packageName] at [now] first shows the breathing pause:
-/// mindful opening is on, the app is paused (default list), no session or
+/// mindful opening is on, the app is on the mindful list, no session or
 /// focus time runs (those block strictly) and the app wasn't released until
 /// after [now]. Mirrored in Kotlin (`MindfulOpening.needsPause`).
 bool needsMindfulPause({
@@ -246,7 +266,7 @@ bool needsMindfulPause({
   DateTime? releasedUntil,
 }) {
   if (!state.mindfulOpening) return false;
-  if (!state.packageNames.contains(packageName)) return false;
+  if (!state.mindfulPackages.contains(packageName)) return false;
   if (releasedUntil != null && now.isBefore(releasedUntil)) return false;
   final end = state.plannedEnd;
   final sessionRuns = state.active && (end == null || now.isBefore(end));
@@ -267,6 +287,7 @@ class BlockingSync {
     this._focusTimes,
     this._namedLists,
     this._settings,
+    this._mindfulApps,
   });
 
   final BlockListRepository _blockList;
@@ -280,6 +301,9 @@ class BlockingSync {
 
   /// Whether mindful opening is on; off without settings.
   final SettingsRepository? _settings;
+
+  /// The apps that get the breathing pause; the default list without it.
+  final BlockListRepository? _mindfulApps;
 
   Future<void> update(FocusSession? session) async {
     final mindfulOpening = await _settings?.loadMindfulOpening() ?? false;
@@ -299,6 +323,9 @@ class BlockingSync {
               time.id: apps.packageNames,
         },
         mindfulOpening: mindfulOpening,
+        mindfulPackages: mindfulOpening
+            ? (await _mindfulApps?.loadBlockList() ?? blockList).packageNames
+            : const {},
       ),
     );
   }

@@ -27,6 +27,15 @@ void main() {
     expect(mindfulRelease, const Duration(minutes: 5));
   });
 
+  test('the pause can be 3, 5, 10 or 20 seconds', () {
+    expect(mindfulPauseOptions, const [
+      Duration(seconds: 3),
+      Duration(seconds: 5),
+      Duration(seconds: 10),
+      Duration(seconds: 20),
+    ]);
+  });
+
   group('BlockingState.from with mindful opening', () {
     test('keeps the default list without a session or focus time', () {
       expect(
@@ -35,11 +44,13 @@ void main() {
           blockList: blockList,
           now: now,
           mindfulOpening: true,
+          mindfulPackages: const {maps},
         ),
         const BlockingState(
           active: false,
           packageNames: {telegram},
           mindfulOpening: true,
+          mindfulPackages: {maps},
         ),
       );
     });
@@ -57,6 +68,7 @@ void main() {
       active: false,
       packageNames: {telegram},
       mindfulOpening: true,
+      mindfulPackages: {telegram},
     );
 
     bool check(
@@ -75,8 +87,20 @@ void main() {
       expect(check(mindful), isTrue);
     });
 
-    test('does not pause apps that are not paused', () {
+    test('does not pause apps that are not on the mindful list', () {
       expect(check(mindful, app: maps), isFalse);
+    });
+
+    test('pauses only the mindful list, not the whole default list', () {
+      const ownList = BlockingState(
+        active: false,
+        packageNames: {telegram, maps},
+        mindfulOpening: true,
+        mindfulPackages: {maps},
+      );
+
+      expect(check(ownList, app: telegram), isFalse);
+      expect(check(ownList, app: maps), isTrue);
     });
 
     test('does not pause with the setting off', () {
@@ -100,6 +124,7 @@ void main() {
         packageNames: const {telegram},
         plannedEnd: now.add(const Duration(minutes: 20)),
         mindfulOpening: true,
+        mindfulPackages: const {telegram},
       );
 
       expect(check(session), isFalse);
@@ -112,6 +137,7 @@ void main() {
         packageNames: const {telegram},
         focusTimes: [morning],
         mindfulOpening: true,
+        mindfulPackages: const {telegram},
       );
 
       expect(check(focusTime, at: DateTime(2026, 10, 5, 9)), isFalse);
@@ -131,6 +157,7 @@ void main() {
           writer: writer,
           clock: () => now,
           settings: settings,
+          mindfulApps: FakeBlockListRepository(const BlockList({maps})),
         ),
       );
 
@@ -138,6 +165,7 @@ void main() {
 
       expect(writer.last?.mindfulOpening, isTrue);
       expect(writer.last?.packageNames, {telegram});
+      expect(writer.last?.mindfulPackages, {maps});
     });
   });
 

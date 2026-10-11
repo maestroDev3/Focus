@@ -21,7 +21,7 @@ object MindfulOpening {
      */
     fun needsPause(context: Context, state: BlockingState, app: String, nowMillis: Long): Boolean =
         state.mindful &&
-            app in state.packages &&
+            app in state.mindfulPackages &&
             nowMillis >= releasedUntil(context, app) &&
             !state.focusing(nowMillis)
 
