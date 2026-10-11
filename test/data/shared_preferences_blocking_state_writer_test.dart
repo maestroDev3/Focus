@@ -30,6 +30,28 @@ void main() {
       });
     });
 
+    test('marks mindful opening for the native side', () async {
+      SharedPreferences.setMockInitialValues({});
+      final preferences = await SharedPreferences.getInstance();
+
+      await SharedPreferencesBlockingStateWriter(preferences).write(
+        const BlockingState(
+          active: false,
+          packageNames: {'org.telegram.messenger'},
+          mindfulOpening: true,
+        ),
+      );
+
+      expect(jsonDecode(preferences.getString('blocking.state.v1') ?? ''), {
+        'v': 1,
+        'active': false,
+        'packages': ['org.telegram.messenger'],
+        'plannedEndMillis': null,
+        'focusTimes': <Object>[],
+        'mindful': true,
+      });
+    });
+
     test('stores an inactive state without end', () async {
       SharedPreferences.setMockInitialValues({});
       final preferences = await SharedPreferences.getInstance();

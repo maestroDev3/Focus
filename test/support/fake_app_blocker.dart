@@ -17,6 +17,17 @@ class FakeAppBlocker implements AppBlocker {
   var openedSettings = 0;
   var openedAppInfo = 0;
   final _opened = StreamController<String>.broadcast();
+  final _mindful = StreamController<MindfulRequest>.broadcast();
+
+  /// The mindful request Focus was launched for (consumed once).
+  MindfulRequest? initialMindful;
+
+  /// Apps opened after the breathing pause.
+  final openedMindfully = <String>[];
+  var wentHome = 0;
+
+  /// Simulates opening a paused app with mindful opening on.
+  void emitMindful(MindfulRequest request) => _mindful.add(request);
 
   /// Simulates the user opening a blocked app while Focus runs.
   void emit(String packageName) => _opened.add(packageName);
@@ -46,4 +57,21 @@ class FakeAppBlocker implements AppBlocker {
 
   @override
   Stream<String> get blockedAppOpened => _opened.stream;
+
+  @override
+  Future<MindfulRequest?> initialMindfulRequest() async {
+    final request = initialMindful;
+    initialMindful = null;
+    return request;
+  }
+
+  @override
+  Stream<MindfulRequest> get mindfulOpenRequested => _mindful.stream;
+
+  @override
+  Future<void> openMindfully(String packageName) async =>
+      openedMindfully.add(packageName);
+
+  @override
+  Future<void> goHome() async => wentHome++;
 }

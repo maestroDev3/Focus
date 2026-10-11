@@ -132,5 +132,13 @@
   "languageGerman": "Deutsch",
   "languageRussian": "Русский",
   "showOnLockScreen": "Показывать на экране блокировки",
-  "showOnLockScreenDetails": "Метка и оставшееся время, пока идёт сессия"
+  "showOnLockScreenDetails": "Метка и оставшееся время, пока идёт сессия",
+  "takeABreath": "Сделай вдох.",
+  "mindfulQuestion": "Ты правда хочешь открыть {app}?",
+  "mindfulOpenedToday": "{count, plural, =1{Сегодня открыто один раз} one{Сегодня открыто {count} раз} few{Сегодня открыто {count} раза} many{Сегодня открыто {count} раз} other{Сегодня открыто {count} раза}}",
+  "mindfulGoBack": "Назад",
+  "mindfulOpen": "Открыть {app}",
+  "mindfulOpenIn": "Открыть через {seconds} с",
+  "mindfulOpening": "Осознанное открытие",
+  "mindfulOpeningDetails": "Вне сессий и времени фокуса приложения на паузе открываются после короткой паузы"
 }

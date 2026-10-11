@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:focus_timer/data/method_channel_app_blocker.dart';
+import 'package:focus_timer/domain/app_blocker.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -8,15 +9,18 @@ void main() {
   final messenger =
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
   final calls = <MethodCall>[];
+  Object? initialMindful;
 
   setUp(() {
     calls.clear();
+    initialMindful = null;
     messenger.setMockMethodCallHandler(channel, (call) async {
       calls.add(call);
       return switch (call.method) {
         'isBlockerEnabled' => true,
         'isNotificationGateEnabled' => false,
         'initialBlockedPackage' => 'org.telegram.messenger',
+        'initialMindfulRequest' => initialMindful,
         _ => null,
       };
     });
@@ -76,6 +80,61 @@ void main() {
       );
 
       expect(opened, ['com.instagram.android']);
+    });
+
+    test('reads the mindful request Focus was launched for', () async {
+      initialMindful = {'package': 'org.telegram.messenger', 'openedToday': 3};
+
+      expect(
+        await MethodChannelAppBlocker().initialMindfulRequest(),
+        const MindfulRequest(
+          packageName: 'org.telegram.messenger',
+          openedToday: 3,
+        ),
+      );
+      expect(calls.single.method, 'initialMindfulRequest');
+    });
+
+    test('has no mindful request when Focus was opened normally', () async {
+      expect(await MethodChannelAppBlocker().initialMindfulRequest(), isNull);
+    });
+
+    test('emits mindful requests while Focus runs', () async {
+      final blocker = MethodChannelAppBlocker();
+      final requests = <MindfulRequest>[];
+      final subscription = blocker.mindfulOpenRequested.listen(requests.add);
+      addTearDown(subscription.cancel);
+
+      await messenger.handlePlatformMessage(
+        channel.name,
+        channel.codec.encodeMethodCall(
+          const MethodCall('mindfulOpenRequested', {
+            'package': 'com.instagram.android',
+            'openedToday': 1,
+          }),
+        ),
+        (_) {},
+      );
+
+      expect(requests, [
+        const MindfulRequest(
+          packageName: 'com.instagram.android',
+          openedToday: 1,
+        ),
+      ]);
+    });
+
+    test('opens the app after the pause', () async {
+      await MethodChannelAppBlocker().openMindfully('org.telegram.messenger');
+
+      expect(calls.single.method, 'openMindfully');
+      expect(calls.single.arguments, 'org.telegram.messenger');
+    });
+
+    test('goes to the home screen instead', () async {
+      await MethodChannelAppBlocker().goHome();
+
+      expect(calls.single.method, 'goHome');
     });
   });
 }

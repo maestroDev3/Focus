@@ -4,6 +4,7 @@ import 'focus_session.dart';
 import 'focus_time.dart';
 import 'focus_time_repository.dart';
 import 'named_block_list.dart';
+import 'settings_repository.dart';
 
 /// Android package name of Focus itself, which can never be blocked.
 const focusPackageName = 'de.maestrodev.focus_timer';
@@ -99,6 +100,7 @@ class BlockingState {
     this.plannedEnd,
     this.focusTimes = const [],
     this.focusTimePackages = const {},
+    this.mindfulOpening = false,
   });
 
   const BlockingState.inactive()
@@ -106,7 +108,8 @@ class BlockingState {
       packageNames = const {},
       plannedEnd = null,
       focusTimes = const [],
-      focusTimePackages = const {};
+      focusTimePackages = const {},
+      mindfulOpening = false;
 
   /// Derives the state from the active session; [plannedEnd] is null while
   /// paused because the end is not known then. With [focusTimes] the block
@@ -118,14 +121,18 @@ class BlockingState {
     required DateTime now,
     List<FocusTime> focusTimes = const [],
     Map<String, Set<String>> focusTimePackages = const {},
+    bool mindfulOpening = false,
   }) {
     if (session == null || session.isFinished) {
-      if (focusTimes.isEmpty) return const BlockingState.inactive();
+      if (focusTimes.isEmpty && !mindfulOpening) {
+        return const BlockingState.inactive();
+      }
       return BlockingState(
         active: false,
         packageNames: blockList.packageNames,
         focusTimes: focusTimes,
         focusTimePackages: focusTimePackages,
+        mindfulOpening: mindfulOpening,
       );
     }
     return BlockingState(
@@ -134,6 +141,7 @@ class BlockingState {
       plannedEnd: session.isPaused ? null : now.add(session.remaining(now)),
       focusTimes: focusTimes,
       focusTimePackages: focusTimePackages,
+      mindfulOpening: mindfulOpening,
     );
   }
 
@@ -149,6 +157,10 @@ class BlockingState {
   /// Apps of the named list of a focus time, by focus time id.
   final Map<String, Set<String>> focusTimePackages;
 
+  /// Outside sessions and focus times, paused apps open only after a short
+  /// breathing pause (#119).
+  final bool mindfulOpening;
+
   /// The apps [time] blocks.
   Set<String> packagesDuring(FocusTime time) =>
       focusTimePackages[time.id] ?? packageNames;
@@ -157,6 +169,7 @@ class BlockingState {
   bool operator ==(Object other) =>
       other is BlockingState &&
       other.active == active &&
+      other.mindfulOpening == mindfulOpening &&
       other.plannedEnd == plannedEnd &&
       _sameFocusTimes(other.focusTimes, focusTimes) &&
       _samePackagesByTime(other.focusTimePackages, focusTimePackages) &&
@@ -169,6 +182,7 @@ class BlockingState {
     plannedEnd,
     Object.hashAllUnordered(packageNames),
     Object.hashAll(focusTimes),
+    mindfulOpening,
   );
 }
 
@@ -215,6 +229,30 @@ bool blocksAt({
       state.packagesDuring(focusTime).contains(packageName);
 }
 
+/// How long the breathing pause lasts before a paused app can be opened.
+const mindfulPause = Duration(seconds: 5);
+
+/// How long an app opened after the pause stays free of it.
+const mindfulRelease = Duration(minutes: 5);
+
+/// Whether opening [packageName] at [now] first shows the breathing pause:
+/// mindful opening is on, the app is paused (default list), no session or
+/// focus time runs (those block strictly) and the app wasn't released until
+/// after [now]. Mirrored in Kotlin (`MindfulOpening.needsPause`).
+bool needsMindfulPause({
+  required BlockingState state,
+  required String packageName,
+  required DateTime now,
+  DateTime? releasedUntil,
+}) {
+  if (!state.mindfulOpening) return false;
+  if (!state.packageNames.contains(packageName)) return false;
+  if (releasedUntil != null && now.isBefore(releasedUntil)) return false;
+  final end = state.plannedEnd;
+  final sessionRuns = state.active && (end == null || now.isBefore(end));
+  return !sessionRuns && activeFocusTime(state.focusTimes, now) == null;
+}
+
 /// Publishes the [BlockingState] where the native blocker can read it.
 abstract interface class BlockingStateWriter {
   Future<void> write(BlockingState state);
@@ -228,6 +266,7 @@ class BlockingSync {
     required this._clock,
     this._focusTimes,
     this._namedLists,
+    this._settings,
   });
 
   final BlockListRepository _blockList;
@@ -239,7 +278,11 @@ class BlockingSync {
   /// the default list.
   final NamedBlockListRepository? _namedLists;
 
+  /// Whether mindful opening is on; off without settings.
+  final SettingsRepository? _settings;
+
   Future<void> update(FocusSession? session) async {
+    final mindfulOpening = await _settings?.loadMindfulOpening() ?? false;
     final blockList = await _blockList.loadBlockList();
     final focusTimes = await _focusTimes?.watchFocusTimes().first ?? const [];
     final lists = await _namedLists?.watchLists().first ?? const [];
@@ -255,6 +298,7 @@ class BlockingSync {
             if (appsById[time.blockListId] case final apps?)
               time.id: apps.packageNames,
         },
+        mindfulOpening: mindfulOpening,
       ),
     );
   }

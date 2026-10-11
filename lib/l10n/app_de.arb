@@ -132,5 +132,13 @@
   "languageGerman": "Deutsch",
   "languageRussian": "Русский",
   "showOnLockScreen": "Auf dem Sperrbildschirm anzeigen",
-  "showOnLockScreenDetails": "Label und Restzeit, solange eine Session läuft"
+  "showOnLockScreenDetails": "Label und Restzeit, solange eine Session läuft",
+  "takeABreath": "Atme kurz durch.",
+  "mindfulQuestion": "Möchtest du {app} wirklich öffnen?",
+  "mindfulOpenedToday": "{count, plural, =1{Heute einmal geöffnet} other{Heute {count}-mal geöffnet}}",
+  "mindfulGoBack": "Zurück",
+  "mindfulOpen": "{app} öffnen",
+  "mindfulOpenIn": "Öffnen in {seconds} s",
+  "mindfulOpening": "Achtsames Öffnen",
+  "mindfulOpeningDetails": "Außerhalb von Sessions und Fokuszeiten öffnen pausierte Apps erst nach einer kurzen Atempause"
 }

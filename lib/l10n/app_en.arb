@@ -702,5 +702,57 @@
   },
   "@showOnLockScreenDetails": {
     "description": "Subtitle of the lock screen switch."
+  },
+  "takeABreath": "Take a breath.",
+  "@takeABreath": {
+    "description": "Title of the breathing pause before a paused app opens."
+  },
+  "mindfulQuestion": "Do you really want to open {app}?",
+  "@mindfulQuestion": {
+    "description": "Question on the breathing pause.",
+    "placeholders": {
+      "app": {
+        "type": "String"
+      }
+    }
+  },
+  "mindfulOpenedToday": "{count, plural, =1{Opened once today} other{Opened {count} times today}}",
+  "@mindfulOpenedToday": {
+    "description": "How often the paused app was opened today.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mindfulGoBack": "Go back",
+  "@mindfulGoBack": {
+    "description": "Leaves the paused app (home screen)."
+  },
+  "mindfulOpen": "Open {app}",
+  "@mindfulOpen": {
+    "description": "Opens the paused app after the pause.",
+    "placeholders": {
+      "app": {
+        "type": "String"
+      }
+    }
+  },
+  "mindfulOpenIn": "Open in {seconds} s",
+  "@mindfulOpenIn": {
+    "description": "Open button while the pause still runs.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "mindfulOpening": "Mindful opening",
+  "@mindfulOpening": {
+    "description": "Settings switch for the breathing pause."
+  },
+  "mindfulOpeningDetails": "Outside sessions and focus times, paused apps open after a short breath",
+  "@mindfulOpeningDetails": {
+    "description": "Subtitle of the mindful opening switch."
   }
 }

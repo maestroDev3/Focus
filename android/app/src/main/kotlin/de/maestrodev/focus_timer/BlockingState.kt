@@ -53,6 +53,8 @@ data class BlockingState(
     val packages: Set<String>,
     val plannedEndMillis: Long?,
     val focusTimes: List<FocusTimeRule> = emptyList(),
+    /** Mindful opening outside sessions and focus times (#119). */
+    val mindful: Boolean = false,
 ) {
     private fun sessionBlocks(nowMillis: Long): Boolean =
         active && (plannedEndMillis == null || nowMillis < plannedEndMillis)
@@ -120,6 +122,8 @@ data class BlockingState(
                     plannedEndMillis =
                         if (obj.isNull("plannedEndMillis")) null else obj.getLong("plannedEndMillis"),
                     focusTimes = readFocusTimes(obj),
+                    // Optional since #119.
+                    mindful = obj.optBoolean("mindful", false),
                 )
             } catch (error: org.json.JSONException) {
                 INACTIVE

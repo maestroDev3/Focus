@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:focus_timer/domain/app_blocker.dart';
 import 'package:focus_timer/domain/app_language.dart';
 import 'package:focus_timer/domain/blocking.dart';
 import 'package:focus_timer/domain/daily_goal.dart';
@@ -829,6 +830,89 @@ void main() {
       await tester.pump();
 
       expect(find.text('Locked during this focus time'), findsOneWidget);
+    });
+
+    group('mindful opening', () {
+      const telegram = MindfulRequest(
+        packageName: 'org.telegram.messenger',
+        openedToday: 2,
+      );
+
+      testWidgets('shows the breathing pause and goes back home', (
+        tester,
+      ) async {
+        await tester.pumpWidget(buildApp());
+        await tester.pump();
+
+        blocker.emitMindful(telegram);
+        await tester.pump();
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+        expect(
+          find.text('Do you really want to open Telegram?'),
+          findsOneWidget,
+        );
+        expect(find.text('Opened 2 times today'), findsOneWidget);
+
+        await tester.tap(find.text('Go back'));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+
+        expect(blocker.wentHome, 1);
+        expect(find.text('Take a breath.'), findsNothing);
+      });
+
+      testWidgets('opens the app after the pause when launched for it', (
+        tester,
+      ) async {
+        blocker.initialMindful = telegram;
+        await tester.pumpWidget(buildApp());
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+        expect(find.text('Take a breath.'), findsOneWidget);
+
+        await tester.pump(const Duration(seconds: 5));
+        await tester.tap(find.text('Open Telegram'));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+
+        expect(blocker.openedMindfully, ['org.telegram.messenger']);
+        expect(find.text('Take a breath.'), findsNothing);
+      });
+
+      testWidgets('refreshes blocking when the switch changes', (
+        tester,
+      ) async {
+        final writer = FakeBlockingStateWriter();
+        final timer = FocusTimer(
+          repository: repository,
+          clock: () => now,
+          blocking: BlockingSync(
+            blockList: FakeBlockListRepository(
+              const BlockList({'org.telegram.messenger'}),
+            ),
+            writer: writer,
+            clock: () => now,
+            settings: settings,
+          ),
+        );
+        await tester.pumpWidget(buildApp(timer: timer));
+        await tester.pump();
+        await tester.tap(find.byTooltip('Settings'));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+        final mindful = find.byKey(const Key('mindful-opening'));
+        await tester.scrollUntilVisible(mindful, 200);
+        await tester.ensureVisible(mindful);
+        await tester.pump();
+
+        await tester.tap(mindful);
+        await tester.pump();
+        await tester.pump();
+
+        expect(settings.mindfulOpening, isTrue);
+        expect(writer.last?.mindfulOpening, isTrue);
+      });
     });
   });
 }
