@@ -53,6 +53,7 @@ class FocusApp extends StatefulWidget {
     this.homeWidget,
     this.language,
     this.onLanguageChanged,
+    this.mindfulApps,
     this.clock = DateTime.now,
     this.showIntro = false,
   });
@@ -96,6 +97,10 @@ class FocusApp extends StatefulWidget {
   /// Called when the language changed in the settings, so texts sent to
   /// native code follow it.
   final ValueChanged<AppLanguage>? onLanguageChanged;
+
+  /// The apps that get the breathing pause; optional because not every
+  /// test needs it.
+  final BlockListRepository? mindfulApps;
 
   /// Source of the current time for every screen.
   final Clock clock;
@@ -379,6 +384,8 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
         onLanguageChanged: _onLanguageChanged,
         onLockScreenChanged: widget.timer.refreshCountdown,
         onMindfulChanged: widget.timer.refreshBlocking,
+        installedApps: widget.installedApps,
+        mindfulApps: widget.mindfulApps,
         restoreLock: () => widget.timer.current != null
             ? RestoreLock.session
             : activeFocusTime(_focusTimes, widget.clock()) != null
@@ -528,6 +535,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
     if (_breathShown) return;
     _breathShown = true;
     final apps = await widget.installedApps.installedApps();
+    final pause = await widget.settings.loadMindfulPause();
     final label = [
       for (final app in apps)
         if (app.packageName == request.packageName) app.label,
@@ -536,6 +544,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
       (context) => BreathScreen(
         appLabel: label ?? request.packageName,
         openedToday: request.openedToday,
+        pause: pause,
         onOpen: () {
           widget.appBlocker.openMindfully(request.packageName);
           Navigator.of(context).pop();

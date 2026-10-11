@@ -8,7 +8,7 @@ import 'widgets/focus_background.dart';
 
 /// Shown before a paused app opens outside sessions and focus times: a
 /// breathing ring, how often the app was opened today, and the choice to go
-/// back at once or to open the app after `mindfulPause`.
+/// back at once or to open the app after the chosen pause.
 class BreathScreen extends StatefulWidget {
   const BreathScreen({
     super.key,
@@ -16,7 +16,11 @@ class BreathScreen extends StatefulWidget {
     required this.openedToday,
     required this.onOpen,
     required this.onGoBack,
+    this.pause = mindfulPause,
   });
+
+  /// How long to breathe before the app can be opened.
+  final Duration pause;
 
   final String appLabel;
 
@@ -37,7 +41,7 @@ class _BreathScreenState extends State<BreathScreen>
     duration: const Duration(seconds: 4),
   )..repeat(reverse: true);
 
-  var _secondsLeft = mindfulPause.inSeconds;
+  late var _secondsLeft = widget.pause.inSeconds;
   Timer? _countdown;
 
   @override

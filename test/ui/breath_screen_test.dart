@@ -8,13 +8,18 @@ void main() {
     late int opened;
     late int wentBack;
 
-    Future<void> pumpBreath(WidgetTester tester, {int openedToday = 3}) async {
+    Future<void> pumpBreath(
+      WidgetTester tester, {
+      int openedToday = 3,
+      Duration pause = const Duration(seconds: 5),
+    }) async {
       opened = 0;
       wentBack = 0;
       await tester.pumpApp(
         BreathScreen(
           appLabel: 'Telegram',
           openedToday: openedToday,
+          pause: pause,
           onOpen: () => opened++,
           onGoBack: () => wentBack++,
         ),
@@ -47,6 +52,20 @@ void main() {
       expect(find.text('Open in 3 s'), findsOneWidget);
 
       await tester.pump(const Duration(seconds: 3));
+      await tester.tap(find.text('Open Telegram'));
+      await tester.pump();
+
+      expect(opened, 1);
+    });
+
+    testWidgets('waits as long as the chosen pause', (tester) async {
+      await pumpBreath(tester, pause: const Duration(seconds: 10));
+      expect(find.text('Open in 10 s'), findsOneWidget);
+
+      await tester.pump(const Duration(seconds: 5));
+      expect(find.text('Open Telegram'), findsNothing);
+
+      await tester.pump(const Duration(seconds: 5));
       await tester.tap(find.text('Open Telegram'));
       await tester.pump();
 

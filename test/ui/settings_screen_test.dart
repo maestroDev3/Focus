@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:focus_timer/data/json_backup_codec.dart';
 import 'package:focus_timer/domain/app_language.dart';
 import 'package:focus_timer/domain/backup.dart';
+import 'package:focus_timer/domain/blocking.dart';
 import 'package:focus_timer/domain/daily_goal.dart';
 import 'package:focus_timer/domain/focus_session.dart';
 import 'package:focus_timer/domain/pomodoro.dart';
@@ -10,8 +11,10 @@ import 'package:focus_timer/ui/settings_screen.dart';
 
 import '../support/backup_files_for_tests.dart';
 import '../support/fake_app_language_setting.dart';
+import '../support/fake_block_list_repository.dart';
 import '../support/fake_document_store.dart';
 import '../support/fake_focus_time_repository.dart';
+import '../support/fake_installed_apps_source.dart';
 import '../support/fake_label_repository.dart';
 import '../support/fake_session_repository.dart';
 import '../support/fake_settings_repository.dart';
@@ -36,9 +39,11 @@ void main() {
       VoidCallback? onLockScreenChanged,
       bool showOnLockScreen = true,
       VoidCallback? onMindfulChanged,
+      bool mindfulOpening = false,
     ]) async {
       final repository = FakeSettingsRepository(pomodoro)
-        ..showOnLockScreen = showOnLockScreen;
+        ..showOnLockScreen = showOnLockScreen
+        ..mindfulOpening = mindfulOpening;
       await tester.pumpApp(
         SettingsScreen(
           language: language,
@@ -46,6 +51,10 @@ void main() {
           restoreLock: restoreLock ?? () => RestoreLock.none,
           onLockScreenChanged: onLockScreenChanged,
           onMindfulChanged: onMindfulChanged,
+          installedApps: FakeInstalledAppsSource(),
+          mindfulApps: FakeBlockListRepository(
+            const BlockList({'com.instagram.android'}),
+          ),
           settings: repository,
           focusTimes: FakeFocusTimeRepository(),
           backupFiles: backupFilesForTests(
@@ -184,14 +193,57 @@ void main() {
       await tester.ensureVisible(mindful);
       await tester.pump();
       expect(find.text('Mindful opening'), findsOneWidget);
-      expect(tester.widget<SwitchListTile>(mindful).value, isFalse);
+      expect(tester.widget<Switch>(mindful).value, isFalse);
 
       await tester.tap(mindful);
       await tester.pump();
 
       expect(repository.mindfulOpening, isTrue);
-      expect(tester.widget<SwitchListTile>(mindful).value, isTrue);
+      expect(tester.widget<Switch>(mindful).value, isTrue);
       expect(changes, 1);
+    });
+
+    testWidgets('switches mindful opening on when the row is tapped', (
+      tester,
+    ) async {
+      final repository = await pumpSettings(tester);
+      final row = find.text('Mindful opening');
+      await tester.scrollUntilVisible(row, 200);
+      await tester.ensureVisible(row);
+      await tester.pump();
+
+      await tester.tap(row);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(repository.mindfulOpening, isTrue);
+      expect(find.text('Pause length'), findsNothing);
+    });
+
+    testWidgets('opens the mindful opening page while it is on', (
+      tester,
+    ) async {
+      await pumpSettings(
+        tester,
+        const PomodoroSettings(),
+        null,
+        null,
+        null,
+        null,
+        true,
+        null,
+        true,
+      );
+      final row = find.text('Mindful opening');
+      await tester.scrollUntilVisible(row, 200);
+      await tester.ensureVisible(row);
+      await tester.pump();
+
+      await tester.tap(row);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(find.text('Pause length'), findsOneWidget);
     });
 
     testWidgets('shows a stored lock screen choice', (tester) async {

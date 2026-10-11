@@ -140,5 +140,8 @@
   "mindfulOpen": "Открыть {app}",
   "mindfulOpenIn": "Открыть через {seconds} с",
   "mindfulOpening": "Осознанное открытие",
-  "mindfulOpeningDetails": "Вне сессий и времени фокуса приложения на паузе открываются после короткой паузы"
+  "mindfulOpeningDetails": "Вне сессий и времени фокуса приложения на паузе открываются после короткой паузы",
+  "mindfulPauseLength": "Длина паузы",
+  "mindfulPauseSeconds": "{seconds} с",
+  "mindfulApps": "Приложения с паузой"
 }
