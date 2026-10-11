@@ -8,7 +8,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- #237 Choose apps and pause length for mindful opening – tasks #238 → #239.
+- Nothing – next: epic #123 Session ritual (#121 → #122).
 
 ## Up next
 
@@ -29,7 +29,6 @@ The GitHub issues are authoritative; this file is the summary.
 
 | Epic | State | Stories (in order) |
 |---|---|---|
-| #141 Mindful access to paused apps | 1 of 2 closed | #237 Choose apps and pause length for mindful opening (`in-progress`) |
 | #187 Block list per session | 0 of 1 closed | #188 Choose a block list when starting a session (`backlog`, parked – only on real need) |
 
 
@@ -41,11 +40,11 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## Recently done
 
+- #237 Mindful opening settings: own app list and pause length (3/5/10/20 s); epic #141 closed
 - #119 Mindful opening (5-second breathing pause outside focus, 5 minutes free after opening) – confirmed on the phone
 - #220 Session on the lock screen (Live Update on Android 16, setting “Show on lock screen”); epic #219 closed
 - #96 Backups include block lists and focus times (restore locked while focusing); epic #20 closed
 - #215 Language in the settings (System, English, Deutsch, Русский), synced with Android's app language; epic #214 closed
-- #190 Warning when blocking is switched off during focus – confirmed on the phone; epic #189 closed
 
 ## Open decisions (user only)
 
