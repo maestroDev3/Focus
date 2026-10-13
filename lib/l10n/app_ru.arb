@@ -143,5 +143,7 @@
   "mindfulOpeningDetails": "Вне сессий и времени фокуса приложения на паузе открываются после короткой паузы",
   "mindfulPauseLength": "Длина паузы",
   "mindfulPauseSeconds": "{seconds} с",
-  "mindfulApps": "Приложения с паузой"
+  "mindfulApps": "Приложения с паузой",
+  "addTimeRange": "Добавить промежуток",
+  "removeTimeRange": "Удалить промежуток"
 }

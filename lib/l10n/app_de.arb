@@ -143,5 +143,7 @@
   "mindfulOpeningDetails": "Außerhalb von Sessions und Fokuszeiten öffnen pausierte Apps erst nach einer kurzen Atempause",
   "mindfulPauseLength": "Länge der Pause",
   "mindfulPauseSeconds": "{seconds} s",
-  "mindfulApps": "Apps mit Atempause"
+  "mindfulApps": "Apps mit Atempause",
+  "addTimeRange": "Zeitraum hinzufügen",
+  "removeTimeRange": "Zeitraum entfernen"
 }
