@@ -14,12 +14,47 @@ void main() {
   });
 
   group('SharedPreferencesFocusTimeRepository', () {
-    test('replaces all focus times and keeps their ids', () async {
-      await repository.addFocusTime(
-        weekdays: {1},
-        startMinute: 540,
-        endMinute: 720,
+    test('stores a focus time with several ranges', () async {
+      final ranges = [
+        FocusTimeRange(weekdays: const {1, 2, 3, 5}, startMinute: 420, endMinute: 600),
+        FocusTimeRange(weekdays: const {6}, startMinute: 420, endMinute: 720),
+      ];
+
+      final added = await repository.addFocusTime(ranges: ranges);
+
+      expect(added.ranges, ranges);
+      expect(
+        await SharedPreferencesFocusTimeRepository(
+          preferences,
+        ).watchFocusTimes().first,
+        [added],
       );
+    });
+
+    test('loads focus times saved with one range before', () async {
+      SharedPreferences.setMockInitialValues({
+        'flutter.focus_times.v1':
+            '{"v":1,"nextId":2,"times":[{"id":"focus-time-1",'
+            '"weekdays":[1,2,3,4,5],"start":540,"end":720,'
+            '"blockList":"list-1"}]}',
+      });
+      final repository = SharedPreferencesFocusTimeRepository(
+        await SharedPreferences.getInstance(),
+      );
+
+      expect(await repository.watchFocusTimes().first, [
+        FocusTime(
+          id: 'focus-time-1',
+          weekdays: const {1, 2, 3, 4, 5},
+          startMinute: 540,
+          endMinute: 720,
+          blockListId: 'list-1',
+        ),
+      ]);
+    });
+
+    test('replaces all focus times and keeps their ids', () async {
+      await repository.addFocusTime(ranges: [FocusTimeRange(weekdays: {1}, startMinute: 540, endMinute: 720)]);
       final restored = [
         FocusTime(
           id: 'focus-time-7',
@@ -39,20 +74,12 @@ void main() {
 
       expect(emitted.last, restored);
       expect(await repository.watchFocusTimes().first, restored);
-      final added = await repository.addFocusTime(
-        weekdays: {1},
-        startMinute: 540,
-        endMinute: 720,
-      );
+      final added = await repository.addFocusTime(ranges: [FocusTimeRange(weekdays: {1}, startMinute: 540, endMinute: 720)]);
       expect(added.id, 'focus-time-8');
     });
 
     test('adds, updates and deletes focus times', () async {
-      final added = await repository.addFocusTime(
-        weekdays: {1, 2, 3, 4, 5},
-        startMinute: 540,
-        endMinute: 720,
-      );
+      final added = await repository.addFocusTime(ranges: [FocusTimeRange(weekdays: {1, 2, 3, 4, 5}, startMinute: 540, endMinute: 720)]);
       expect(await repository.watchFocusTimes().first, [added]);
 
       final later = FocusTime(
@@ -69,28 +96,16 @@ void main() {
     });
 
     test('rejects overlapping focus times', () async {
-      await repository.addFocusTime(
-        weekdays: {1, 2, 3, 4, 5},
-        startMinute: 540,
-        endMinute: 720,
-      );
+      await repository.addFocusTime(ranges: [FocusTimeRange(weekdays: {1, 2, 3, 4, 5}, startMinute: 540, endMinute: 720)]);
 
       expect(
-        () => repository.addFocusTime(
-          weekdays: {3},
-          startMinute: 660,
-          endMinute: 780,
-        ),
+        () => repository.addFocusTime(ranges: [FocusTimeRange(weekdays: {3}, startMinute: 660, endMinute: 780)]),
         throwsArgumentError,
       );
     });
 
     test('allows an update that only overlaps the edited focus time', () async {
-      final added = await repository.addFocusTime(
-        weekdays: {1},
-        startMinute: 540,
-        endMinute: 720,
-      );
+      final added = await repository.addFocusTime(ranges: [FocusTimeRange(weekdays: {1}, startMinute: 540, endMinute: 720)]);
 
       await repository.updateFocusTime(
         FocusTime(
@@ -102,15 +117,11 @@ void main() {
       );
 
       final times = await repository.watchFocusTimes().first;
-      expect(times.single.startMinute, 560);
+      expect(times.single.ranges.single.startMinute, 560);
     });
 
     test('persists focus times for a new instance', () async {
-      final added = await repository.addFocusTime(
-        weekdays: {6, 7},
-        startMinute: 600,
-        endMinute: 690,
-      );
+      final added = await repository.addFocusTime(ranges: [FocusTimeRange(weekdays: {6, 7}, startMinute: 600, endMinute: 690)]);
 
       expect(
         await SharedPreferencesFocusTimeRepository(
@@ -121,12 +132,7 @@ void main() {
     });
 
     test('persists the block list of a focus time', () async {
-      final added = await repository.addFocusTime(
-        weekdays: {1},
-        startMinute: 480,
-        endMinute: 600,
-        blockListId: 'list-1',
-      );
+      final added = await repository.addFocusTime(ranges: [FocusTimeRange(weekdays: {1}, startMinute: 480, endMinute: 600)], blockListId: 'list-1');
 
       final reloaded = await SharedPreferencesFocusTimeRepository(
         preferences,

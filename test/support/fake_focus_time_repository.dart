@@ -20,16 +20,12 @@ class FakeFocusTimeRepository implements FocusTimeRepository {
 
   @override
   Future<FocusTime> addFocusTime({
-    required Set<int> weekdays,
-    required int startMinute,
-    required int endMinute,
+    required List<FocusTimeRange> ranges,
     String? blockListId,
   }) async {
-    final time = FocusTime(
+    final time = FocusTime.withRanges(
       id: 'focus-time-${_nextId++}',
-      weekdays: weekdays,
-      startMinute: startMinute,
-      endMinute: endMinute,
+      ranges: ranges,
       blockListId: blockListId,
     );
     checkNoOverlap(times, time);

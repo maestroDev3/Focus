@@ -30,6 +30,47 @@ void main() {
       });
     });
 
+    test('writes one native rule per time range', () async {
+      SharedPreferences.setMockInitialValues({});
+      final preferences = await SharedPreferences.getInstance();
+      final morning = FocusTime.withRanges(
+        id: 'focus-time-1',
+        ranges: [
+          FocusTimeRange(weekdays: const {1, 2}, startMinute: 420, endMinute: 600),
+          FocusTimeRange(weekdays: const {6}, startMinute: 420, endMinute: 720),
+        ],
+        blockListId: 'list-1',
+      );
+
+      await SharedPreferencesBlockingStateWriter(preferences).write(
+        BlockingState(
+          active: false,
+          packageNames: const {'com.a.b'},
+          focusTimes: [morning],
+          focusTimePackages: const {
+            'focus-time-1': {'org.telegram.messenger'},
+          },
+        ),
+      );
+
+      final json =
+          jsonDecode(preferences.getString('blocking.state.v1') ?? '') as Map;
+      expect(json['focusTimes'], [
+        {
+          'weekdays': [1, 2],
+          'start': 420,
+          'end': 600,
+          'packages': ['org.telegram.messenger'],
+        },
+        {
+          'weekdays': [6],
+          'start': 420,
+          'end': 720,
+          'packages': ['org.telegram.messenger'],
+        },
+      ]);
+    });
+
     test('marks mindful opening for the native side', () async {
       SharedPreferences.setMockInitialValues({});
       final preferences = await SharedPreferences.getInstance();

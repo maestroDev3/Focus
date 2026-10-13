@@ -23,15 +23,17 @@ class SharedPreferencesBlockingStateWriter implements BlockingStateWriter {
         'active': state.active,
         'packages': state.packageNames.toList()..sort(),
         'plannedEndMillis': state.plannedEnd?.millisecondsSinceEpoch,
+        // One rule per range (#247): the native side needs no ranges.
         'focusTimes': [
           for (final time in state.focusTimes)
-            {
-              'weekdays': time.weekdays.toList()..sort(),
-              'start': time.startMinute,
-              'end': time.endMinute,
-              if (state.focusTimePackages[time.id] case final packages?)
-                'packages': packages.toList()..sort(),
-            },
+            for (final range in time.ranges)
+              {
+                'weekdays': range.weekdays.toList()..sort(),
+                'start': range.startMinute,
+                'end': range.endMinute,
+                if (state.focusTimePackages[time.id] case final packages?)
+                  'packages': packages.toList()..sort(),
+              },
         ],
         // Optional since #119; read as false when missing.
         if (state.mindfulOpening) 'mindful': true,

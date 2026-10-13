@@ -13,17 +13,23 @@ String minuteOfDayText(int minute, String locale) =>
       locale,
     ).format(DateTime(2026, 1, 1, minute ~/ 60, minute % 60));
 
-/// “Mon–Fri · 09:00–12:00”, “Sat, Sun · 10:00–11:30”.
-String focusTimeLabel(FocusTime time, String locale) {
+/// “Mon–Fri · 09:00–12:00”, “Sat, Sun · 10:00–11:30”; several ranges are
+/// joined: “Mon–Wed, Fri · 07:00–10:00 · Sat · 07:00–12:00”.
+String focusTimeLabel(FocusTime time, String locale) => [
+  for (final range in time.ranges) focusTimeRangeLabel(range, locale),
+].join(' · ');
+
+/// “Mon–Fri · 09:00–12:00” for one range.
+String focusTimeRangeLabel(FocusTimeRange range, String locale) {
   final days = [
-    for (final (first, last) in weekdayRuns(time.weekdays))
+    for (final (first, last) in weekdayRuns(range.weekdays))
       switch (last - first) {
         0 => weekdayName(first, locale),
         1 => '${weekdayName(first, locale)}, ${weekdayName(last, locale)}',
         _ => '${weekdayName(first, locale)}–${weekdayName(last, locale)}',
       },
   ].join(', ');
-  final start = minuteOfDayText(time.startMinute, locale);
-  final end = minuteOfDayText(time.endMinute, locale);
+  final start = minuteOfDayText(range.startMinute, locale);
+  final end = minuteOfDayText(range.endMinute, locale);
   return '$days · $start–$end';
 }

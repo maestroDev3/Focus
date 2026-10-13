@@ -60,6 +60,52 @@ void main() {
       expect(decodeBackup(encodeBackup(full)), full);
     });
 
+    test('round-trips a focus time with several ranges', () {
+      final ranges = Backup(
+        createdAt: backup.createdAt,
+        sessions: backup.sessions,
+        labels: backup.labels,
+        pomodoro: backup.pomodoro,
+        dailyGoal: backup.dailyGoal,
+        blocking: BlockingBackup(
+          defaultList: const BlockList(),
+          lists: const [],
+          focusTimes: [
+            FocusTime.withRanges(
+              id: 'focus-time-1',
+              ranges: [
+                FocusTimeRange(weekdays: const {1, 2, 3, 5}, startMinute: 420, endMinute: 600),
+                FocusTimeRange(weekdays: const {6}, startMinute: 420, endMinute: 720),
+              ],
+            ),
+          ],
+        ),
+      );
+
+      expect(decodeBackup(encodeBackup(ranges)), ranges);
+    });
+
+    test('reads focus times of older backups with one range', () {
+      final json = encodeBackup(withBlocking());
+      final times = (json['blocking']! as Map)['focusTimes'] as List;
+      times[1] = {
+        'id': 'focus-time-2',
+        'weekdays': [1, 2, 3, 4, 5],
+        'start': 1020,
+        'end': 1260,
+      };
+
+      expect(
+        decodeBackup(json).blocking?.focusTimes[1],
+        FocusTime(
+          id: 'focus-time-2',
+          weekdays: const {1, 2, 3, 4, 5},
+          startMinute: 1020,
+          endMinute: 1260,
+        ),
+      );
+    });
+
     test('reads a backup without blocking data, e.g. an older one', () {
       final json = encodeBackup(withBlocking())..remove('blocking');
 
@@ -76,7 +122,7 @@ void main() {
     test('rejects overlapping focus times', () {
       final json = encodeBackup(withBlocking());
       final times = (json['blocking']! as Map)['focusTimes'] as List;
-      (times[1] as Map)['start'] = 600;
+      (((times[1] as Map)['ranges'] as List).first as Map)['start'] = 600;
 
       expect(() => decodeBackup(json), throwsFormatException);
     });
