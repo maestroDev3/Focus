@@ -280,3 +280,6 @@ commit comment).
   once with the default list, then edited freely).
 - 2026-10-13 – Mindful opening must not interrupt use (#243): an app opened
   after the pause stays free while in use and 10 minutes after leaving it.
+- 2026-10-13 – Focus times with different hours per day (epic #246, story
+  #247): variant A – one focus time holds several time ranges, each with its
+  own weekdays and hours; built on `epic/focus-time-ranges`.
