@@ -8,6 +8,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
+- Nothing – next: epic #123 Session ritual (#121 → #122).
 
 ## Up next
 
