@@ -862,6 +862,60 @@ void main() {
         expect(find.text('Take a breath.'), findsNothing);
       });
 
+      testWidgets('a new request replaces the open pause', (tester) async {
+        await tester.pumpWidget(buildApp());
+        await tester.pump();
+        blocker.emitMindful(telegram);
+        await tester.pump();
+        await tester.pump();
+        await tester.pump(const Duration(seconds: 6));
+
+        blocker.emitMindful(
+          const MindfulRequest(
+            packageName: 'com.google.android.youtube',
+            openedToday: 1,
+          ),
+        );
+        await tester.pump();
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+        expect(find.text('Do you really want to open YouTube?'), findsOneWidget);
+        expect(find.text('Do you really want to open Telegram?'), findsNothing);
+        expect(find.text('Open in 5 s'), findsOneWidget);
+
+        await tester.pump(const Duration(seconds: 5));
+        await tester.tap(find.text('Open YouTube'));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+
+        expect(blocker.openedMindfully, ['com.google.android.youtube']);
+        expect(find.text('Take a breath.'), findsNothing);
+      });
+
+      testWidgets('leaving Focus closes the pause without opening', (
+        tester,
+      ) async {
+        await tester.pumpWidget(buildApp());
+        await tester.pump();
+        blocker.emitMindful(telegram);
+        await tester.pump();
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+        expect(find.text('Take a breath.'), findsOneWidget);
+
+        tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+        tester.binding.handleAppLifecycleStateChanged(
+          AppLifecycleState.resumed,
+        );
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+
+        expect(find.text('Take a breath.'), findsNothing);
+        expect(blocker.openedMindfully, isEmpty);
+      });
+
       testWidgets('waits for the chosen pause', (tester) async {
         settings.mindfulPause = const Duration(seconds: 10);
         await tester.pumpWidget(buildApp());
