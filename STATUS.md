@@ -4,11 +4,11 @@ Current project state for planning and Claude projects. Maintained by Claude
 after every status change (see CLAUDE.md, “Keeping the status”).
 The GitHub issues are authoritative; this file is the summary.
 
-**Last updated:** 2026-10-11
+**Last updated:** 2026-10-13
 
 ## In progress
 
-- Nothing – next: epic #123 Session ritual (#121 → #122).
+- #243 Don't pause apps I'm still using – task #244.
 
 ## Up next
 
@@ -29,6 +29,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 | Epic | State | Stories (in order) |
 |---|---|---|
+| #242 Mindful opening without interruptions | 0 of 1 closed | #243 Don't pause apps I'm still using (`in-progress`) |
 | #187 Block list per session | 0 of 1 closed | #188 Choose a block list when starting a session (`backlog`, parked – only on real need) |
 
 
@@ -49,3 +50,4 @@ The GitHub issues are authoritative; this file is the summary.
 ## Open decisions (user only)
 
 - New epic #187 Block list per session (parked idea #188) – created, please confirm or re-sort.
+- New epic #242 Mindful opening without interruptions (in #139) – created, please confirm or re-sort.

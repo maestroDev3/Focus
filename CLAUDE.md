@@ -278,3 +278,5 @@ commit comment).
   #237: while the switch is on, tapping the entry opens its own page with the
   pause length (3 / 5 / 10 / 20 s, default 5) and its own app list (filled
   once with the default list, then edited freely).
+- 2026-10-13 – Mindful opening must not interrupt use (#243): an app opened
+  after the pause stays free while in use and 10 minutes after leaving it.
