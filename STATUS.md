@@ -30,6 +30,7 @@ The GitHub issues are authoritative; this file is the summary.
 | Epic | State | Stories (in order) |
 |---|---|---|
 | #246 Focus times that fit each day | 0 of 1 closed | #247 Different hours per day in one focus time (`in-progress`) |
+| #253 Breathing pause that can't be skipped | 0 of 1 closed | #254 The pause always fits the app I open (`in-progress`) |
 | #187 Block list per session | 0 of 1 closed | #188 Choose a block list when starting a session (`backlog`, parked – only on real need) |
 
 
@@ -50,3 +51,4 @@ The GitHub issues are authoritative; this file is the summary.
 ## Open decisions (user only)
 
 - New epic #187 Block list per session (parked idea #188) – created, please confirm or re-sort.
+- New epic #253 Breathing pause that can't be skipped (in #139, bug fix) – created, please confirm or re-sort.

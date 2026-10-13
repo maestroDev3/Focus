@@ -283,3 +283,5 @@ commit comment).
 - 2026-10-13 – Focus times with different hours per day (epic #246, story
   #247): variant A – one focus time holds several time ranges, each with its
   own weekdays and hours; built on `epic/focus-time-ranges`.
+- 2026-10-13 – Breathing pause can't be skipped (#254): a new request
+  replaces an open pause screen, leaving Focus closes it.
