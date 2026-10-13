@@ -98,7 +98,8 @@ void main() {
         find.text('Instagram ruht, während du im Fokus bist.'),
         findsOneWidget,
       );
-  
+    });
+
     testWidgets('names the end of the range that runs', (tester) async {
       await tester.pumpApp(
         BlockedScreen(
@@ -120,5 +121,4 @@ void main() {
       expect(find.text('Focus time until 12:00'), findsOneWidget);
     });
   });
-});
 }
