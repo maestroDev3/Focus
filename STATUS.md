@@ -49,4 +49,3 @@ The GitHub issues are authoritative; this file is the summary.
 ## Open decisions (user only)
 
 - New epic #187 Block list per session (parked idea #188) – created, please confirm or re-sort.
-- New epic #242 Mindful opening without interruptions (in #139) – created, please confirm or re-sort.
