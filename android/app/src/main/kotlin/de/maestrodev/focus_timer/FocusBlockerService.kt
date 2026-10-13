@@ -14,8 +14,9 @@ class FocusBlockerService : AccessibilityService() {
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         if (event?.eventType != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) return
         val app = event.packageName?.toString() ?: return
-        if (app == packageName) return
         val now = System.currentTimeMillis()
+        trackForeground(app, now)
+        if (app == packageName) return
         val state = BlockingState.read(this)
         if (state.blocks(app, now)) {
             bringFocusToFront { putExtra(MainActivity.EXTRA_BLOCKED_PACKAGE, app) }
@@ -31,6 +32,23 @@ class FocusBlockerService : AccessibilityService() {
             putExtra(MainActivity.EXTRA_MINDFUL_PACKAGE, app)
             putExtra(MainActivity.EXTRA_MINDFUL_COUNT, count)
         }
+    }
+
+    /** The app in the foreground and whether it was free of the pause. */
+    private var foregroundApp: String? = null
+    private var foregroundFree = false
+
+    /**
+     * Keeps a mindful app free while it is used: when another window comes
+     * up, the left app stays free ten more minutes (mirrors
+     * `mindfulReleaseOnLeaving`), however long it was in use.
+     */
+    private fun trackForeground(app: String, now: Long) {
+        if (app == foregroundApp) return
+        val left = foregroundApp
+        if (left != null && foregroundFree) MindfulOpening.release(this, left, now)
+        foregroundApp = app
+        foregroundFree = MindfulOpening.isReleased(this, app, now)
     }
 
     private var lastMindfulApp: String? = null

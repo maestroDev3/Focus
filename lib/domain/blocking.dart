@@ -252,8 +252,17 @@ const mindfulPauseOptions = [
   Duration(seconds: 20),
 ];
 
-/// How long an app opened after the pause stays free of it.
-const mindfulRelease = Duration(minutes: 5);
+/// How long an app stays free of the pause after it was opened or left.
+const mindfulRelease = Duration(minutes: 10);
+
+/// Until when an app stays free after the user left it at [leftAt]: an app
+/// that was free while in the foreground keeps free for [mindfulRelease]
+/// after leaving – however long it was used. Null if it wasn't free.
+/// Mirrored in Kotlin (`FocusBlockerService`).
+DateTime? mindfulReleaseOnLeaving({
+  required bool wasFreeInForeground,
+  required DateTime leftAt,
+}) => wasFreeInForeground ? leftAt.add(mindfulRelease) : null;
 
 /// Whether opening [packageName] at [now] first shows the breathing pause:
 /// mindful opening is on, the app is on the mindful list, no session or

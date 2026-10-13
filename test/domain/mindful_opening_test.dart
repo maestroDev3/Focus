@@ -22,9 +22,26 @@ void main() {
     endMinute: 12 * 60,
   );
 
-  test('the pause lasts 5 seconds and an opened app stays free 5 minutes', () {
+  test('the pause lasts 5 seconds and an opened app stays free 10 minutes', () {
     expect(mindfulPause, const Duration(seconds: 5));
-    expect(mindfulRelease, const Duration(minutes: 5));
+    expect(mindfulRelease, const Duration(minutes: 10));
+  });
+
+  group('mindfulReleaseOnLeaving', () {
+    test('keeps an app free 10 minutes after leaving it, however long '
+        'it was used', () {
+      expect(
+        mindfulReleaseOnLeaving(wasFreeInForeground: true, leftAt: now),
+        now.add(const Duration(minutes: 10)),
+      );
+    });
+
+    test('frees nothing for an app that was not free', () {
+      expect(
+        mindfulReleaseOnLeaving(wasFreeInForeground: false, leftAt: now),
+        isNull,
+      );
+    });
   });
 
   test('the pause can be 3, 5, 10 or 20 seconds', () {

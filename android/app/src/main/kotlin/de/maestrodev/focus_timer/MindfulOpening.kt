@@ -7,12 +7,13 @@ import java.util.Locale
 
 /**
  * Mindful opening (#119): outside sessions and focus times a paused app first
- * shows Focus' breathing pause. After “Open” the app stays free for five
- * minutes. Also counts per app how often it was opened today.
+ * shows Focus' breathing pause. After “Open” the app stays free while it is
+ * used and ten minutes after leaving it (#243). Also counts per app how often
+ * it was opened today.
  */
 object MindfulOpening {
     private const val PREFERENCES = "mindful_opening"
-    private const val RELEASE_MILLIS = 5 * 60_000L
+    private const val RELEASE_MILLIS = 10 * 60_000L
     private const val DAY_KEY = "day"
 
     /**
@@ -25,7 +26,11 @@ object MindfulOpening {
             nowMillis >= releasedUntil(context, app) &&
             !state.focusing(nowMillis)
 
-    /** “Open” after the pause: [app] opens without pause for five minutes. */
+    /** Whether [app] is free of the pause at [nowMillis]. */
+    fun isReleased(context: Context, app: String, nowMillis: Long): Boolean =
+        nowMillis < releasedUntil(context, app)
+
+    /** [app] opens without pause until ten minutes after [nowMillis]. */
     fun release(context: Context, app: String, nowMillis: Long) {
         preferences(context).edit().putLong("release.$app", nowMillis + RELEASE_MILLIS).apply()
     }
