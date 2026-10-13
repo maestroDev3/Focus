@@ -8,7 +8,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- Nothing – next: epic #123 Session ritual (#121 → #122).
+- #247 Different hours per day in one focus time – on branch `epic/focus-time-ranges` (tasks #248 → #249), merged after your test.
 
 ## Up next
 
@@ -29,7 +29,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 | Epic | State | Stories (in order) |
 |---|---|---|
-| #246 Focus times that fit each day | 0 of 1 closed | #247 Different hours per day in one focus time (`backlog`, variant open) |
+| #246 Focus times that fit each day | 0 of 1 closed | #247 Different hours per day in one focus time (`in-progress`) |
 | #187 Block list per session | 0 of 1 closed | #188 Choose a block list when starting a session (`backlog`, parked – only on real need) |
 
 
@@ -50,4 +50,3 @@ The GitHub issues are authoritative; this file is the summary.
 ## Open decisions (user only)
 
 - New epic #187 Block list per session (parked idea #188) – created, please confirm or re-sort.
-- New epic #246 Focus times that fit each day (in #139) – created, please confirm or re-sort; variant for #247 open.
