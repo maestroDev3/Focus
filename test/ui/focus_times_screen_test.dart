@@ -70,8 +70,11 @@ void main() {
       await save(tester);
 
       final added = repository.times.single;
-      expect(added.weekdays, {1, 2, 3, 4, 5, 6});
-      expect((added.startMinute, added.endMinute), (540, 720));
+      expect(added.ranges.single.weekdays, {1, 2, 3, 4, 5, 6});
+      expect(
+        (added.ranges.single.startMinute, added.ranges.single.endMinute),
+        (540, 720),
+      );
       expect(find.text('Mon–Sat · 09:00–12:00'), findsOneWidget);
     });
 

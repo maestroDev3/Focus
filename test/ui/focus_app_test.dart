@@ -114,11 +114,7 @@ void main() {
       );
       await tester.pump();
 
-      await focusTimes.addFocusTime(
-        weekdays: const {1, 2, 3, 4, 5},
-        startMinute: 540,
-        endMinute: 720,
-      );
+      await focusTimes.addFocusTime(ranges: [FocusTimeRange(weekdays: const {1, 2, 3, 4, 5}, startMinute: 540, endMinute: 720)]);
       await tester.pump();
       await tester.pump();
 
@@ -131,11 +127,7 @@ void main() {
       await tester.pump();
       final before = reminders.rescheduled.length;
 
-      await focusTimes.addFocusTime(
-        weekdays: const {1, 2, 3, 4, 5},
-        startMinute: 540,
-        endMinute: 720,
-      );
+      await focusTimes.addFocusTime(ranges: [FocusTimeRange(weekdays: const {1, 2, 3, 4, 5}, startMinute: 540, endMinute: 720)]);
       await tester.pump();
       await tester.pump();
 
@@ -155,11 +147,7 @@ void main() {
       await tester.pump();
       expect(reminders.permissionRequests, 0);
 
-      await focusTimes.addFocusTime(
-        weekdays: const {1, 2, 3, 4, 5},
-        startMinute: 540,
-        endMinute: 720,
-      );
+      await focusTimes.addFocusTime(ranges: [FocusTimeRange(weekdays: const {1, 2, 3, 4, 5}, startMinute: 540, endMinute: 720)]);
       await tester.pump();
       await tester.pump();
 
