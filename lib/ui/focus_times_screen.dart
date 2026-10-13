@@ -41,18 +41,21 @@ class FocusTimesScreen extends StatelessWidget {
     if (result == null) return;
     try {
       // Validates weekdays and length before the overlap check.
-      final candidate = FocusTime(
+      final candidate = FocusTime.withRanges(
         id: time?.id ?? 'new',
-        weekdays: result.weekdays,
-        startMinute: result.startMinute,
-        endMinute: result.endMinute,
+        ranges: [
+          FocusTimeRange(
+            weekdays: result.weekdays,
+            startMinute: result.startMinute,
+            endMinute: result.endMinute,
+          ),
+          ...?time?.ranges.skip(1),
+        ],
         blockListId: result.blockListId,
       );
       if (time == null) {
         await focusTimes.addFocusTime(
-          weekdays: candidate.weekdays,
-          startMinute: candidate.startMinute,
-          endMinute: candidate.endMinute,
+          ranges: candidate.ranges,
           blockListId: candidate.blockListId,
         );
       } else {
@@ -171,9 +174,9 @@ class _FocusTimeEditor extends StatefulWidget {
 }
 
 class _FocusTimeEditorState extends State<_FocusTimeEditor> {
-  late final _weekdays = {...?widget.initial?.weekdays};
-  late var _start = widget.initial?.startMinute ?? 9 * 60;
-  late var _end = widget.initial?.endMinute ?? 12 * 60;
+  late final _weekdays = {...?widget.initial?.ranges.first.weekdays};
+  late var _start = widget.initial?.ranges.first.startMinute ?? 9 * 60;
+  late var _end = widget.initial?.ranges.first.endMinute ?? 12 * 60;
 
   /// Null = default list; a list that no longer exists counts as default.
   late String? _listId = widget.lists.any(

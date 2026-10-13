@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../domain/clock.dart';
 import '../domain/countdown.dart';
 import '../domain/focus_time.dart';
 import '../l10n/app_localizations.dart';
@@ -16,7 +17,11 @@ class BlockedScreen extends StatelessWidget {
     required this.onReturn,
     this.focusTime,
     this.blockListName,
+    this.clock = DateTime.now,
   });
+
+  /// Tells which range of the focus time runs, for its end.
+  final Clock clock;
 
   final String appLabel;
 
@@ -41,9 +46,9 @@ class BlockedScreen extends StatelessWidget {
       (final time?, _) => switch (blockListName) {
         final name? => l10n.blockListUntil(
           name,
-          minuteOfDayText(time.endMinute, locale),
+          minuteOfDayText(time.endMinuteAt(clock()), locale),
         ),
-        null => l10n.focusTimeUntil(minuteOfDayText(time.endMinute, locale)),
+        null => l10n.focusTimeUntil(minuteOfDayText(time.endMinuteAt(clock()), locale)),
       },
       (null, null) => l10n.blockedSessionPaused,
       (null, final left?) => l10n.blockedRemaining(formatCountdown(left)),

@@ -7,9 +7,7 @@ abstract interface class FocusTimeRepository {
 
   /// Adds a focus time; throws [ArgumentError] if it is invalid or overlaps.
   Future<FocusTime> addFocusTime({
-    required Set<int> weekdays,
-    required int startMinute,
-    required int endMinute,
+    required List<FocusTimeRange> ranges,
     String? blockListId,
   });
 

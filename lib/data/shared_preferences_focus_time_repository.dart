@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../domain/focus_time.dart';
 import '../domain/focus_time_repository.dart';
 import '../domain/id_counter.dart';
+import 'focus_time_codec.dart';
 
 /// Stores focus times as versioned JSON (`focus_times.v1`).
 class SharedPreferencesFocusTimeRepository implements FocusTimeRepository {
@@ -25,17 +26,13 @@ class SharedPreferencesFocusTimeRepository implements FocusTimeRepository {
 
   @override
   Future<FocusTime> addFocusTime({
-    required Set<int> weekdays,
-    required int startMinute,
-    required int endMinute,
+    required List<FocusTimeRange> ranges,
     String? blockListId,
   }) async {
     final (:times, :nextId) = _load();
-    final time = FocusTime(
+    final time = FocusTime.withRanges(
       id: 'focus-time-$nextId',
-      weekdays: weekdays,
-      startMinute: startMinute,
-      endMinute: endMinute,
+      ranges: ranges,
       blockListId: blockListId,
     );
     checkNoOverlap(times, time);
@@ -80,26 +77,7 @@ class SharedPreferencesFocusTimeRepository implements FocusTimeRepository {
         'times': final List<Object?> list,
       } =>
         (
-          times: [
-            for (final item in list)
-              switch (item) {
-                {
-                  'id': final String id,
-                  'weekdays': final List<Object?> weekdays,
-                  'start': final int start,
-                  'end': final int end,
-                } =>
-                  FocusTime(
-                    id: id,
-                    weekdays: weekdays.cast<int>().toSet(),
-                    startMinute: start,
-                    endMinute: end,
-                    // Optional since #144; older focus times have none.
-                    blockListId: (item as Map)['blockList'] as String?,
-                  ),
-                _ => throw FormatException('Malformed focus time: $item'),
-              },
-          ],
+          times: [for (final item in list) decodeFocusTime(item)],
           nextId: nextId,
         ),
       _ => throw FormatException('Unknown focus times data: $stored'),
@@ -113,14 +91,7 @@ class SharedPreferencesFocusTimeRepository implements FocusTimeRepository {
         'v': _version,
         'nextId': nextId,
         'times': [
-          for (final time in times)
-            {
-              'id': time.id,
-              'weekdays': time.weekdays.toList()..sort(),
-              'start': time.startMinute,
-              'end': time.endMinute,
-              'blockList': ?time.blockListId,
-            },
+          for (final time in times) encodeFocusTime(time),
         ],
       }),
     );

@@ -524,6 +524,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
         },
         focusTime: focusTime,
         blockListName: listName,
+        clock: widget.clock,
         onReturn: () => Navigator.of(context).pop(),
       ),
     );
