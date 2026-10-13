@@ -44,12 +44,12 @@ class FocusTimesScreen extends StatelessWidget {
       final candidate = FocusTime.withRanges(
         id: time?.id ?? 'new',
         ranges: [
-          FocusTimeRange(
-            weekdays: result.weekdays,
-            startMinute: result.startMinute,
-            endMinute: result.endMinute,
-          ),
-          ...?time?.ranges.skip(1),
+          for (final range in result.ranges)
+            FocusTimeRange(
+              weekdays: range.weekdays,
+              startMinute: range.startMinute,
+              endMinute: range.endMinute,
+            ),
         ],
         blockListId: result.blockListId,
       );
@@ -152,13 +152,11 @@ class FocusTimesScreen extends StatelessWidget {
   }
 }
 
+/// One range as edited; validated only when saving.
+typedef _RangeDraft = ({Set<int> weekdays, int startMinute, int endMinute});
+
 /// What the editor returns.
-typedef _FocusTimeDraft = ({
-  Set<int> weekdays,
-  int startMinute,
-  int endMinute,
-  String? blockListId,
-});
+typedef _FocusTimeDraft = ({List<_RangeDraft> ranges, String? blockListId});
 
 /// Weekday chips and start/end times; defaults to Mon–Fri 09:00–12:00.
 class _FocusTimeEditor extends StatefulWidget {
@@ -174,9 +172,17 @@ class _FocusTimeEditor extends StatefulWidget {
 }
 
 class _FocusTimeEditorState extends State<_FocusTimeEditor> {
-  late final _weekdays = {...?widget.initial?.ranges.first.weekdays};
-  late var _start = widget.initial?.ranges.first.startMinute ?? 9 * 60;
-  late var _end = widget.initial?.ranges.first.endMinute ?? 12 * 60;
+  /// Defaults to one range Mon–Fri 09:00–12:00.
+  late final _ranges = <_RangeDraft>[
+    for (final range in widget.initial?.ranges ?? const <FocusTimeRange>[])
+      (
+        weekdays: {...range.weekdays},
+        startMinute: range.startMinute,
+        endMinute: range.endMinute,
+      ),
+    if (widget.initial == null)
+      (weekdays: {1, 2, 3, 4, 5}, startMinute: 9 * 60, endMinute: 12 * 60),
+  ];
 
   /// Null = default list; a list that no longer exists counts as default.
   late String? _listId = widget.lists.any(
@@ -185,72 +191,78 @@ class _FocusTimeEditorState extends State<_FocusTimeEditor> {
       ? widget.initial?.blockListId
       : null;
 
-  @override
-  void initState() {
-    super.initState();
-    if (widget.initial == null) _weekdays.addAll({1, 2, 3, 4, 5});
-  }
+  /// A new range starts with the hours of the last one and no days.
+  void _addRange() => setState(() {
+    final last = _ranges.last;
+    _ranges.add((
+      weekdays: <int>{},
+      startMinute: last.startMinute,
+      endMinute: last.endMinute,
+    ));
+  });
 
-  Future<void> _pick({required bool start}) async {
-    final minute = start ? _start : _end;
+  void _toggleDay(int index, int day, {required bool selected}) =>
+      setState(() {
+        final days = _ranges[index].weekdays;
+        if (selected) {
+          days.add(day);
+        } else {
+          days.remove(day);
+        }
+      });
+
+  Future<void> _pick(int index, {required bool start}) async {
+    final range = _ranges[index];
+    final minute = start ? range.startMinute : range.endMinute;
     final picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay(hour: minute ~/ 60, minute: minute % 60),
     );
     if (picked == null || !mounted) return;
+    final value = picked.hour * 60 + picked.minute;
     setState(() {
-      final value = picked.hour * 60 + picked.minute;
-      if (start) {
-        _start = value;
-      } else {
-        _end = value;
-      }
+      _ranges[index] = (
+        weekdays: range.weekdays,
+        startMinute: start ? value : range.startMinute,
+        endMinute: start ? range.endMinute : value,
+      );
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final locale = Localizations.localeOf(context).toLanguageTag();
 
     return SafeArea(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                for (var day = 1; day <= 7; day++)
-                  FilterChip(
-                    label: Text(weekdayName(day, locale)),
-                    selected: _weekdays.contains(day),
-                    onSelected: (selected) => setState(() {
-                      if (selected) {
-                        _weekdays.add(day);
-                      } else {
-                        _weekdays.remove(day);
-                      }
-                    }),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            ListTile(
-              title: Text(l10n.focusTimeStart),
-              trailing: Text(minuteOfDayText(_start, locale)),
-              onTap: () => _pick(start: true),
-            ),
-            ListTile(
-              title: Text(l10n.focusTimeEnd),
-              trailing: Text(minuteOfDayText(_end, locale)),
-              onTap: () => _pick(start: false),
+            for (var index = 0; index < _ranges.length; index++)
+              _RangeCard(
+                index: index,
+                range: _ranges[index],
+                onToggleDay: (day, {required selected}) =>
+                    _toggleDay(index, day, selected: selected),
+                onPickStart: () => _pick(index, start: true),
+                onPickEnd: () => _pick(index, start: false),
+                onRemove: _ranges.length > 1
+                    ? () => setState(() => _ranges.removeAt(index))
+                    : null,
+              ),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton.icon(
+                onPressed: _addRange,
+                icon: const Icon(Icons.add),
+                label: Text(l10n.addTimeRange),
+              ),
             ),
             if (widget.lists.isNotEmpty)
               ListTile(
+                contentPadding: EdgeInsets.zero,
                 title: Text(l10n.focusTimeBlockList),
                 trailing: DropdownButton<String?>(
                   value: _listId,
@@ -266,12 +278,105 @@ class _FocusTimeEditorState extends State<_FocusTimeEditor> {
             const SizedBox(height: 12),
             FilledButton(
               onPressed: () => Navigator.of(context).pop((
-                weekdays: Set.of(_weekdays),
-                startMinute: _start,
-                endMinute: _end,
+                ranges: [
+                  for (final range in _ranges)
+                    (
+                      weekdays: Set.of(range.weekdays),
+                      startMinute: range.startMinute,
+                      endMinute: range.endMinute,
+                    ),
+                ],
                 blockListId: _listId,
               )),
               child: Text(l10n.save),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// One range of the editor: weekday chips, start and end.
+class _RangeCard extends StatelessWidget {
+  const _RangeCard({
+    required this.index,
+    required this.range,
+    required this.onToggleDay,
+    required this.onPickStart,
+    required this.onPickEnd,
+    required this.onRemove,
+  });
+
+  final int index;
+  final _RangeDraft range;
+  final void Function(int day, {required bool selected}) onToggleDay;
+  final VoidCallback onPickStart;
+  final VoidCallback onPickEnd;
+
+  /// Null while it is the only range.
+  final VoidCallback? onRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final locale = Localizations.localeOf(context).toLanguageTag();
+    final remove = onRemove;
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(12, 12, 4, 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Wrap(
+              spacing: 4,
+              runSpacing: 4,
+              children: [
+                for (var day = 1; day <= 7; day++)
+                  FilterChip(
+                    key: ValueKey('range-$index-day-$day'),
+                    visualDensity: VisualDensity.compact,
+                    showCheckmark: false,
+                    label: Text(weekdayName(day, locale)),
+                    selected: range.weekdays.contains(day),
+                    onSelected: (selected) =>
+                        onToggleDay(day, selected: selected),
+                  ),
+              ],
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: Wrap(
+                    children: [
+                      TextButton(
+                        key: ValueKey('range-$index-start'),
+                        onPressed: onPickStart,
+                        child: Text(
+                          '${l10n.focusTimeStart} '
+                          '${minuteOfDayText(range.startMinute, locale)}',
+                        ),
+                      ),
+                      TextButton(
+                        key: ValueKey('range-$index-end'),
+                        onPressed: onPickEnd,
+                        child: Text(
+                          '${l10n.focusTimeEnd} '
+                          '${minuteOfDayText(range.endMinute, locale)}',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (remove != null)
+                  IconButton(
+                    tooltip: l10n.removeTimeRange,
+                    icon: const Icon(Icons.close),
+                    onPressed: remove,
+                  ),
+              ],
             ),
           ],
         ),
