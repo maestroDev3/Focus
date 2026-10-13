@@ -132,8 +132,9 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
   StreamSubscription<String>? _blockedApps;
   StreamSubscription<MindfulRequest>? _mindfulRequests;
 
-  /// Whether the breathing pause is open, so it is never pushed twice.
-  var _breathShown = false;
+  /// The open breathing pause, if any: a new request or leaving Focus
+  /// removes it, so it never stays with a ready “Open” (#254).
+  Route<void>? _breathRoute;
   StreamSubscription<void>? _startRequests;
   StreamSubscription<FocusSession?>? _sessionChanges;
 
@@ -185,6 +186,11 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
     if (state == AppLifecycleState.resumed) {
       _loadState();
       _adoptWidgetStart();
+    }
+    // Left without deciding: the pause must start over next time.
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.hidden) {
+      _closeBreath();
     }
   }
 
@@ -533,16 +539,18 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
   /// A paused app was opened with mindful opening on: breathe first, then
   /// open it or go back to the home screen.
   Future<void> _showBreath(MindfulRequest request) async {
-    if (_breathShown) return;
-    _breathShown = true;
+    _closeBreath();
     final apps = await widget.installedApps.installedApps();
     final pause = await widget.settings.loadMindfulPause();
+    if (!mounted) return;
     final label = [
       for (final app in apps)
         if (app.packageName == request.packageName) app.label,
     ].firstOrNull;
-    await _push(
-      (context) => BreathScreen(
+    // A newer request may have opened its pause in the meantime.
+    _closeBreath();
+    final route = MaterialPageRoute<void>(
+      builder: (context) => BreathScreen(
         appLabel: label ?? request.packageName,
         openedToday: request.openedToday,
         pause: pause,
@@ -556,7 +564,18 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
         },
       ),
     );
-    _breathShown = false;
+    _breathRoute = route;
+    await _navigator.currentState?.push(route);
+    if (_breathRoute == route) _breathRoute = null;
+  }
+
+  /// Removes the open breathing pause without opening the app.
+  void _closeBreath() {
+    final route = _breathRoute;
+    _breathRoute = null;
+    if (route != null && route.isActive) {
+      _navigator.currentState?.removeRoute(route);
+    }
   }
 
   /// A completed session is followed by the right break; a cancelled one

@@ -8,7 +8,6 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- Nothing – next: epic #123 Session ritual (#121 → #122).
 
 ## Up next
 
@@ -41,10 +40,10 @@ The GitHub issues are authoritative; this file is the summary.
 ## Recently done
 
 - #247 Different hours per day in one focus time (time ranges); epic #246 closed
+- #254 Breathing pause always fits the app being opened (bug fix); epic #253 closed
 - #243 Mindful apps stay free while in use and 10 minutes after leaving; epic #242 closed
 - #237 Mindful opening settings: own app list and pause length (3/5/10/20 s); epic #141 closed
 - #119 Mindful opening (5-second breathing pause outside focus, 5 minutes free after opening) – confirmed on the phone
-- #220 Session on the lock screen (Live Update on Android 16, setting “Show on lock screen”); epic #219 closed
 
 ## Open decisions (user only)
 
