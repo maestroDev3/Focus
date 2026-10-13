@@ -117,7 +117,7 @@ void main() {
       );
 
       final times = await repository.watchFocusTimes().first;
-      expect(times.single.startMinute, 560);
+      expect(times.single.ranges.single.startMinute, 560);
     });
 
     test('persists focus times for a new instance', () async {
