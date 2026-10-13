@@ -331,12 +331,14 @@ class _RangeCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Wrap(
-              spacing: 6,
-              runSpacing: 6,
+              spacing: 4,
+              runSpacing: 4,
               children: [
                 for (var day = 1; day <= 7; day++)
                   FilterChip(
                     key: ValueKey('range-$index-day-$day'),
+                    visualDensity: VisualDensity.compact,
+                    showCheckmark: false,
                     label: Text(weekdayName(day, locale)),
                     selected: range.weekdays.contains(day),
                     onSelected: (selected) =>
@@ -346,23 +348,28 @@ class _RangeCard extends StatelessWidget {
             ),
             Row(
               children: [
-                TextButton(
-                  key: ValueKey('range-$index-start'),
-                  onPressed: onPickStart,
-                  child: Text(
-                    '${l10n.focusTimeStart} '
-                    '${minuteOfDayText(range.startMinute, locale)}',
+                Expanded(
+                  child: Wrap(
+                    children: [
+                      TextButton(
+                        key: ValueKey('range-$index-start'),
+                        onPressed: onPickStart,
+                        child: Text(
+                          '${l10n.focusTimeStart} '
+                          '${minuteOfDayText(range.startMinute, locale)}',
+                        ),
+                      ),
+                      TextButton(
+                        key: ValueKey('range-$index-end'),
+                        onPressed: onPickEnd,
+                        child: Text(
+                          '${l10n.focusTimeEnd} '
+                          '${minuteOfDayText(range.endMinute, locale)}',
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                TextButton(
-                  key: ValueKey('range-$index-end'),
-                  onPressed: onPickEnd,
-                  child: Text(
-                    '${l10n.focusTimeEnd} '
-                    '${minuteOfDayText(range.endMinute, locale)}',
-                  ),
-                ),
-                const Spacer(),
                 if (remove != null)
                   IconButton(
                     tooltip: l10n.removeTimeRange,
