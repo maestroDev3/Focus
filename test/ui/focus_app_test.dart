@@ -333,6 +333,22 @@ void main() {
       expect(player.playing, isNull);
     });
 
+    testWidgets('does not preview the music app', (tester) async {
+      final player = FakeAmbientPlayer();
+      await tester.pumpWidget(buildApp(ambientPlayer: player));
+      await tester.pump();
+
+      await tester.tap(find.text('Sound · Off'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      await tester.tap(find.text('Your music app'));
+      await tester.pump();
+      await tester.pump();
+
+      expect(settings.ambient.sound, AmbientSound.musicApp);
+      expect(player.plays, 0);
+    });
+
     testWidgets('uses the configured break duration', (tester) async {
       settings.pomodoro = const PomodoroSettings(
         shortBreak: Duration(minutes: 10),

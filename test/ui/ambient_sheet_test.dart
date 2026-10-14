@@ -21,7 +21,7 @@ void main() {
       );
     }
 
-    testWidgets('lists off and the five sounds', (tester) async {
+    testWidgets('lists off, the five sounds and the music app', (tester) async {
       await pumpSheet(tester);
 
       for (final name in [
@@ -31,6 +31,7 @@ void main() {
         'Deep noise',
         'Fireplace',
         'Ocean waves',
+        'Your music app',
       ]) {
         expect(find.text(name), findsOneWidget);
       }
@@ -62,6 +63,17 @@ void main() {
 
       expect(changes.last.sound, AmbientSound.rain);
       expect(changes.last.volume, greaterThan(0.8));
+    });
+
+    testWidgets('hides the volume for the music app', (tester) async {
+      await pumpSheet(tester);
+
+      await tester.tap(find.text('Your music app'));
+      await tester.pump();
+
+      expect(changes.last.sound, AmbientSound.musicApp);
+      expect(find.text('Volume'), findsNothing);
+      expect(find.byType(Slider), findsNothing);
     });
   });
 }
