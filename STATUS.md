@@ -39,7 +39,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## Recently done
 
-- #122 Ambient sounds during sessions (rain, soft noise, deep noise, fireplace)
+- #122 Ambient sounds during sessions (rain, soft noise, deep noise, fireplace, ocean waves)
 - #121 Intention before and reflection after a session, day list in the statistics
 - #247 Different hours per day in one focus time (time ranges); epic #246 closed
 - #254 Breathing pause always fits the app being opened (bug fix); epic #253 closed
