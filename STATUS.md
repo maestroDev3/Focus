@@ -20,7 +20,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 | Epic | State | Stories (in order) |
 |---|---|---|
-| #123 Session ritual | 0 of 2 closed | #121 Intention and reflection (`in-progress`) → #122 Ambient sounds (`ready`) |
+| #123 Session ritual | 0 of 2 closed | #121 Intention and reflection (`in-progress`) → #122 Ambient sounds (`in-progress`) → #266 Play my own music (`backlog`, option open) |
 | #195 Quick settings tile | 0 of 1 closed | #196 Start a session from the quick settings (`backlog`) |
 | #205 Statistics you can explore | 1 of 2 closed | #207 Focus insights (`backlog`) |
 
@@ -49,3 +49,4 @@ The GitHub issues are authoritative; this file is the summary.
 
 - New epic #187 Block list per session (parked idea #188) – created, please confirm or re-sort.
 - Session ritual defaults chosen by Claude (see CLAUDE.md 2026-10-14) – please confirm or change; ambient sound without a foreground service may stop if Android ends Focus in the background.
+- #266 Own music during sessions: A (control the music app, plays what last played) or B (Spotify SDK with playlist choice, limited to 5 users in dev mode)?
