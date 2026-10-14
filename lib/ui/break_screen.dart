@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import '../domain/break_session.dart';
 import '../domain/clock.dart';
 import '../domain/countdown.dart';
+import '../domain/focus_session.dart';
 import '../domain/pomodoro.dart';
 import '../l10n/app_localizations.dart';
+import 'reflection_text.dart';
 import 'widgets/focus_background.dart';
 
 /// Offers the break that follows a completed session and counts it down.
@@ -17,7 +19,11 @@ class BreakScreen extends StatefulWidget {
     required this.duration,
     required this.clock,
     required this.onDone,
+    this.onReflect,
   });
+
+  /// Stores how the session felt; without it the question isn't asked.
+  final ValueChanged<SessionReflection>? onReflect;
 
   final BreakKind kind;
   final Duration duration;
@@ -34,6 +40,7 @@ class _BreakScreenState extends State<BreakScreen> {
   BreakSession? _break;
   StreamSubscription<void>? _ticks;
   var _done = false;
+  SessionReflection? _reflection;
 
   @override
   void dispose() {
@@ -127,6 +134,30 @@ class _BreakScreenState extends State<BreakScreen> {
                             ),
                     ),
                   ),
+                  if (running == null && widget.onReflect != null) ...[
+                    Text(
+                      l10n.reflectionQuestion,
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodyLarge,
+                    ),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      alignment: WrapAlignment.center,
+                      spacing: 8,
+                      children: [
+                        for (final level in SessionReflection.values)
+                          ChoiceChip(
+                            label: Text(reflectionText(l10n, level)),
+                            selected: _reflection == level,
+                            onSelected: (_) {
+                              setState(() => _reflection = level);
+                              widget.onReflect?.call(level);
+                            },
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                  ],
                   if (running == null) ...[
                     FilledButton(
                       onPressed: _start,

@@ -135,6 +135,9 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
   /// The open breathing pause, if any: a new request or leaving Focus
   /// removes it, so it never stays with a ready “Open” (#254).
   Route<void>? _breathRoute;
+
+  /// The sentence typed on the home screen for the next session.
+  final _intention = TextEditingController();
   StreamSubscription<void>? _startRequests;
   StreamSubscription<FocusSession?>? _sessionChanges;
 
@@ -177,6 +180,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
     _sessionChanges?.cancel();
     _focusTimeChanges?.cancel();
     _blockingActive.dispose();
+    _intention.dispose();
     super.dispose();
   }
 
@@ -346,6 +350,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
                   clock: widget.clock,
                   focusDuration: _pomodoro.focus,
                   onStart: _startSession,
+                  intention: _intention,
                   onOpenSettings: _openSettings,
                   blockedAppCount: _blockedAppCount,
                   onOpenBlockedApps: _openBlockedApps,
@@ -474,10 +479,13 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
   }
 
   Future<void> _startSession() async {
+    final intention = _intention.text;
     await widget.timer.start(
       _pomodoro.focus,
       labelId: _labelWithId(_selectedLabelId)?.id,
+      intention: intention,
     );
+    _intention.clear();
     await _pushSession();
   }
 
@@ -578,6 +586,12 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
     }
   }
 
+  /// Stores the reflection on the session that just ended.
+  Future<void> _reflectOnLastSession(SessionReflection reflection) async {
+    final last = (await widget.timer.watchFinished().first).lastOrNull;
+    if (last != null) await widget.timer.reflect(last, reflection);
+  }
+
   /// A completed session is followed by the right break; a cancelled one
   /// returns home.
   Future<void> _afterSession(
@@ -601,6 +615,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
               duration: breakDuration(kind, pomodoro),
               clock: widget.clock,
               onDone: () => Navigator.of(context).pop(),
+              onReflect: _reflectOnLastSession,
             ),
           ),
         );

@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:focus_timer/domain/focus_session.dart';
 import 'package:focus_timer/domain/pomodoro.dart';
 import 'package:focus_timer/ui/break_screen.dart';
 
@@ -7,6 +8,7 @@ import '../support/pump_app.dart';
 void main() {
   late DateTime now;
   late int doneCalls;
+  final reflections = <SessionReflection>[];
 
   setUp(() {
     now = DateTime(2026, 9, 29, 10, 25);
@@ -24,6 +26,7 @@ void main() {
         duration: duration,
         clock: () => now,
         onDone: () => doneCalls++,
+        onReflect: reflections.add,
       ),
     );
   }
@@ -81,6 +84,21 @@ void main() {
       await tester.pump();
 
       expect(doneCalls, 1);
+    });
+
+    testWidgets('asks how it went with three calm levels', (tester) async {
+      reflections.clear();
+      await pumpBreak(tester);
+
+      expect(find.text('How did it go?'), findsOneWidget);
+      for (final level in ['Heavy', 'Steady', 'Flowing']) {
+        expect(find.text(level), findsOneWidget);
+      }
+
+      await tester.tap(find.text('Steady'));
+      await tester.pump();
+
+      expect(reflections, [SessionReflection.steady]);
     });
   });
 }

@@ -779,5 +779,29 @@
   "removeTimeRange": "Remove time range",
   "@removeTimeRange": {
     "description": "Tooltip: removes a range from a focus time."
+  },
+  "intentionHint": "What are you working on?",
+  "@intentionHint": {
+    "description": "Optional field on the home screen: one sentence about the session."
+  },
+  "reflectionQuestion": "How did it go?",
+  "@reflectionQuestion": {
+    "description": "Asked after a completed session."
+  },
+  "reflectionHeavy": "Heavy",
+  "@reflectionHeavy": {
+    "description": "Calm reflection level: the session was hard going."
+  },
+  "reflectionSteady": "Steady",
+  "@reflectionSteady": {
+    "description": "Calm reflection level: the session was fine."
+  },
+  "reflectionFlowing": "Flowing",
+  "@reflectionFlowing": {
+    "description": "Calm reflection level: the session was in flow."
+  },
+  "daySessions": "Sessions",
+  "@daySessions": {
+    "description": "Heading of the selected day's sessions in the statistics."
   }
 }
