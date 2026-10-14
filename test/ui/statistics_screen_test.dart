@@ -176,7 +176,8 @@ void main() {
         tester.getTopLeft(find.text('Week')).dy,
         lessThan(tester.getTopLeft(find.text('Today')).dy),
       );
-  
+    });
+
     testWidgets('lists the sessions of the selected day with their ritual', (
       tester,
     ) async {
@@ -196,5 +197,4 @@ void main() {
       expect(find.text('09:00 · 25 min · Study · Flowing'), findsOneWidget);
     });
   });
-});
 }

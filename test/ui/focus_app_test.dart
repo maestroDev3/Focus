@@ -86,6 +86,8 @@ void main() {
   }
 
   Future<void> beginFocus(WidgetTester tester) async {
+    await tester.ensureVisible(find.text('Begin focus'));
+    await tester.pump();
     await tester.tap(find.text('Begin focus'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 500));
@@ -920,12 +922,22 @@ void main() {
         await tester.pump(const Duration(milliseconds: 500));
         expect(find.text('Take a breath.'), findsOneWidget);
 
-        tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+        for (final state in [
+          AppLifecycleState.inactive,
+          AppLifecycleState.hidden,
+          AppLifecycleState.paused,
+        ]) {
+          tester.binding.handleAppLifecycleStateChanged(state);
+        }
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 500));
-        tester.binding.handleAppLifecycleStateChanged(
+        for (final state in [
+          AppLifecycleState.hidden,
+          AppLifecycleState.inactive,
           AppLifecycleState.resumed,
-        );
+        ]) {
+          tester.binding.handleAppLifecycleStateChanged(state);
+        }
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 500));
 
