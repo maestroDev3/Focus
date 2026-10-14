@@ -485,7 +485,8 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
           await widget.settings.saveAmbient(choice);
           if (widget.timer.current != null) {
             await widget.timer.refreshAmbient();
-          } else if (choice.sound == AmbientSound.off) {
+          } else if (!choice.sound.isBundled) {
+            // Off, or the music app – which mustn't start just for a preview.
             await widget.ambientPlayer?.stop();
           } else {
             await widget.ambientPlayer?.play(

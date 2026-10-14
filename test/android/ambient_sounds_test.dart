@@ -12,7 +12,7 @@ String _snake(String name) => name.replaceAllMapped(
 void main() {
   test('every sound is bundled as an Android resource', () {
     for (final sound in AmbientSound.values) {
-      if (sound == AmbientSound.off) continue;
+      if (!sound.isBundled) continue;
       final file = File(
         'android/app/src/main/res/raw/ambient_${_snake(sound.name)}.ogg',
       );

@@ -840,5 +840,9 @@
   "ambientOceanWaves": "Ocean waves",
   "@ambientOceanWaves": {
     "description": "Ambient sound: ocean waves."
+  },
+  "ambientMusicApp": "Your music app",
+  "@ambientMusicApp": {
+    "description": "Sound choice: continues the music app played last (Spotify, podcasts, …)."
   }
 }

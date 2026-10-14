@@ -159,5 +159,6 @@
   "ambientDeepNoise": "Tiefes Rauschen",
   "ambientFireplace": "Kaminfeuer",
   "ambientVolume": "Lautstärke",
-  "ambientOceanWaves": "Meereswellen"
+  "ambientOceanWaves": "Meereswellen",
+  "ambientMusicApp": "Deine Musik-App"
 }
