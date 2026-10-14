@@ -91,6 +91,7 @@ Future<void> main() async {
   runApp(
     FocusApp(
       showIntro: true,
+      ambientPlayer: const MethodChannelAmbientPlayer(),
       mindfulApps: mindfulApps,
       language: languageSetting,
       onLanguageChanged: (chosen) => language = chosen,

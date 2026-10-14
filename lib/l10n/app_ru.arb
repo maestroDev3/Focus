@@ -151,5 +151,12 @@
   "reflectionHeavy": "Тяжело",
   "reflectionSteady": "Ровно",
   "reflectionFlowing": "В потоке",
-  "daySessions": "Сессии"
+  "daySessions": "Сессии",
+  "ambientSound": "Звук · {name}",
+  "ambientOff": "Выкл.",
+  "ambientRain": "Дождь",
+  "ambientSoftNoise": "Мягкий шум",
+  "ambientDeepNoise": "Глубокий шум",
+  "ambientFireplace": "Камин",
+  "ambientVolume": "Громкость"
 }

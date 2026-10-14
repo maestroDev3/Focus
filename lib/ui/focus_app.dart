@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../domain/ambient.dart';
 import '../domain/app_blocker.dart';
 import '../domain/app_language.dart';
 import '../domain/backup.dart';
@@ -21,6 +22,7 @@ import '../domain/named_block_list.dart';
 import '../domain/pomodoro.dart';
 import '../domain/settings_repository.dart';
 import '../l10n/app_localizations.dart';
+import 'ambient_sheet.dart';
 import 'app_locale.dart';
 import 'block_lists_screen.dart';
 import 'breath_screen.dart';
@@ -54,6 +56,7 @@ class FocusApp extends StatefulWidget {
     this.language,
     this.onLanguageChanged,
     this.mindfulApps,
+    this.ambientPlayer,
     this.clock = DateTime.now,
     this.showIntro = false,
   });
@@ -102,6 +105,9 @@ class FocusApp extends StatefulWidget {
   /// test needs it.
   final BlockListRepository? mindfulApps;
 
+  /// Previews ambient sounds while choosing one; optional for tests.
+  final AmbientPlayer? ambientPlayer;
+
   /// Source of the current time for every screen.
   final Clock clock;
 
@@ -124,6 +130,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
   var _blockerEnabled = true;
   var _notificationGateEnabled = true;
   var _language = AppLanguage.system;
+  var _ambient = AmbientChoice.initial;
 
   /// False while apps are paused but the blocker is switched off; the
   /// session screen warns then.
@@ -208,6 +215,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
     final notificationGateEnabled = await widget.appBlocker
         .isNotificationGateEnabled();
     final language = await widget.language?.load() ?? _language;
+    final ambient = await widget.settings.loadAmbient();
     if (!mounted) return;
     final languageChanged = language != _language;
     setState(() {
@@ -219,6 +227,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
       _blockerEnabled = blockerEnabled;
       _notificationGateEnabled = notificationGateEnabled;
       _language = language;
+      _ambient = ambient;
     });
     _blockingActive.value = blockerEnabled || blockList.length == 0;
     if (languageChanged) {
@@ -351,6 +360,11 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
                   focusDuration: _pomodoro.focus,
                   onStart: _startSession,
                   intention: _intention,
+                  soundName: ambientSoundName(
+                    AppLocalizations.of(homeContext),
+                    _ambient.sound,
+                  ),
+                  onChooseSound: () => _chooseSound(homeContext),
                   onOpenSettings: _openSettings,
                   blockedAppCount: _blockedAppCount,
                   onOpenBlockedApps: _openBlockedApps,
@@ -456,6 +470,33 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
       );
     });
     await _loadState();
+  }
+
+  /// Sound and volume for sessions; without a session the choice is
+  /// previewed while the sheet is open.
+  Future<void> _chooseSound(BuildContext context) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => AmbientSheet(
+        initial: _ambient,
+        onChanged: (choice) async {
+          setState(() => _ambient = choice);
+          await widget.settings.saveAmbient(choice);
+          if (widget.timer.current != null) {
+            await widget.timer.refreshAmbient();
+          } else if (choice.sound == AmbientSound.off) {
+            await widget.ambientPlayer?.stop();
+          } else {
+            await widget.ambientPlayer?.play(
+              choice.sound,
+              volume: choice.volume,
+            );
+          }
+        },
+      ),
+    );
+    if (widget.timer.current == null) await widget.ambientPlayer?.stop();
   }
 
   Future<void> _chooseLabel(BuildContext context) async {
