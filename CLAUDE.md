@@ -292,3 +292,8 @@ commit comment).
   day list in the statistics; four generated sounds (Rain, Soft noise, Deep
   noise, Fireplace), default off, volume 60 %, sound only during running
   sessions, no foreground service.
+- 2026-10-14 – Own music (#266): option A – “Your music app” sends play /
+  pause media keys with the session (any app, also podcasts). Spotify
+  playlist choice only as a personal mode for the user (#269), because
+  Spotify's development mode allows 5 users per app. Ocean waves added as a
+  fifth bundled sound.
