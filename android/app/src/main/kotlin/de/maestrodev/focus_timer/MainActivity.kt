@@ -29,6 +29,21 @@ class MainActivity : FlutterActivity() {
         super.configureFlutterEngine(flutterEngine)
         val messenger = flutterEngine.dartExecutor.binaryMessenger
         documents = DocumentChannel(this, messenger)
+        MethodChannel(messenger, AMBIENT_CHANNEL).setMethodCallHandler { call, result ->
+            when (call.method) {
+                "play" -> {
+                    val sound = call.argument<String>("sound")
+                    val volume = call.argument<Double>("volume") ?: 0.6
+                    if (sound != null) AmbientPlayer.play(applicationContext, sound, volume.toFloat())
+                    result.success(null)
+                }
+                "stop" -> {
+                    AmbientPlayer.stop()
+                    result.success(null)
+                }
+                else -> result.notImplemented()
+            }
+        }
         MethodChannel(messenger, LANGUAGE_CHANNEL).setMethodCallHandler { call, result ->
             when (call.method) {
                 "get" -> result.success(AppLanguage.get(this))
@@ -337,6 +352,7 @@ class MainActivity : FlutterActivity() {
         private const val ICON_SIZE = 96
         private const val APPS_CHANNEL = "de.maestrodev.focus_timer/apps"
         private const val LANGUAGE_CHANNEL = "de.maestrodev.focus_timer/language"
+        private const val AMBIENT_CHANNEL = "de.maestrodev.focus_timer/ambient"
         private const val BLOCKING_CHANNEL = "de.maestrodev.focus_timer/blocking"
         private const val REMINDERS_CHANNEL = "de.maestrodev.focus_timer/reminders"
         private const val SESSION_END_CHANNEL = "de.maestrodev.focus_timer/session_end"
