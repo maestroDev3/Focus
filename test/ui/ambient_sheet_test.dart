@@ -21,7 +21,7 @@ void main() {
       );
     }
 
-    testWidgets('lists off and the four sounds', (tester) async {
+    testWidgets('lists off and the five sounds', (tester) async {
       await pumpSheet(tester);
 
       for (final name in [
@@ -30,6 +30,7 @@ void main() {
         'Soft noise',
         'Deep noise',
         'Fireplace',
+        'Ocean waves',
       ]) {
         expect(find.text(name), findsOneWidget);
       }
