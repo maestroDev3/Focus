@@ -1,7 +1,8 @@
 """Generates Focus' ambient sound loops (no third-party recordings).
 
 Writes seamless 45-second mono loops as OGG Vorbis into
-android/app/src/main/res/raw/: rain, soft noise, deep noise and fireplace.
+android/app/src/main/res/raw/: rain, soft noise, deep noise, fireplace and
+ocean waves.
 Run from the repository root: python3 tool/generate_ambient_sounds.py
 Needs numpy, scipy and ffmpeg.
 """
@@ -99,11 +100,25 @@ def fireplace(n):
     )
 
 
+def ocean_waves(n):
+    """Slow, irregular swells of deep noise with a soft foam hiss on top."""
+    t = np.arange(n) / RATE
+    # Waves of 7–12 s that never quite repeat: two slow sines mixed.
+    swell = 0.5 + 0.3 * np.sin(2 * np.pi * t / 9.3) + 0.2 * np.sin(
+        2 * np.pi * t / 6.1 + 1.3
+    )
+    swell = np.clip(swell, 0.05, 1.0) ** 2
+    body = filt(brown(n), "lowpass", 700) * swell
+    foam = filt(filt(pink(n), "highpass", 1200), "lowpass", 7000) * swell ** 3
+    return normalize(normalize(body) + 0.5 * normalize(foam))
+
+
 SOUNDS = {
     "ambient_rain": rain,
     "ambient_soft_noise": soft_noise,
     "ambient_deep_noise": deep_noise,
     "ambient_fireplace": fireplace,
+    "ambient_ocean_waves": ocean_waves,
 }
 
 

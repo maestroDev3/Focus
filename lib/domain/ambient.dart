@@ -2,7 +2,7 @@ import 'focus_session.dart';
 import 'settings_repository.dart';
 
 /// Calm sounds bundled with Focus (#122); [off] plays nothing.
-enum AmbientSound { off, rain, softNoise, deepNoise, fireplace }
+enum AmbientSound { off, rain, softNoise, deepNoise, fireplace, oceanWaves }
 
 /// The sound chosen on the home screen and its volume (0–1).
 class AmbientChoice {

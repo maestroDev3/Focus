@@ -836,5 +836,9 @@
   "ambientVolume": "Volume",
   "@ambientVolume": {
     "description": "Volume slider of the ambient sound."
+  },
+  "ambientOceanWaves": "Ocean waves",
+  "@ambientOceanWaves": {
+    "description": "Ambient sound: ocean waves."
   }
 }

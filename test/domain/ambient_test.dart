@@ -26,13 +26,14 @@ void main() {
     );
   });
 
-  test('offers off and four calm sounds, off at 60 % by default', () {
+  test('offers off and five calm sounds, off at 60 % by default', () {
     expect(AmbientSound.values, [
       AmbientSound.off,
       AmbientSound.rain,
       AmbientSound.softNoise,
       AmbientSound.deepNoise,
       AmbientSound.fireplace,
+      AmbientSound.oceanWaves,
     ]);
     expect(
       AmbientChoice.initial,
