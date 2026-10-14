@@ -158,5 +158,6 @@
   "ambientSoftNoise": "Мягкий шум",
   "ambientDeepNoise": "Глубокий шум",
   "ambientFireplace": "Камин",
-  "ambientVolume": "Громкость"
+  "ambientVolume": "Громкость",
+  "ambientOceanWaves": "Морские волны"
 }

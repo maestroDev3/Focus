@@ -11,6 +11,7 @@ String ambientSoundName(AppLocalizations l10n, AmbientSound sound) =>
       AmbientSound.softNoise => l10n.ambientSoftNoise,
       AmbientSound.deepNoise => l10n.ambientDeepNoise,
       AmbientSound.fireplace => l10n.ambientFireplace,
+      AmbientSound.oceanWaves => l10n.ambientOceanWaves,
     };
 
 /// Bottom sheet to choose the ambient sound and its volume; every change is
