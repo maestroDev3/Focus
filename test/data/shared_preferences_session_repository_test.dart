@@ -16,7 +16,11 @@ void main() {
   group('SharedPreferencesSessionRepository', () {
     test('updates one finished session, e.g. with a reflection', () async {
       final repository = SharedPreferencesSessionRepository(preferences);
-      await repository.addFinished(cancelledSample());
+      final earlier = FocusSession(
+        start: sampleStart.subtract(const Duration(hours: 1)),
+        planned: const Duration(minutes: 25),
+      ).complete();
+      await repository.addFinished(earlier);
       await repository.addFinished(completedSample());
 
       await repository.updateFinished(
@@ -27,10 +31,7 @@ void main() {
         await SharedPreferencesSessionRepository(
           preferences,
         ).watchFinished().first,
-        [
-          cancelledSample(),
-          completedSample().withReflection(SessionReflection.heavy),
-        ],
+        [earlier, completedSample().withReflection(SessionReflection.heavy)],
       );
     });
 
