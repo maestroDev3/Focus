@@ -26,7 +26,7 @@ void main() {
     );
   });
 
-  test('offers off and five calm sounds, off at 60 % by default', () {
+  test('offers off, five calm sounds and the music app, off at 60 % by default', () {
     expect(AmbientSound.values, [
       AmbientSound.off,
       AmbientSound.rain,
@@ -34,6 +34,7 @@ void main() {
       AmbientSound.deepNoise,
       AmbientSound.fireplace,
       AmbientSound.oceanWaves,
+      AmbientSound.musicApp,
     ]);
     expect(
       AmbientChoice.initial,
@@ -79,6 +80,19 @@ void main() {
 
       expect(player.playing, isNull);
       expect(player.plays, 0);
+    });
+
+    test('plays and stops the music app like a sound', () async {
+      settings.ambient = const AmbientChoice(
+        sound: AmbientSound.musicApp,
+        volume: 0.6,
+      );
+
+      await timer.start(planned);
+      expect(player.playing?.$1, AmbientSound.musicApp);
+
+      await timer.pause();
+      expect(player.playing, isNull);
     });
 
     test('a new choice applies to the running session', () async {

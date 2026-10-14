@@ -12,6 +12,7 @@ String ambientSoundName(AppLocalizations l10n, AmbientSound sound) =>
       AmbientSound.deepNoise => l10n.ambientDeepNoise,
       AmbientSound.fireplace => l10n.ambientFireplace,
       AmbientSound.oceanWaves => l10n.ambientOceanWaves,
+      AmbientSound.musicApp => l10n.ambientMusicApp,
     };
 
 /// Bottom sheet to choose the ambient sound and its volume; every change is
@@ -60,25 +61,28 @@ class _AmbientSheetState extends State<AmbientSheet> {
                   AmbientChoice(sound: sound, volume: _choice.volume),
                 ),
               ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-              child: Text(
-                l10n.ambientVolume,
-                style: theme.textTheme.titleSmall,
-              ),
-            ),
-            Slider(
-              value: _choice.volume,
-              onChanged: (volume) => setState(
-                () => _choice = AmbientChoice(
-                  sound: _choice.sound,
-                  volume: volume,
+            // The music app keeps its own volume.
+            if (_choice.sound != AmbientSound.musicApp) ...[
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                child: Text(
+                  l10n.ambientVolume,
+                  style: theme.textTheme.titleSmall,
                 ),
               ),
-              onChangeEnd: (volume) => _change(
-                AmbientChoice(sound: _choice.sound, volume: volume),
+              Slider(
+                value: _choice.volume,
+                onChanged: (volume) => setState(
+                  () => _choice = AmbientChoice(
+                    sound: _choice.sound,
+                    volume: volume,
+                  ),
+                ),
+                onChangeEnd: (volume) => _change(
+                  AmbientChoice(sound: _choice.sound, volume: volume),
+                ),
               ),
-            ),
+            ],
           ],
         ),
       ),

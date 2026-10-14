@@ -1,8 +1,20 @@
 import 'focus_session.dart';
 import 'settings_repository.dart';
 
-/// Calm sounds bundled with Focus (#122); [off] plays nothing.
-enum AmbientSound { off, rain, softNoise, deepNoise, fireplace, oceanWaves }
+/// Calm sounds bundled with Focus (#122); [off] plays nothing and
+/// [musicApp] continues whatever the user's music app played last (#266).
+enum AmbientSound {
+  off,
+  rain,
+  softNoise,
+  deepNoise,
+  fireplace,
+  oceanWaves,
+  musicApp;
+
+  /// Whether Focus plays the sound itself from a bundled file.
+  bool get isBundled => this != off && this != musicApp;
+}
 
 /// The sound chosen on the home screen and its volume (0–1).
 class AmbientChoice {

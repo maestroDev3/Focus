@@ -38,7 +38,7 @@ class MainActivity : FlutterActivity() {
                     result.success(null)
                 }
                 "stop" -> {
-                    AmbientPlayer.stop()
+                    AmbientPlayer.stop(applicationContext)
                     result.success(null)
                 }
                 else -> result.notImplemented()
