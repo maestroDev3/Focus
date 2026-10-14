@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../domain/ambient.dart';
 import '../domain/blocking.dart';
 import '../domain/daily_goal.dart';
 import '../domain/pomodoro.dart';
@@ -19,6 +20,7 @@ class SharedPreferencesSettingsRepository implements SettingsRepository {
   static const lockScreenKey = 'settings.lockScreen.v1';
   static const mindfulKey = 'settings.mindful.v1';
   static const mindfulPauseKey = 'settings.mindfulPause.v1';
+  static const ambientKey = 'settings.ambient.v1';
   static const _version = 1;
 
   final SharedPreferences _preferences;
@@ -123,5 +125,32 @@ class SharedPreferencesSettingsRepository implements SettingsRepository {
       throw ArgumentError.value(pause, 'pause', 'is not a pause option');
     }
     await _preferences.setInt(mindfulPauseKey, pause.inSeconds);
+  }
+
+  @override
+  Future<AmbientChoice> loadAmbient() async {
+    final stored = _preferences.getString(ambientKey);
+    if (stored == null) return AmbientChoice.initial;
+    return switch (jsonDecode(stored)) {
+      {'v': _version, 'sound': final String sound, 'volume': final num volume}
+          when volume >= 0 && volume <= 1 =>
+        AmbientChoice(
+          sound: AmbientSound.values.asNameMap()[sound] ?? AmbientSound.off,
+          volume: volume.toDouble(),
+        ),
+      _ => AmbientChoice.initial,
+    };
+  }
+
+  @override
+  Future<void> saveAmbient(AmbientChoice choice) async {
+    await _preferences.setString(
+      ambientKey,
+      jsonEncode({
+        'v': _version,
+        'sound': choice.sound.name,
+        'volume': choice.volume,
+      }),
+    );
   }
 }
