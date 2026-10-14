@@ -60,12 +60,17 @@ class FocusTimer {
     return session;
   }
 
-  Future<FocusSession> start(Duration planned, {String? labelId}) async {
+  Future<FocusSession> start(
+    Duration planned, {
+    String? labelId,
+    String? intention,
+  }) async {
     if (_current != null) throw StateError('A session is already running.');
     final session = FocusSession(
       start: _clock(),
       planned: planned,
       labelId: labelId,
+      intention: intention,
     );
     await _setActive(session);
     return session;
@@ -100,6 +105,10 @@ class FocusTimer {
     await _finish(session.complete());
     return true;
   }
+
+  /// Stores how the finished [session] felt.
+  Future<void> reflect(FocusSession session, SessionReflection reflection) =>
+      _repository.updateFinished(session.withReflection(reflection));
 
   /// All completed and cancelled sessions, now and after every change.
   Stream<List<FocusSession>> watchFinished() => _repository.watchFinished();

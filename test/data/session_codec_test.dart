@@ -19,6 +19,28 @@ void main() {
       });
     });
 
+    test('round-trips intention and reflection', () {
+      final ritual = FocusSession(
+        start: sampleStart,
+        planned: const Duration(minutes: 25),
+        intention: 'Chapter 3',
+      ).complete().withReflection(SessionReflection.flowing);
+
+      expect(decodeSession(encodeSession(ritual)), ritual);
+    });
+
+    test('loads version 2 sessions without intention and reflection', () {
+      final json = encodeSession(completedSample())
+        ..['v'] = 2
+        ..remove('intention')
+        ..remove('reflection');
+
+      final session = decodeSession(json);
+
+      expect(session.intention, isNull);
+      expect(session.reflection, isNull);
+    });
+
     test('rejects an unknown format version', () {
       final json = encodeSession(runningSample())..['v'] = 99;
 

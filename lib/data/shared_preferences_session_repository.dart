@@ -47,6 +47,15 @@ class SharedPreferencesSessionRepository implements SessionRepository {
   }
 
   @override
+  Future<void> updateFinished(FocusSession session) async {
+    final sessions = _loadFinished();
+    final index = sessions.indexWhere((other) => other.start == session.start);
+    if (index < 0) throw StateError('Unknown session ${session.start}');
+    sessions[index] = session;
+    await replaceFinished(sessions);
+  }
+
+  @override
   Future<void> replaceFinished(List<FocusSession> sessions) async {
     await _preferences.setString(
       finishedKey,

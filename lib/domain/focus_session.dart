@@ -25,6 +25,12 @@ final class SessionCancelled extends SessionOutcome {
   int get hashCode => (SessionCancelled).hashCode;
 }
 
+/// How a finished session felt, on three calm levels – no score (#121).
+enum SessionReflection { heavy, steady, flowing }
+
+/// The longest intention, one short sentence.
+const maxIntentionLength = 120;
+
 /// A break inside a session; [end] is null while the pause is still running.
 class SessionPause {
   const SessionPause({required this.start, this.end});
@@ -60,9 +66,21 @@ class FocusSession {
     this.end,
     this.outcome,
     this.labelId,
-  }) {
+    String? intention,
+    this.reflection,
+  }) : intention = switch (intention?.trim()) {
+         final text? when text.isNotEmpty => text,
+         _ => null,
+       } {
     if (planned <= Duration.zero) {
       throw ArgumentError.value(planned, 'planned', 'must be positive');
+    }
+    if ((this.intention?.length ?? 0) > maxIntentionLength) {
+      throw ArgumentError.value(
+        intention,
+        'intention',
+        'must be at most $maxIntentionLength characters',
+      );
     }
   }
 
@@ -74,6 +92,30 @@ class FocusSession {
 
   /// Id of the [FocusLabel] the session was about, if any.
   final String? labelId;
+
+  /// What the user set out to do, in one sentence; trimmed, null if blank.
+  final String? intention;
+
+  /// How the finished session felt, if the user said so.
+  final SessionReflection? reflection;
+
+  /// The finished session with [reflection]; throws [StateError] before it
+  /// has ended.
+  FocusSession withReflection(SessionReflection reflection) {
+    if (!isFinished) {
+      throw StateError('Only a finished session can be reflected.');
+    }
+    return FocusSession(
+      start: start,
+      planned: planned,
+      pauses: pauses,
+      end: end,
+      outcome: outcome,
+      labelId: labelId,
+      intention: intention,
+      reflection: reflection,
+    );
+  }
 
   bool get isFinished => outcome != null;
 
@@ -154,6 +196,8 @@ class FocusSession {
       end: end ?? this.end,
       outcome: outcome ?? this.outcome,
       labelId: labelId,
+      intention: intention,
+      reflection: reflection,
     );
   }
 
@@ -165,7 +209,9 @@ class FocusSession {
       _listEquals(other.pauses, pauses) &&
       other.end == end &&
       other.outcome == outcome &&
-      other.labelId == labelId;
+      other.labelId == labelId &&
+      other.intention == intention &&
+      other.reflection == reflection;
 
   @override
   int get hashCode =>
@@ -176,6 +222,8 @@ class FocusSession {
         end,
         outcome,
         labelId,
+        intention,
+        reflection,
       );
 }
 

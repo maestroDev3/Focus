@@ -34,4 +34,12 @@ class FakeSessionRepository implements SessionRepository {
       ..addAll(sessions);
     _changes.add(List.of(finished));
   }
+
+  @override
+  Future<void> updateFinished(FocusSession session) async {
+    final index = finished.indexWhere((other) => other.start == session.start);
+    if (index < 0) throw StateError('Unknown session ${session.start}');
+    finished[index] = session;
+    _changes.add(List.of(finished));
+  }
 }
