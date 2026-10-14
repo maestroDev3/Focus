@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:focus_timer/domain/ambient.dart';
 import 'package:focus_timer/domain/app_blocker.dart';
 import 'package:focus_timer/domain/app_language.dart';
 import 'package:focus_timer/domain/blocking.dart';
@@ -15,6 +16,7 @@ import 'package:focus_timer/ui/focus_app.dart';
 import 'package:focus_timer/ui/theme.dart';
 
 import '../support/backup_files_for_tests.dart';
+import '../support/fake_ambient_player.dart';
 import '../support/fake_app_language_setting.dart';
 import '../support/fake_app_blocker.dart';
 import '../support/fake_block_list_repository.dart';
@@ -45,7 +47,9 @@ void main() {
     FakeHomeWidgetBridge? homeWidget,
     FakeAppLanguageSetting? language,
     ValueChanged<AppLanguage>? onLanguageChanged,
+    FakeAmbientPlayer? ambientPlayer,
   }) => FocusApp(
+    ambientPlayer: ambientPlayer,
     language: language,
     onLanguageChanged: onLanguageChanged,
     showIntro: showIntro,
@@ -298,6 +302,31 @@ void main() {
       await tester.pump();
 
       expect(repository.finished.single.reflection, SessionReflection.flowing);
+    });
+
+    testWidgets('chooses a sound on the home screen and previews it', (
+      tester,
+    ) async {
+      final player = FakeAmbientPlayer();
+      await tester.pumpWidget(buildApp(ambientPlayer: player));
+      await tester.pump();
+      expect(find.text('Sound · Off'), findsOneWidget);
+
+      await tester.tap(find.text('Sound · Off'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      await tester.tap(find.text('Rain'));
+      await tester.pump();
+      await tester.pump();
+      expect(settings.ambient.sound, AmbientSound.rain);
+      expect(player.playing?.$1, AmbientSound.rain);
+
+      await tester.tapAt(const Offset(20, 20));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(find.text('Sound · Rain'), findsOneWidget);
+      expect(player.playing, isNull);
     });
 
     testWidgets('uses the configured break duration', (tester) async {
