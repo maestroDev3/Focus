@@ -4,11 +4,11 @@ Current project state for planning and Claude projects. Maintained by Claude
 after every status change (see CLAUDE.md, “Keeping the status”).
 The GitHub issues are authoritative; this file is the summary.
 
-**Last updated:** 2026-10-13
+**Last updated:** 2026-10-14
 
 ## In progress
 
-- Epic #123 Session ritual on branch `epic/session-ritual`: #121 Intention and reflection (tasks #257 → #258), then #122 Ambient sounds (#259 → #260); merged after your test.
+- Nothing – next: #207 Focus insights, #196 Quick settings tile, #194 Google Play release (your choice).
 
 ## Up next
 
@@ -20,7 +20,6 @@ The GitHub issues are authoritative; this file is the summary.
 
 | Epic | State | Stories (in order) |
 |---|---|---|
-| #123 Session ritual | 0 of 2 closed | #121 Intention and reflection (`in-progress`) → #122 Ambient sounds (`ready`) |
 | #195 Quick settings tile | 0 of 1 closed | #196 Start a session from the quick settings (`backlog`) |
 | #205 Statistics you can explore | 1 of 2 closed | #207 Focus insights (`backlog`) |
 
@@ -39,11 +38,11 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## Recently done
 
+- #122 Ambient sounds during sessions (rain, soft noise, deep noise, fireplace); epic #123 closed
+- #121 Intention before and reflection after a session, day list in the statistics
 - #247 Different hours per day in one focus time (time ranges); epic #246 closed
 - #254 Breathing pause always fits the app being opened (bug fix); epic #253 closed
 - #243 Mindful apps stay free while in use and 10 minutes after leaving; epic #242 closed
-- #237 Mindful opening settings: own app list and pause length (3/5/10/20 s); epic #141 closed
-- #119 Mindful opening (5-second breathing pause outside focus, 5 minutes free after opening) – confirmed on the phone
 
 ## Open decisions (user only)
 
