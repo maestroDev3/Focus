@@ -269,6 +269,35 @@ void main() {
       expect(find.text('50:00'), findsOneWidget);
     });
 
+    testWidgets('starts the session with the typed intention', (
+      tester,
+    ) async {
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+
+      await tester.enterText(find.byType(TextField), 'Chapter 3');
+      await beginFocus(tester);
+
+      expect(repository.active?.intention, 'Chapter 3');
+      expect(find.text('Chapter 3'), findsOneWidget);
+    });
+
+    testWidgets('stores the reflection after a completed session', (
+      tester,
+    ) async {
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+      await beginFocus(tester);
+      await elapse(tester, const Duration(minutes: 25));
+      expect(find.text('How did it go?'), findsOneWidget);
+
+      await tester.tap(find.text('Flowing'));
+      await tester.pump();
+      await tester.pump();
+
+      expect(repository.finished.single.reflection, SessionReflection.flowing);
+    });
+
     testWidgets('uses the configured break duration', (tester) async {
       settings.pomodoro = const PomodoroSettings(
         shortBreak: Duration(minutes: 10),

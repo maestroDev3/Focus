@@ -176,6 +176,25 @@ void main() {
         tester.getTopLeft(find.text('Week')).dy,
         lessThan(tester.getTopLeft(find.text('Today')).dy),
       );
+  
+    testWidgets('lists the sessions of the selected day with their ritual', (
+      tester,
+    ) async {
+      await pumpStatistics(tester, [
+        FocusSession(
+          start: DateTime(2026, 9, 30, 9),
+          planned: const Duration(minutes: 25),
+          labelId: 'study',
+          intention: 'Chapter 3',
+        ).complete().withReflection(SessionReflection.flowing),
+        completed(DateTime(2026, 9, 29, 9), 30),
+      ]);
+      final intention = find.text('Chapter 3');
+      await tester.scrollUntilVisible(intention, 200);
+
+      expect(intention, findsOneWidget);
+      expect(find.text('09:00 · 25 min · Study · Flowing'), findsOneWidget);
     });
+  });
 });
 }
