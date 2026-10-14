@@ -33,6 +33,8 @@ class HomeScreen extends StatelessWidget {
     required this.dailyGoal,
     required this.onOpenStatistics,
     this.intention,
+    this.soundName,
+    this.onChooseSound,
     this.activeFocusTime,
     this.nextFocusTimeStart,
   });
@@ -40,6 +42,12 @@ class HomeScreen extends StatelessWidget {
   final Clock clock;
   final Duration focusDuration;
   final VoidCallback onStart;
+
+  /// Name of the chosen ambient sound for its chip.
+  final String? soundName;
+
+  /// Opens the sound choice; no chip without it.
+  final VoidCallback? onChooseSound;
 
   /// The optional sentence about the next session; no field without it.
   final TextEditingController? intention;
@@ -182,6 +190,20 @@ class HomeScreen extends StatelessWidget {
                                     (hasLabels ? l10n.noLabel : l10n.addLabel),
                               ),
                             ),
+                            if (onChooseSound case final choose?)
+                              ActionChip(
+                                onPressed: choose,
+                                avatar: Icon(
+                                  Icons.graphic_eq,
+                                  size: 18,
+                                  color: theme.colorScheme.primary,
+                                ),
+                                label: Text(
+                                  l10n.ambientSound(
+                                    soundName ?? l10n.ambientOff,
+                                  ),
+                                ),
+                              ),
                             ActionChip(
                               onPressed: onOpenBlockedApps,
                               avatar: Icon(

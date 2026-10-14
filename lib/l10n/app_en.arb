@@ -803,5 +803,38 @@
   "daySessions": "Sessions",
   "@daySessions": {
     "description": "Heading of the selected day's sessions in the statistics."
+  },
+  "ambientSound": "Sound · {name}",
+  "@ambientSound": {
+    "description": "Home chip with the chosen ambient sound.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "ambientOff": "Off",
+  "@ambientOff": {
+    "description": "No ambient sound."
+  },
+  "ambientRain": "Rain",
+  "@ambientRain": {
+    "description": "Ambient sound: rain."
+  },
+  "ambientSoftNoise": "Soft noise",
+  "@ambientSoftNoise": {
+    "description": "Ambient sound: soft (pink) noise."
+  },
+  "ambientDeepNoise": "Deep noise",
+  "@ambientDeepNoise": {
+    "description": "Ambient sound: deep (brown) noise."
+  },
+  "ambientFireplace": "Fireplace",
+  "@ambientFireplace": {
+    "description": "Ambient sound: crackling fireplace."
+  },
+  "ambientVolume": "Volume",
+  "@ambientVolume": {
+    "description": "Volume slider of the ambient sound."
   }
 }
