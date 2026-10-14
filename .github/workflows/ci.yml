@@ -72,9 +72,20 @@ jobs:
           cache: true
       - run: flutter pub get
       # The run number as build number: every APK has a higher version code.
-      - run: flutter build apk --release --build-number=${{ github.run_number }}
+      - name: Build APK
+        run: flutter build apk --release --build-number=${{ github.run_number }} 2>&1 | tee build.log; exit ${PIPESTATUS[0]}
         env:
           FOCUS_KEYSTORE_PASSWORD: ${{ secrets.FOCUS_KEYSTORE_PASSWORD }}
+      # Post the build errors as a commit comment so they can be read via the API.
+      - name: Report build failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          { echo '### APK build failed'; echo '```'; grep -E 'e: |error:|FAILURE|What went wrong|^> ' build.log | tail -c 20000; echo; tail -c 8000 build.log; echo '```'; } > report.md
+          jq -Rs '{body: .}' report.md > body.json
+          curl -sS -X POST -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/commits/${{ github.event.pull_request.head.sha || github.sha }}/comments" -d @body.json > /dev/null
       # Only APKs signed with the Focus release key may be published, otherwise
       # phones refuse the update (“App not installed”).
       - name: Check release signature
