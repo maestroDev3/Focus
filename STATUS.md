@@ -8,12 +8,11 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- Nothing – next: epic #123 Session ritual (#121 → #122).
+- Epic #123 Session ritual on branch `epic/session-ritual`: #121 Intention and reflection (tasks #257 → #258), then #122 Ambient sounds (#259 → #260); merged after your test.
 
 ## Up next
 
-1. Epic #123 Session ritual: #121 Intention and reflection → #122 Ambient sounds.
-2. Later: #207 Focus insights, #196 Quick settings tile, #194 Google Play release.
+1. Later: #207 Focus insights, #196 Quick settings tile, #194 Google Play release.
 
 ## Backlog by initiative → epic
 
@@ -21,7 +20,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 | Epic | State | Stories (in order) |
 |---|---|---|
-| #123 Session ritual | 0 of 2 closed | #121 Intention and reflection → #122 Ambient sounds (both `backlog`) |
+| #123 Session ritual | 0 of 2 closed | #121 Intention and reflection (`in-progress`) → #122 Ambient sounds (`ready`) |
 | #195 Quick settings tile | 0 of 1 closed | #196 Start a session from the quick settings (`backlog`) |
 | #205 Statistics you can explore | 1 of 2 closed | #207 Focus insights (`backlog`) |
 
@@ -49,3 +48,4 @@ The GitHub issues are authoritative; this file is the summary.
 ## Open decisions (user only)
 
 - New epic #187 Block list per session (parked idea #188) – created, please confirm or re-sort.
+- Session ritual defaults chosen by Claude (see CLAUDE.md 2026-10-14) – please confirm or change; ambient sound without a foreground service may stop if Android ends Focus in the background.
