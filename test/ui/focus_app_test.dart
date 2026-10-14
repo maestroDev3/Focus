@@ -341,6 +341,8 @@ void main() {
       await tester.tap(find.text('Sound · Off'));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
+      await tester.ensureVisible(find.text('Your music app'));
+      await tester.pump();
       await tester.tap(find.text('Your music app'));
       await tester.pump();
       await tester.pump();
