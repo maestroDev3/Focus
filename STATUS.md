@@ -8,7 +8,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- Nothing – next: #207 Focus insights, #196 Quick settings tile, #194 Google Play release (your choice).
+- Nothing – next: your choice for #266 Own music, then #207 Focus insights, #196 Quick settings tile, #194 Google Play release.
 
 ## Up next
 
