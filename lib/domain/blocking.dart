@@ -362,10 +362,12 @@ Duration? snoozeFor({
     }
   }
   final focusTime = activeFocusTime(state.focusTimes, now);
+  final range = focusTime?.activeRange(now);
   if (focusTime == null ||
+      range == null ||
       !state.packagesDuring(focusTime).contains(packageName)) {
     return null;
   }
-  final left = focusTime.endOn(now).difference(now);
+  final left = range.endOn(now).difference(now);
   return left < notificationSnoozeStep ? left : notificationSnoozeStep;
 }

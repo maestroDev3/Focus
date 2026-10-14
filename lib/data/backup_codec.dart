@@ -2,10 +2,10 @@ import '../domain/backup.dart';
 import '../domain/blocking.dart';
 import '../domain/daily_goal.dart';
 import '../domain/focus_label.dart';
-import '../domain/focus_time.dart';
 import '../domain/focus_time_repository.dart';
 import '../domain/named_block_list.dart';
 import '../domain/pomodoro.dart';
+import 'focus_time_codec.dart';
 import 'session_codec.dart';
 
 /// Version of the backup file format.
@@ -42,14 +42,7 @@ Map<String, Object?> _encodeBlocking(BlockingBackup blocking) => {
       },
   ],
   'focusTimes': [
-    for (final time in blocking.focusTimes)
-      {
-        'id': time.id,
-        'weekdays': time.weekdays.toList()..sort(),
-        'start': time.startMinute,
-        'end': time.endMinute,
-        'blockList': ?time.blockListId,
-      },
+    for (final time in blocking.focusTimes) encodeFocusTime(time),
   ],
 };
 
@@ -79,25 +72,7 @@ BlockingBackup? _decodeBlocking(Object? json) {
               _ => throw FormatException('Malformed block list: $item'),
             },
         ],
-        focusTimes: [
-          for (final item in times)
-            switch (item) {
-              {
-                'id': final String id,
-                'weekdays': final List<Object?> weekdays,
-                'start': final int start,
-                'end': final int end,
-              } =>
-                FocusTime(
-                  id: id,
-                  weekdays: weekdays.cast<int>().toSet(),
-                  startMinute: start,
-                  endMinute: end,
-                  blockListId: (item as Map)['blockList'] as String?,
-                ),
-              _ => throw FormatException('Malformed focus time: $item'),
-            },
-        ],
+        focusTimes: [for (final item in times) decodeFocusTime(item)],
       ),
     _ => throw const FormatException('Malformed blocking data.'),
   };

@@ -73,7 +73,7 @@ class HomeScreen extends StatelessWidget {
   /// “Focus time until 12:00” or “Next focus time · Mon 09:00”.
   String? _focusTimeLine(AppLocalizations l10n, String locale) {
     if (activeFocusTime case final active?) {
-      return l10n.focusTimeUntil(minuteOfDayText(active.endMinute, locale));
+      return l10n.focusTimeUntil(minuteOfDayText(active.endMinuteAt(clock()), locale));
     }
     final next = nextFocusTimeStart;
     if (next == null) return null;

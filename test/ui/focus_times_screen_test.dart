@@ -70,8 +70,11 @@ void main() {
       await save(tester);
 
       final added = repository.times.single;
-      expect(added.weekdays, {1, 2, 3, 4, 5, 6});
-      expect((added.startMinute, added.endMinute), (540, 720));
+      expect(added.ranges.single.weekdays, {1, 2, 3, 4, 5, 6});
+      expect(
+        (added.ranges.single.startMinute, added.ranges.single.endMinute),
+        (540, 720),
+      );
       expect(find.text('Mon–Sat · 09:00–12:00'), findsOneWidget);
     });
 
@@ -200,6 +203,80 @@ void main() {
       await save(tester);
 
       expect(repository.times.single.blockListId, isNull);
+    });
+
+    group('time ranges', () {
+      testWidgets('lists every range of a focus time', (tester) async {
+        repository.times.add(
+          FocusTime.withRanges(
+            id: 'a',
+            ranges: [
+              FocusTimeRange(weekdays: const {1, 2, 3, 5}, startMinute: 420, endMinute: 600),
+              FocusTimeRange(weekdays: const {6}, startMinute: 420, endMinute: 720),
+            ],
+          ),
+        );
+        await pumpScreen(tester);
+
+        expect(
+          find.text('Mon–Wed, Fri 07:00–10:00 · Sat 07:00–12:00'),
+          findsOneWidget,
+        );
+      });
+
+      testWidgets('adds a second range with other days', (tester) async {
+        await pumpScreen(tester);
+        await openEditor(tester);
+
+        await tester.tap(find.text('Add time range'));
+        await tester.pump();
+        await tester.tap(find.byKey(const ValueKey('range-1-day-6')));
+        await tester.pump();
+        await save(tester);
+
+        expect(repository.times.single.ranges, [
+          FocusTimeRange(weekdays: const {1, 2, 3, 4, 5}, startMinute: 540, endMinute: 720),
+          FocusTimeRange(weekdays: const {6}, startMinute: 540, endMinute: 720),
+        ]);
+      });
+
+      testWidgets('removes a range again', (tester) async {
+        repository.times.add(
+          FocusTime.withRanges(
+            id: 'a',
+            ranges: [
+              FocusTimeRange(weekdays: const {1}, startMinute: 420, endMinute: 600),
+              FocusTimeRange(weekdays: const {6}, startMinute: 420, endMinute: 720),
+            ],
+          ),
+        );
+        await pumpScreen(tester);
+        await tester.tap(find.text('Mon 07:00–10:00 · Sat 07:00–12:00'));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+
+        await tester.tap(find.byTooltip('Remove time range').last);
+        await tester.pump();
+        await save(tester);
+
+        expect(repository.times.single.ranges, [
+          FocusTimeRange(weekdays: const {1}, startMinute: 420, endMinute: 600),
+        ]);
+      });
+
+      testWidgets('does not save ranges that overlap', (tester) async {
+        await pumpScreen(tester);
+        await openEditor(tester);
+
+        await tester.tap(find.text('Add time range'));
+        await tester.pump();
+        await tester.tap(find.byKey(const ValueKey('range-1-day-1')));
+        await tester.pump();
+        await save(tester);
+
+        expect(find.text('This overlaps another focus time.'), findsOneWidget);
+        expect(repository.times, isEmpty);
+      });
     });
   });
 }

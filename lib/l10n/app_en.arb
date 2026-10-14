@@ -771,5 +771,13 @@
   "mindfulApps": "Apps with a pause",
   "@mindfulApps": {
     "description": "The apps that get the breathing pause; entry and picker title."
+  },
+  "addTimeRange": "Add time range",
+  "@addTimeRange": {
+    "description": "Adds another range (weekdays and hours) to a focus time."
+  },
+  "removeTimeRange": "Remove time range",
+  "@removeTimeRange": {
+    "description": "Tooltip: removes a range from a focus time."
   }
 }

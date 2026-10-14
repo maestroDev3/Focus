@@ -99,5 +99,26 @@ void main() {
         findsOneWidget,
       );
     });
-});
+
+    testWidgets('names the end of the range that runs', (tester) async {
+      await tester.pumpApp(
+        BlockedScreen(
+          appLabel: 'Telegram',
+          remaining: null,
+          focusTime: FocusTime.withRanges(
+            id: 'focus-time-1',
+            ranges: [
+              FocusTimeRange(weekdays: const {1, 2, 3, 5}, startMinute: 420, endMinute: 600),
+              FocusTimeRange(weekdays: const {6}, startMinute: 420, endMinute: 720),
+            ],
+          ),
+          // Saturday, 2026-10-17, 11:00.
+          clock: () => DateTime(2026, 10, 17, 11),
+          onReturn: () {},
+        ),
+      );
+
+      expect(find.text('Focus time until 12:00'), findsOneWidget);
+    });
+  });
 }
