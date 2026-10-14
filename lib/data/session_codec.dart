@@ -1,8 +1,8 @@
 import '../domain/focus_session.dart';
 
-/// Current storage format of a session. Version 2 added `labelId`;
-/// version 1 data still loads (without label).
-const sessionFormatVersion = 2;
+/// Current storage format of a session. Version 2 added `labelId`, version 3
+/// `intention` and `reflection`; older data still loads without them.
+const sessionFormatVersion = 3;
 
 /// Converts [session] into JSON-compatible data (current format version).
 Map<String, Object?> encodeSession(FocusSession session) => {
@@ -23,13 +23,15 @@ Map<String, Object?> encodeSession(FocusSession session) => {
     null => null,
   },
   'labelId': session.labelId,
+  'intention': session.intention,
+  'reflection': session.reflection?.name,
 };
 
 /// Reads a session written by [encodeSession]; throws [FormatException] for
 /// unknown versions or malformed data instead of silently dropping it.
 FocusSession decodeSession(Map<String, Object?> json) {
   final version = json['v'];
-  if (version != 1 && version != sessionFormatVersion) {
+  if (version is! int || version < 1 || version > sessionFormatVersion) {
     throw FormatException('Unknown session format version: ${json['v']}');
   }
   try {
@@ -57,9 +59,17 @@ FocusSession decodeSession(Map<String, Object?> json) {
         final other => throw FormatException('Unknown outcome: $other'),
       },
       labelId: version == 1 ? null : json['labelId'] as String?,
+      intention: json['intention'] as String?,
+      reflection: switch (json['reflection']) {
+        null => null,
+        final String name => SessionReflection.values.byName(name),
+        final other => throw FormatException('Unknown reflection: $other'),
+      },
     );
   } on TypeError catch (error) {
     throw FormatException('Malformed session: $error');
+  } on ArgumentError catch (error) {
+    throw FormatException('Invalid session: $error');
   }
 }
 

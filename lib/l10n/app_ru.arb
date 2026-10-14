@@ -145,5 +145,20 @@
   "mindfulPauseSeconds": "{seconds} с",
   "mindfulApps": "Приложения с паузой",
   "addTimeRange": "Добавить промежуток",
-  "removeTimeRange": "Удалить промежуток"
+  "removeTimeRange": "Удалить промежуток",
+  "intentionHint": "Над чем ты работаешь?",
+  "reflectionQuestion": "Как прошло?",
+  "reflectionHeavy": "Тяжело",
+  "reflectionSteady": "Ровно",
+  "reflectionFlowing": "В потоке",
+  "daySessions": "Сессии",
+  "ambientSound": "Звук · {name}",
+  "ambientOff": "Выкл.",
+  "ambientRain": "Дождь",
+  "ambientSoftNoise": "Мягкий шум",
+  "ambientDeepNoise": "Глубокий шум",
+  "ambientFireplace": "Камин",
+  "ambientVolume": "Громкость",
+  "ambientOceanWaves": "Морские волны",
+  "ambientMusicApp": "Твоё музыкальное приложение"
 }

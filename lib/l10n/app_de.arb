@@ -145,5 +145,20 @@
   "mindfulPauseSeconds": "{seconds} s",
   "mindfulApps": "Apps mit Atempause",
   "addTimeRange": "Zeitraum hinzufügen",
-  "removeTimeRange": "Zeitraum entfernen"
+  "removeTimeRange": "Zeitraum entfernen",
+  "intentionHint": "Woran arbeitest du?",
+  "reflectionQuestion": "Wie lief es?",
+  "reflectionHeavy": "Zäh",
+  "reflectionSteady": "Okay",
+  "reflectionFlowing": "Im Fluss",
+  "daySessions": "Sessions",
+  "ambientSound": "Klang · {name}",
+  "ambientOff": "Aus",
+  "ambientRain": "Regen",
+  "ambientSoftNoise": "Sanftes Rauschen",
+  "ambientDeepNoise": "Tiefes Rauschen",
+  "ambientFireplace": "Kaminfeuer",
+  "ambientVolume": "Lautstärke",
+  "ambientOceanWaves": "Meereswellen",
+  "ambientMusicApp": "Deine Musik-App"
 }

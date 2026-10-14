@@ -151,6 +151,15 @@ class _SessionScreenState extends State<SessionScreen> {
                       letterSpacing: 3,
                     ),
                   ),
+                  if (widget.timer.current?.intention case final intention?)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 12),
+                      child: Text(
+                        intention,
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.bodyLarge,
+                      ),
+                    ),
                   Expanded(
                     child: Center(
                       child: _CountdownRing(

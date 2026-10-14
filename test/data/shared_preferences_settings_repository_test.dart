@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:focus_timer/domain/ambient.dart';
 import 'package:focus_timer/data/shared_preferences_settings_repository.dart';
 import 'package:focus_timer/domain/daily_goal.dart';
 import 'package:focus_timer/domain/pomodoro.dart';
@@ -6,6 +7,22 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   group('SharedPreferencesSettingsRepository', () {
+    test('keeps the ambient sound off at 60 % until chosen', () async {
+      SharedPreferences.setMockInitialValues({});
+      final preferences = await SharedPreferences.getInstance();
+      final repository = SharedPreferencesSettingsRepository(preferences);
+      expect(await repository.loadAmbient(), AmbientChoice.initial);
+
+      await repository.saveAmbient(
+        const AmbientChoice(sound: AmbientSound.fireplace, volume: 0.3),
+      );
+
+      expect(
+        await SharedPreferencesSettingsRepository(preferences).loadAmbient(),
+        const AmbientChoice(sound: AmbientSound.fireplace, volume: 0.3),
+      );
+    });
+
     test('pauses 5 seconds before a mindful opening by default', () async {
       SharedPreferences.setMockInitialValues({});
       final preferences = await SharedPreferences.getInstance();

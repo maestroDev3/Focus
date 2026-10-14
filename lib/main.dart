@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'data/json_backup_codec.dart';
+import 'data/method_channel_ambient_player.dart';
 import 'data/method_channel_app_blocker.dart';
 import 'data/method_channel_app_language_setting.dart';
 import 'data/method_channel_document_store.dart';
@@ -19,6 +20,7 @@ import 'data/shared_preferences_mindful_apps_repository.dart';
 import 'data/shared_preferences_named_block_list_repository.dart';
 import 'data/shared_preferences_session_repository.dart';
 import 'data/shared_preferences_settings_repository.dart';
+import 'domain/ambient.dart';
 import 'domain/app_language.dart';
 import 'domain/backup.dart';
 import 'domain/blocking.dart';
@@ -81,10 +83,15 @@ Future<void> main() async {
       ),
     ),
     labels: labels,
+    ambient: AmbientSync(
+      player: const MethodChannelAmbientPlayer(),
+      settings: settings,
+    ),
   );
   runApp(
     FocusApp(
       showIntro: true,
+      ambientPlayer: const MethodChannelAmbientPlayer(),
       mindfulApps: mindfulApps,
       language: languageSetting,
       onLanguageChanged: (chosen) => language = chosen,
