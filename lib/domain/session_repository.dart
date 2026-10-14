@@ -15,6 +15,10 @@ abstract interface class SessionRepository {
   /// Emits all finished sessions now and after every change.
   Stream<List<FocusSession>> watchFinished();
 
+  /// Replaces the finished session with the same start, e.g. after a
+  /// reflection; throws [StateError] if there is none.
+  Future<void> updateFinished(FocusSession session);
+
   /// Replaces the whole history, e.g. when restoring a backup.
   Future<void> replaceFinished(List<FocusSession> sessions);
 }
