@@ -1,3 +1,4 @@
+import 'package:focus_timer/domain/ambient.dart';
 import 'package:focus_timer/domain/daily_goal.dart';
 import 'package:focus_timer/domain/pomodoro.dart';
 import 'package:focus_timer/domain/settings_repository.dart';
@@ -11,6 +12,7 @@ class FakeSettingsRepository implements SettingsRepository {
   DailyGoal dailyGoal = const DailyGoal();
   bool showOnLockScreen = true;
   bool mindfulOpening = false;
+  AmbientChoice ambient = AmbientChoice.initial;
   Duration mindfulPause = const Duration(seconds: 5);
 
   @override
@@ -49,4 +51,10 @@ class FakeSettingsRepository implements SettingsRepository {
 
   @override
   Future<void> saveMindfulPause(Duration pause) async => mindfulPause = pause;
+
+  @override
+  Future<AmbientChoice> loadAmbient() async => ambient;
+
+  @override
+  Future<void> saveAmbient(AmbientChoice choice) async => ambient = choice;
 }
