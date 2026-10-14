@@ -285,3 +285,10 @@ commit comment).
   own weekdays and hours; built on `epic/focus-time-ranges`.
 - 2026-10-13 – Breathing pause can't be skipped (#254): a new request
   replaces an open pause screen, leaving Focus closes it.
+- 2026-10-14 – Session ritual (epic #123) to be built one after the other on
+  `epic/session-ritual` (user). Defaults chosen by Claude, to be confirmed:
+  intention up to 120 characters on the home screen; reflection only after
+  completed sessions with three calm levels (Heavy / Steady / Flowing);
+  day list in the statistics; four generated sounds (Rain, Soft noise, Deep
+  noise, Fireplace), default off, volume 60 %, sound only during running
+  sessions, no foreground service.
