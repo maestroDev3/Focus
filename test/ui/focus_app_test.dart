@@ -92,6 +92,7 @@ void main() {
   Future<void> beginFocus(WidgetTester tester) async {
     await tester.ensureVisible(find.text('Begin focus'));
     await tester.pump();
+    await tester.ensureVisible(find.text('Begin focus'));
     await tester.tap(find.text('Begin focus'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 500));
@@ -193,6 +194,8 @@ void main() {
     testWidgets('Begin focus opens the session screen', (tester) async {
       await tester.pumpWidget(buildApp());
 
+      await tester.ensureVisible(find.text('Begin focus'));
+
       await tester.tap(find.text('Begin focus'));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
@@ -202,6 +205,7 @@ void main() {
 
     testWidgets('ending the session returns home', (tester) async {
       await tester.pumpWidget(buildApp());
+      await tester.ensureVisible(find.text('Begin focus'));
       await tester.tap(find.text('Begin focus'));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
