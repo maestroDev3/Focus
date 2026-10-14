@@ -14,6 +14,26 @@ void main() {
   });
 
   group('SharedPreferencesSessionRepository', () {
+    test('updates one finished session, e.g. with a reflection', () async {
+      final repository = SharedPreferencesSessionRepository(preferences);
+      await repository.addFinished(cancelledSample());
+      await repository.addFinished(completedSample());
+
+      await repository.updateFinished(
+        completedSample().withReflection(SessionReflection.heavy),
+      );
+
+      expect(
+        await SharedPreferencesSessionRepository(
+          preferences,
+        ).watchFinished().first,
+        [
+          cancelledSample(),
+          completedSample().withReflection(SessionReflection.heavy),
+        ],
+      );
+    });
+
     test('saves, loads and clears the active session', () async {
       final repository = SharedPreferencesSessionRepository(preferences);
 
