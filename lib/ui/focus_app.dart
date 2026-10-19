@@ -538,6 +538,8 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
   /// Shows the running session; home is refreshed once it is done.
   Future<void> _pushSession() async {
     final labelName = _labelWithId(widget.timer.current?.labelId)?.name;
+    // A blocked screen from a focus time would return after the session.
+    _closeBlocked();
     _sessionShown = true;
     await _push(
       (context) => SessionScreen(
@@ -659,6 +661,8 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
     SessionOutcome outcome,
   ) async {
     final navigator = Navigator.of(context);
+    // The apps are free again; the session screen must be on top.
+    _closeBlocked();
     switch (outcome) {
       case SessionCancelled():
         navigator.pop();

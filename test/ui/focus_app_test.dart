@@ -552,6 +552,59 @@ void main() {
       expect(find.text('Return to focus'), findsNothing);
     });
 
+    testWidgets('closes the blocked screen when the session ends', (
+      tester,
+    ) async {
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+      await beginFocus(tester);
+      blocker.emit('org.telegram.messenger');
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      await elapse(tester, const Duration(minutes: 25));
+
+      expect(find.text('Short break · 5 min'), findsOneWidget);
+      expect(
+        find.text('Telegram is resting while you focus.', skipOffstage: false),
+        findsNothing,
+      );
+      await tester.tap(find.text('Skip'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(find.text('Begin focus'), findsOneWidget);
+    });
+
+    testWidgets('closes the blocked screen when a session starts', (
+      tester,
+    ) async {
+      // 2026-09-29 is a Tuesday; now is 20:00.
+      final focusTimes = FakeFocusTimeRepository([
+        FocusTime(
+          id: 'focus-time-1',
+          weekdays: const {2},
+          startMinute: 19 * 60,
+          endMinute: 21 * 60,
+        ),
+      ]);
+      await tester.pumpWidget(buildApp(focusTimes: focusTimes));
+      await tester.pump();
+      blocker.emit('org.telegram.messenger');
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      reminders.emitStart();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(find.text('25:00'), findsOneWidget);
+      expect(
+        find.text('Telegram is resting while you focus.', skipOffstage: false),
+        findsNothing,
+      );
+    });
+
     testWidgets('shows the blocked screen during a focus time', (
       tester,
     ) async {
