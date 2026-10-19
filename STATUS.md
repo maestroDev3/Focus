@@ -39,11 +39,11 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## Recently done
 
-- #273 Only one blocked screen however often paused apps are opened (bug fix); epic #272 closed
+- #276 Blocked screen closes when a session ends or starts (bug fix); epic #272 closed
+- #273 Only one blocked screen however often paused apps are opened (bug fix)
 - #266 Your music app plays and pauses with the session (Spotify, podcasts, …)
 - #122 Ambient sounds during sessions (rain, soft noise, deep noise, fireplace, ocean waves)
 - #121 Intention before and reflection after a session, day list in the statistics
-- #247 Different hours per day in one focus time (time ranges); epic #246 closed
 
 ## Open decisions (user only)
 
