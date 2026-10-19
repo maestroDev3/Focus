@@ -517,6 +517,41 @@ void main() {
       expect(find.text('25:00'), findsOneWidget);
     });
 
+    testWidgets('keeps one blocked screen for repeated attempts', (
+      tester,
+    ) async {
+      // 2026-09-29 is a Tuesday; now is 20:00.
+      final focusTimes = FakeFocusTimeRepository([
+        FocusTime(
+          id: 'focus-time-1',
+          weekdays: const {2},
+          startMinute: 19 * 60,
+          endMinute: 21 * 60,
+        ),
+      ]);
+      await tester.pumpWidget(buildApp(focusTimes: focusTimes));
+      await tester.pump();
+
+      for (final app in [
+        'org.telegram.messenger',
+        'com.instagram.android',
+        'org.telegram.messenger',
+      ]) {
+        blocker.emit(app);
+        await tester.pump();
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+      }
+      expect(find.text('Telegram is resting while you focus.'), findsOneWidget);
+      expect(find.text('Instagram is resting while you focus.'), findsNothing);
+
+      await tester.tap(find.text('Return to focus'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(find.text('Return to focus'), findsNothing);
+    });
+
     testWidgets('shows the blocked screen during a focus time', (
       tester,
     ) async {
