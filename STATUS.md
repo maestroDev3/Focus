@@ -9,6 +9,7 @@ The GitHub issues are authoritative; this file is the summary.
 ## In progress
 
 - Nothing – next: #269 Spotify personal mode (needs your Spotify developer app), #207 Focus insights, #196 Quick settings tile, #194 Google Play release.
+- #273 One blocked screen, not a pile (bug fix) – on the same branch, merged with it.
 
 ## Up next
 
@@ -28,6 +29,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 | Epic | State | Stories (in order) |
 |---|---|---|
+| #272 Blocked screen that doesn't pile up | 0 of 1 closed | #273 One blocked screen, not a pile (`in-progress`) |
 | #187 Block list per session | 0 of 1 closed | #188 Choose a block list when starting a session (`backlog`, parked – only on real need) |
 
 
