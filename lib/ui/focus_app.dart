@@ -143,6 +143,10 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
   /// removes it, so it never stays with a ready “Open” (#254).
   Route<void>? _breathRoute;
 
+  /// The open blocked screen, if any: a new attempt replaces it, so they
+  /// never pile up (#273).
+  Route<void>? _blockedRoute;
+
   /// The sentence typed on the home screen for the next session.
   final _intention = TextEditingController();
   StreamSubscription<void>? _startRequests;
@@ -571,8 +575,10 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
         if (app.packageName == packageName) app.label,
     ].firstOrNull;
     final now = widget.clock();
-    await _push(
-      (context) => BlockedScreen(
+    if (!mounted) return;
+    _closeBlocked();
+    final route = MaterialPageRoute<void>(
+      builder: (context) => BlockedScreen(
         appLabel: label ?? packageName,
         remaining: switch (session) {
           final session? when !session.isPaused => session.remaining(now),
@@ -584,6 +590,18 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
         onReturn: () => Navigator.of(context).pop(),
       ),
     );
+    _blockedRoute = route;
+    await _navigator.currentState?.push(route);
+    if (_blockedRoute == route) _blockedRoute = null;
+  }
+
+  /// Removes the open blocked screen, e.g. before showing a newer one.
+  void _closeBlocked() {
+    final route = _blockedRoute;
+    _blockedRoute = null;
+    if (route != null && route.isActive) {
+      _navigator.currentState?.removeRoute(route);
+    }
   }
 
   /// A paused app was opened with mindful opening on: breathe first, then
