@@ -20,6 +20,12 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^6.0.0
 
+# shared_preferences_android 2.5.x crashes the release build on start
+# (NoSuchMethodError via JNI, #281). Remove once a fixed version passes the
+# smoke start in CI.
+dependency_overrides:
+  shared_preferences_android: 2.4.28
+
 flutter:
   generate: true
   uses-material-design: true

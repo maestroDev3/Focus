@@ -4,7 +4,7 @@ Current project state for planning and Claude projects. Maintained by Claude
 after every status change (see CLAUDE.md, “Keeping the status”).
 The GitHub issues are authoritative; this file is the summary.
 
-**Last updated:** 2026-10-19
+**Last updated:** 2026-10-20
 
 ## In progress
 
@@ -39,14 +39,15 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## Recently done
 
+- #280 Focus opens after every update: start-up crash from a plugin update fixed, every APK is start-tested on an emulator in CI; epic #279 closed
 - #276 Blocked screen closes when a session ends or starts (bug fix); epic #272 closed
 - #273 Only one blocked screen however often paused apps are opened (bug fix)
 - #266 Your music app plays and pauses with the session (Spotify, podcasts, …)
 - #122 Ambient sounds during sessions (rain, soft noise, deep noise, fireplace, ocean waves)
-- #121 Intention before and reflection after a session, day list in the statistics
 
 ## Open decisions (user only)
 
+- Epic #279 Every APK starts (Release & platform) – created, please confirm or re-sort
 - New epic #187 Block list per session (parked idea #188) – created, please confirm or re-sort.
 - Session ritual defaults chosen by Claude (see CLAUDE.md 2026-10-14) – please confirm or change; ambient sound without a foreground service may stop if Android ends Focus in the background.
 - #269 Spotify personal mode: waiting for your Spotify developer app (Client ID).
