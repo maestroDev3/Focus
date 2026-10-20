@@ -56,11 +56,6 @@ android {
                 } else {
                     signingConfigs.getByName("debug")
                 }
-            // Keep rules for plugin code R8 can't see being used (#281).
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro",
-            )
         }
     }
 }
