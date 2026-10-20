@@ -1,0 +1,53 @@
+name: Smoke start
+
+# Installs a published APK on an Android emulator, cold-starts it and records
+# logcat and a screenshot – for start-up bugs that only show on a device.
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: Release tag to test (preview or latest)
+        default: preview
+      api:
+        description: Android API level
+        default: '34'
+
+jobs:
+  start:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Download APK
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release download "${{ inputs.release }}" -R "${{ github.repository }}" -p focus_timer.apk
+      - name: Start on the emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ inputs.api }}
+          arch: x86_64
+          target: google_apis
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot
+          script: |
+            adb install -r focus_timer.apk
+            adb logcat -c
+            adb shell am start -W -n de.maestrodev.focus_timer/.MainActivity
+            sleep 25
+            adb exec-out screencap -p > screen.png || true
+            adb shell dumpsys activity activities | grep -E "mResumedActivity|topResumedActivity" || true
+            adb shell pidof de.maestrodev.focus_timer || echo "PROCESS NOT RUNNING"
+            adb logcat -d -v time > logcat.txt || true
+            echo "===== relevant logcat ====="
+            grep -E "flutter|Flutter|AndroidRuntime|FATAL|focus_timer|ANR|E/" logcat.txt | tail -300 || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: smoke-${{ inputs.release }}
+          path: |
+            screen.png
+            logcat.txt
