@@ -12,6 +12,9 @@ on:
         description: Android API level
         default: '34'
 
+permissions:
+  contents: write
+
 jobs:
   start:
     runs-on: ubuntu-latest
@@ -39,11 +42,23 @@ jobs:
             adb shell am start -W -n de.maestrodev.focus_timer/.MainActivity
             sleep 25
             adb exec-out screencap -p > screen.png || true
-            adb shell dumpsys activity activities | grep -E "mResumedActivity|topResumedActivity" || true
-            adb shell pidof de.maestrodev.focus_timer || echo "PROCESS NOT RUNNING"
+            { adb shell dumpsys activity activities | grep -E "mResumedActivity|topResumedActivity"; adb shell pidof de.maestrodev.focus_timer || echo "PROCESS NOT RUNNING"; } > summary.txt 2>&1 || true
             adb logcat -d -v time > logcat.txt || true
-            echo "===== relevant logcat ====="
-            grep -E "flutter|Flutter|AndroidRuntime|FATAL|focus_timer|ANR|E/" logcat.txt | tail -300 || true
+            grep -E "flutter|Flutter|AndroidRuntime|FATAL|focus_timer|ANR|SplashScreen| E " logcat.txt | tail -150 > relevant.txt || true
+      - name: Report as a commit comment
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo "### Smoke start: ${{ inputs.release }} on API ${{ inputs.api }}"
+            echo '```'
+            cat summary.txt 2>/dev/null
+            echo '--- logcat (filtered) ---'
+            cut -c1-300 relevant.txt 2>/dev/null | tail -150
+            echo '```'
+          } > comment.md
+          gh api "repos/${{ github.repository }}/commits/${{ github.sha }}/comments" -F body=@comment.md > /dev/null
       - uses: actions/upload-artifact@v4
         if: always()
         with:
