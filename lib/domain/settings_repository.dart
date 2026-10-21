@@ -1,4 +1,5 @@
 import 'ambient.dart';
+import 'background_style.dart';
 import 'daily_goal.dart';
 import 'pomodoro.dart';
 
@@ -41,4 +42,10 @@ abstract interface class SettingsRepository {
   Future<AmbientChoice> loadAmbient();
 
   Future<void> saveAmbient(AmbientChoice choice);
+
+  /// The background behind the main screens; [BackgroundStyle.initial]
+  /// until chosen.
+  Future<BackgroundStyle> loadBackground();
+
+  Future<void> saveBackground(BackgroundStyle style);
 }

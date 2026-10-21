@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../domain/ambient.dart';
+import '../domain/background_style.dart';
 import '../domain/blocking.dart';
 import '../domain/daily_goal.dart';
 import '../domain/pomodoro.dart';
@@ -21,6 +22,7 @@ class SharedPreferencesSettingsRepository implements SettingsRepository {
   static const mindfulKey = 'settings.mindful.v1';
   static const mindfulPauseKey = 'settings.mindfulPause.v1';
   static const ambientKey = 'settings.ambient.v1';
+  static const backgroundKey = 'settings.background.v1';
   static const _version = 1;
 
   final SharedPreferences _preferences;
@@ -153,4 +155,15 @@ class SharedPreferencesSettingsRepository implements SettingsRepository {
       }),
     );
   }
+
+  @override
+  Future<BackgroundStyle> loadBackground() async =>
+      BackgroundStyle.values.asNameMap()[_preferences.getString(
+        backgroundKey,
+      )] ??
+      BackgroundStyle.initial;
+
+  @override
+  Future<void> saveBackground(BackgroundStyle style) async =>
+      _preferences.setString(backgroundKey, style.name);
 }
