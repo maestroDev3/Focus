@@ -8,13 +8,11 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- Epics #283 Goals for your labels, #284 Adjust your day right from home and #302 Start focus from the ring – built together on `epic/label-goals`, waiting for your test on the phone (preview APK).
+- Nothing – next: tell me which; candidates below.
 
 ## Up next
 
-1. #283 Goals for your labels → #285 Set a goal for a label, #286 Label goals in the statistics
-2. #284 Adjust your day right from home → #287 Tap the duration to change it, #288 Set the daily goal with a wheel
-3. Later: #269 Spotify personal mode, #207 Focus insights, #196 Quick settings tile, #194 Google Play release.
+1. Later: #269 Spotify personal mode, #207 Focus insights, #196 Quick settings tile, #194 Google Play release.
 
 ## Backlog by initiative → epic
 
@@ -22,9 +20,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 | Epic | State | Stories (in order) |
 |---|---|---|
-| #283 Goals for your labels | 0 of 2 closed | #285 Set a goal for a label (`in-progress`, built) → #286 Label goals in the statistics (`in-progress`, built) |
-| #302 Start focus from the ring | 0 of 1 closed | #303 Tap the ring to begin (`in-progress`, built) |
-| #284 Adjust your day right from home | 0 of 2 closed | #287 Tap the duration to change it (`in-progress`, built) → #288 Set the daily goal with a wheel (`in-progress`, built) |
+| #306 A calm, living design | 0 of 2 closed | #307 Breathing glow on the ring (`backlog`) → #308 Living neural background, experiment (`backlog`) |
 | #123 Session ritual | 3 of 4 closed | #269 Spotify playlist, personal mode (`backlog`, needs your Spotify developer app) |
 | #195 Quick settings tile | 0 of 1 closed | #196 Start a session from the quick settings (`backlog`) |
 | #205 Statistics you can explore | 1 of 2 closed | #207 Focus insights (`backlog`) |
@@ -44,15 +40,15 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## Recently done
 
+- #302 Start focus from the ring: tap to begin, hold for the daily goal, no bottom button
+- #284 Adjust your day from home: duration chip and goal ring open a wheel
+- #283 Goals for your labels: goal in hours or running total, all-time card in the statistics
 - #123 Session ritual merged after the phone test: intention & reflection (#121), ambient sounds (#122), your music app (#266)
 - #280 Focus opens after every update: start-up crash from a plugin update fixed, every APK is start-tested on an emulator in CI; epic #279 closed
-- #276 Blocked screen closes when a session ends or starts (bug fix); epic #272 closed
-- #273 Only one blocked screen however often paused apps are opened (bug fix)
-- #266 Your music app plays and pauses with the session (Spotify, podcasts, …)
 
 ## Open decisions (user only)
 
-- New epics #283 Goals for your labels, #284 Adjust your day right from home and #302 Start focus from the ring (Focus experience) – created, please confirm or re-sort
+- New epic #306 A calm, living design – created, please confirm or re-sort; which motion first (see chat 2026-10-21)
 - Epic #279 Every APK starts (Release & platform) – created, please confirm or re-sort
 - New epic #187 Block list per session (parked idea #188) – created, please confirm or re-sort.
 - #269 Spotify personal mode: waiting for your Spotify developer app (Client ID).
