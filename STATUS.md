@@ -8,7 +8,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- #307 Breathing glow on the ring (`in-progress`), then #308 – epic #306 on branch `epic/calm-design`, preview APK for your test.
+- Epic #306 A calm, living design – #307 and #308 built on `epic/calm-design`, waiting for your test on the phone (preview APK).
 
 ## Up next
 
@@ -20,7 +20,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 | Epic | State | Stories (in order) |
 |---|---|---|
-| #306 A calm, living design | 0 of 2 closed | #307 Breathing glow on the ring (`in-progress`) → #308 Living neural background, experiment (`ready`) |
+| #306 A calm, living design | 0 of 2 closed | #307 Breathing glow on the ring (`in-progress`, built) → #308 Living neural background (`in-progress`, built) |
 | #123 Session ritual | 3 of 4 closed | #269 Spotify playlist, personal mode (`backlog`, needs your Spotify developer app) |
 | #195 Quick settings tile | 0 of 1 closed | #196 Start a session from the quick settings (`backlog`) |
 | #205 Statistics you can explore | 1 of 2 closed | #207 Focus insights (`backlog`) |
