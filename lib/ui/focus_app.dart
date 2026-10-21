@@ -38,6 +38,7 @@ import 'session_screen.dart';
 import 'settings_screen.dart';
 import 'statistics_screen.dart';
 import 'theme.dart';
+import 'widgets/duration_wheel.dart';
 
 /// Root widget of Focus: wires theme, localization and the screens.
 class FocusApp extends StatefulWidget {
@@ -364,6 +365,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
                   clock: widget.clock,
                   focusDuration: _pomodoro.focus,
                   onStart: _startSession,
+                  onChooseDuration: () => _chooseDuration(homeContext),
                   intention: _intention,
                   soundName: ambientSoundName(
                     AppLocalizations.of(homeContext),
@@ -503,6 +505,22 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
       ),
     );
     if (widget.timer.current == null) await widget.ambientPlayer?.stop();
+  }
+
+  /// The session length from the wheel; saved as the Pomodoro focus length,
+  /// so home and settings always show the same value (#287).
+  Future<void> _chooseDuration(BuildContext context) async {
+    final chosen = await showDurationWheel(
+      context,
+      title: AppLocalizations.of(context).sessionLength,
+      initial: _pomodoro.focus,
+      min: const Duration(minutes: 5),
+      max: Duration(minutes: PomodoroField.focus.max),
+    );
+    if (chosen == null || !mounted) return;
+    final next = _pomodoro.withValue(PomodoroField.focus, chosen.inMinutes);
+    setState(() => _pomodoro = next);
+    await widget.settings.savePomodoro(next);
   }
 
   Future<void> _chooseLabel(BuildContext context) async {
