@@ -79,7 +79,7 @@ void main() {
     testWidgets('clamps a value above the maximum', (tester) async {
       await openWheel(tester, initial: const Duration(hours: 3));
 
-      await pick(tester, '15 min');
+      await pick(tester, '10 min');
       await done(tester);
 
       expect(result, const Duration(hours: 3));
