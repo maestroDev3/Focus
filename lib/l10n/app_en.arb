@@ -29,6 +29,14 @@
       }
     }
   },
+  "done": "Done",
+  "@done": {
+    "description": "Confirms a value chosen in a picker."
+  },
+  "sessionLength": "Session length",
+  "@sessionLength": {
+    "description": "Title of the wheel for the focus session length."
+  },
   "beginFocus": "Begin focus",
   "@beginFocus": {
     "description": "Main button on the home screen that starts a focus session."
