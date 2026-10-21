@@ -524,7 +524,8 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
     await widget.settings.savePomodoro(next);
   }
 
-  /// The daily goal from the wheel, opened by tapping the goal ring (#288).
+  /// The daily goal from the wheel, opened by holding the goal ring (#288,
+  /// #303).
   Future<void> _chooseDailyGoal(BuildContext context) async {
     final chosen = await showDurationWheel(
       context,

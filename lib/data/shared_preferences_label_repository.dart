@@ -118,4 +118,3 @@ class SharedPreferencesLabelRepository implements LabelRepository {
     _changes.add(labels);
   }
 }
-
