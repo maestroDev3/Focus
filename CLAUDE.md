@@ -300,3 +300,8 @@ commit comment).
 - 2026-10-21 – Session ritual tested on the phone and merged; its defaults
   (2026-10-14) are confirmed. Next: label goals (epic #283) and adjusting
   duration and daily goal from home (epic #284).
+- 2026-10-21 – Label goals (#285/#286): a goal is whole hours or none (then
+  only the running total); totals count **all** sessions of the label, also
+  those before the goal was set; no dates/deadlines. Duration changed on home
+  is permanent (same value as the settings). Duration and daily goal use a
+  wheel picker (hours + minutes, 5-minute steps); + / − stay in the settings.
