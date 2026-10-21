@@ -9,6 +9,7 @@ import '../domain/focus_time.dart';
 import '../l10n/app_localizations.dart';
 import 'focus_time_label.dart';
 import 'focus_time_text.dart';
+import 'widgets/breathing_ring.dart';
 import 'widgets/focus_background.dart';
 
 /// The calm first screen: date, a greeting and one big button to start
@@ -323,12 +324,7 @@ class _GoalRing extends StatelessWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                CircularProgressIndicator(
-                  value: goalProgress(focused, goal),
-                  strokeWidth: 2,
-                  color: theme.colorScheme.primary,
-                  backgroundColor: theme.colorScheme.outline,
-                ),
+                BreathingRing(progress: goalProgress(focused, goal)),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

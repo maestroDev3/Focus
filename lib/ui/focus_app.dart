@@ -38,6 +38,7 @@ import 'session_screen.dart';
 import 'settings_screen.dart';
 import 'statistics_screen.dart';
 import 'theme.dart';
+import 'widgets/calm_motion.dart';
 import 'widgets/duration_wheel.dart';
 
 /// Root widget of Focus: wires theme, localization and the screens.
@@ -61,6 +62,7 @@ class FocusApp extends StatefulWidget {
     this.ambientPlayer,
     this.clock = DateTime.now,
     this.showIntro = false,
+    this.motion = true,
   });
 
   /// Runs and stores focus sessions.
@@ -115,6 +117,10 @@ class FocusApp extends StatefulWidget {
 
   /// Whether to show the short intro before home (on cold start).
   final bool showIntro;
+
+  /// Lets the ring breathe and the background pulse (#306); tests turn it
+  /// off so `pumpAndSettle` can settle.
+  final bool motion;
 
   @override
   State<FocusApp> createState() => _FocusAppState();
@@ -357,6 +363,8 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       locale: localeOf(_language),
+      builder: (context, child) =>
+          CalmMotion(enabled: widget.motion, child: child ?? const SizedBox()),
       home: AnimatedSwitcher(
         duration: const Duration(milliseconds: 600),
         child: _introDone
