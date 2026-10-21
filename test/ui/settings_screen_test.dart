@@ -382,7 +382,8 @@ void main() {
     testWidgets('chooses the background on its own page', (tester) async {
       final repository = await pumpSettings(tester);
 
-      await tester.scrollUntilVisible(find.text('Background'), 200);
+      await tester.ensureVisible(find.text('Background'));
+      await tester.pump();
       expect(find.text('Roots'), findsOneWidget);
       await tester.tap(find.text('Background'));
       await tester.pump();
@@ -396,11 +397,13 @@ void main() {
         'Fine mesh',
         'None',
       ]) {
-        await tester.scrollUntilVisible(find.text(name), 200);
+        await tester.ensureVisible(find.text(name));
         expect(find.text(name), findsOneWidget);
       }
       expect(find.byKey(const Key('background-roots-selected')), findsOneWidget);
 
+      await tester.ensureVisible(find.text('Fine mesh'));
+      await tester.pump();
       await tester.tap(find.text('Fine mesh'));
       await tester.pump();
 
