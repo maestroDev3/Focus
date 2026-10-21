@@ -49,6 +49,8 @@ void main() {
     ValueChanged<AppLanguage>? onLanguageChanged,
     FakeAmbientPlayer? ambientPlayer,
   }) => FocusApp(
+    // Breathing and pulses would keep pumpAndSettle from settling.
+    motion: false,
     ambientPlayer: ambientPlayer,
     language: language,
     onLanguageChanged: onLanguageChanged,
@@ -262,6 +264,35 @@ void main() {
       await tester.pump(const Duration(milliseconds: 500));
 
       expect(find.text('Begin focus'), findsOneWidget);
+    });
+  });
+
+  group('FocusApp motion', () {
+    testWidgets('lets the ring breathe when motion is on', (tester) async {
+      await tester.pumpWidget(
+        FocusApp(
+          timer: FocusTimer(repository: repository, clock: () => now),
+          settings: settings,
+          labels: labels,
+          backupFiles: backupFilesForTests(
+            sessions: repository,
+            labels: labels,
+            settings: settings,
+            documents: FakeDocumentStore(),
+          ),
+          blockList: blockList,
+          namedBlockLists: FakeNamedBlockListRepository(),
+          installedApps: FakeInstalledAppsSource(),
+          appBlocker: blocker,
+          focusTimes: FakeFocusTimeRepository(),
+          reminders: reminders,
+          clock: () => now,
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 1));
+
+      expect(tester.binding.hasScheduledFrame, isTrue);
     });
   });
 
