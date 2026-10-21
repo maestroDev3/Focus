@@ -297,3 +297,6 @@ commit comment).
   playlist choice only as a personal mode for the user (#269), because
   Spotify's development mode allows 5 users per app. Ocean waves added as a
   fifth bundled sound.
+- 2026-10-21 – Session ritual tested on the phone and merged; its defaults
+  (2026-10-14) are confirmed. Next: label goals (epic #283) and adjusting
+  duration and daily goal from home (epic #284).
