@@ -36,6 +36,7 @@ class HomeScreen extends StatelessWidget {
     this.soundName,
     this.onChooseSound,
     this.onChooseDuration,
+    this.onChooseDailyGoal,
     this.activeFocusTime,
     this.nextFocusTimeStart,
   });
@@ -79,6 +80,9 @@ class HomeScreen extends StatelessWidget {
   /// Focus time of sessions that ended today.
   final Duration focusedToday;
   final DailyGoal dailyGoal;
+
+  /// Opens the wheel for the daily goal when the ring is tapped (#288).
+  final VoidCallback? onChooseDailyGoal;
   final VoidCallback onOpenStatistics;
 
   /// The focus time running now, if any.
@@ -165,7 +169,11 @@ class HomeScreen extends StatelessWidget {
                           ),
                         ),
                         const Spacer(),
-                        _GoalRing(focused: focusedToday, goal: dailyGoal),
+                        _GoalRing(
+                          focused: focusedToday,
+                          goal: dailyGoal,
+                          onTap: onChooseDailyGoal,
+                        ),
                         const SizedBox(height: 28),
                         Wrap(
                           alignment: WrapAlignment.center,
@@ -291,52 +299,61 @@ class HomeScreen extends StatelessWidget {
 /// Today's focus time inside a thin champagne ring that fills up towards the
 /// daily goal.
 class _GoalRing extends StatelessWidget {
-  const _GoalRing({required this.focused, required this.goal});
+  const _GoalRing({required this.focused, required this.goal, this.onTap});
 
   final Duration focused;
   final DailyGoal goal;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     return Center(
-      child: SizedBox.square(
-        dimension: 236,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            CircularProgressIndicator(
-              value: goalProgress(focused, goal),
-              strokeWidth: 2,
-              color: theme.colorScheme.primary,
-              backgroundColor: theme.colorScheme.outline,
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+      child: Material(
+        type: MaterialType.transparency,
+        shape: const CircleBorder(),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: SizedBox.square(
+            dimension: 236,
+            child: Stack(
+              fit: StackFit.expand,
               children: [
-                Text(
-                  l10n.today,
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                    letterSpacing: 3,
-                  ),
+                CircularProgressIndicator(
+                  value: goalProgress(focused, goal),
+                  strokeWidth: 2,
+                  color: theme.colorScheme.primary,
+                  backgroundColor: theme.colorScheme.outline,
                 ),
-                const SizedBox(height: 6),
-                Text(
-                  focusTimeText(l10n, focused),
-                  style: theme.textTheme.displayMedium,
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  l10n.dailyGoalOf(focusTimeText(l10n, goal.duration)),
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      l10n.today,
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                        letterSpacing: 3,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      focusTimeText(l10n, focused),
+                      style: theme.textTheme.displayMedium,
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      l10n.dailyGoalOf(focusTimeText(l10n, goal.duration)),
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
+          ),
         ),
       ),
     );

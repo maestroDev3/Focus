@@ -16,6 +16,7 @@ import 'app_locale.dart';
 import 'focus_time_text.dart';
 import 'focus_times_screen.dart';
 import 'mindful_settings_screen.dart';
+import 'widgets/duration_wheel.dart';
 
 /// Why restoring a backup is not possible right now: blocking is strict
 /// during a session or focus time, and a restore could shrink the lists.
@@ -201,6 +202,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await widget.settings.saveDailyGoal(next);
   }
 
+  /// The daily goal from the wheel; + / − keep the 10-minute steps (#288).
+  Future<void> _editGoal(String title) async {
+    final chosen = await showDurationWheel(
+      context,
+      title: title,
+      initial: _dailyGoal.duration,
+      min: const Duration(minutes: DailyGoal.minMinutes),
+      max: const Duration(minutes: DailyGoal.maxMinutes),
+    );
+    if (chosen == null || !mounted) return;
+    final goal = DailyGoal.validated(chosen.inMinutes);
+    setState(() => _dailyGoal = goal);
+    await widget.settings.saveDailyGoal(goal);
+  }
+
   Future<void> _export() async {
     final messenger = ScaffoldMessenger.of(context);
     final l10n = AppLocalizations.of(context);
@@ -300,6 +316,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   name: l10n.settingsDailyGoal,
                   value: focusTimeText(l10n, _dailyGoal.duration),
                   onStep: _stepGoal,
+                  onEdit: () => _editGoal(l10n.settingsDailyGoal),
                 ),
                 ListTile(
                   leading: const Icon(Icons.schedule),
