@@ -91,12 +91,21 @@ void main() {
       expect(starts, 1);
     });
 
-    testWidgets('makes Begin focus a tall FilledButton', (tester) async {
-      await pumpHome(tester, now: DateTime(2026, 9, 29, 20));
+    testWidgets('starts from a tap anywhere on the ring, without a button', (
+      tester,
+    ) async {
+      var starts = 0;
+      await pumpHome(
+        tester,
+        now: DateTime(2026, 9, 29, 20),
+        onStart: () => starts++,
+      );
 
-      final button = find.widgetWithText(FilledButton, 'Begin focus');
-      expect(button, findsOneWidget);
-      expect(tester.getSize(button).height, greaterThanOrEqualTo(56));
+      await tester.tap(find.text('Today'));
+      await tester.pump();
+
+      expect(starts, 1);
+      expect(find.byType(FilledButton), findsNothing);
     });
 
     testWidgets('opens the settings from a button with a tooltip', (
