@@ -366,6 +366,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
                   focusDuration: _pomodoro.focus,
                   onStart: _startSession,
                   onChooseDuration: () => _chooseDuration(homeContext),
+                  onChooseDailyGoal: () => _chooseDailyGoal(homeContext),
                   intention: _intention,
                   soundName: ambientSoundName(
                     AppLocalizations.of(homeContext),
@@ -521,6 +522,22 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
     final next = _pomodoro.withValue(PomodoroField.focus, chosen.inMinutes);
     setState(() => _pomodoro = next);
     await widget.settings.savePomodoro(next);
+  }
+
+  /// The daily goal from the wheel, opened by tapping the goal ring (#288).
+  Future<void> _chooseDailyGoal(BuildContext context) async {
+    final chosen = await showDurationWheel(
+      context,
+      title: AppLocalizations.of(context).settingsDailyGoal,
+      initial: _dailyGoal.duration,
+      min: const Duration(minutes: DailyGoal.minMinutes),
+      max: const Duration(minutes: DailyGoal.maxMinutes),
+    );
+    if (chosen == null || !mounted) return;
+    final goal = DailyGoal.validated(chosen.inMinutes);
+    setState(() => _dailyGoal = goal);
+    await widget.settings.saveDailyGoal(goal);
+    await _publishWidget();
   }
 
   Future<void> _chooseLabel(BuildContext context) async {
