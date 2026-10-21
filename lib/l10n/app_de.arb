@@ -6,6 +6,8 @@
   "greetingEvening": "Guten Abend.",
   "homeSubtitle": "Eine ruhige Stunde ist mehr wert als ein voller Tag.",
   "durationMinutes": "{minutes} Min.",
+  "done": "Fertig",
+  "sessionLength": "Sessiondauer",
   "beginFocus": "Fokus beginnen",
   "sessionFocusing": "Fokus",
   "sessionPaused": "Pausiert",

@@ -6,6 +6,8 @@
   "greetingEvening": "Добрый вечер.",
   "homeSubtitle": "Один спокойный час стоит больше, чем суетливый день.",
   "durationMinutes": "{minutes} мин",
+  "done": "Готово",
+  "sessionLength": "Длительность сессии",
   "beginFocus": "Начать фокус",
   "sessionFocusing": "Фокус",
   "sessionPaused": "Пауза",
