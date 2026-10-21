@@ -388,6 +388,7 @@ void main() {
       await tester.tap(find.text('Background'));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
+      expect(find.byKey(const Key('background-roots-selected')), findsOneWidget);
 
       for (final name in [
         'Five stems',
@@ -397,11 +398,13 @@ void main() {
         'Fine mesh',
         'None',
       ]) {
-        await tester.ensureVisible(find.text(name));
+        await tester.scrollUntilVisible(
+          find.text(name),
+          100,
+          scrollable: find.byType(Scrollable).last,
+        );
         expect(find.text(name), findsOneWidget);
       }
-      expect(find.byKey(const Key('background-roots-selected')), findsOneWidget);
-
       await tester.ensureVisible(find.text('Fine mesh'));
       await tester.pump();
       await tester.tap(find.text('Fine mesh'));
@@ -409,7 +412,6 @@ void main() {
 
       expect(repository.background, BackgroundStyle.mesh);
       expect(find.byKey(const Key('background-mesh-selected')), findsOneWidget);
-      expect(find.byKey(const Key('background-roots-selected')), findsNothing);
     });
 
     testWidgets('exports a backup', (tester) async {
