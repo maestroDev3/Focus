@@ -24,17 +24,22 @@ void main() {
     WidgetTester tester,
     List<FocusSession> sessions, {
     DailyGoal dailyGoal = const DailyGoal(),
+    List<FocusLabel>? labelList,
   }) async {
     await tester.pumpApp(
       StatisticsScreen(
         finishedSessions: Stream.value(sessions),
-        labels: Stream.value(labels),
+        labels: Stream.value(labelList ?? labels),
         dailyGoal: dailyGoal,
         clock: () => now,
       ),
     );
     await tester.pump();
   }
+
+  /// [finder] inside the card with [key] (“by-label”, “all-time”).
+  Finder inCard(String key, Finder finder) =>
+      find.descendant(of: find.byKey(Key(key)), matching: finder);
 
   group('StatisticsScreen', () {
     testWidgets('shows today and this week', (tester) async {
@@ -79,8 +84,8 @@ void main() {
       expect(find.text('1h 15'), findsOneWidget);
       expect(find.text('40 min'), findsOneWidget);
       expect(
-        tester.getTopLeft(find.text('Study')).dy,
-        lessThan(tester.getTopLeft(find.text('Work')).dy),
+        tester.getTopLeft(inCard('by-label', find.text('Study'))).dy,
+        lessThan(tester.getTopLeft(inCard('by-label', find.text('Work'))).dy),
       );
     });
 
@@ -91,13 +96,13 @@ void main() {
         completed(DateTime(2026, 9, 3, 9), 25, 'study'),
         completed(DateTime(2026, 9, 29, 9), 40, 'work'),
       ]);
-      expect(find.text('Study'), findsNothing);
+      expect(inCard('by-label', find.text('Study')), findsNothing);
 
       await tester.tap(find.text('Month'));
       await tester.pump();
 
-      expect(find.text('Study'), findsOneWidget);
-      expect(find.text('Work'), findsOneWidget);
+      expect(inCard('by-label', find.text('Study')), findsOneWidget);
+      expect(inCard('by-label', find.text('Work')), findsOneWidget);
     });
 
     testWidgets('shows sessions without label as Unlabeled', (tester) async {
@@ -195,6 +200,68 @@ void main() {
 
       expect(intention, findsOneWidget);
       expect(find.text('09:00 · 25 min · Study · Flowing'), findsOneWidget);
+    });
+
+    testWidgets('lists every label with its all-time total, largest first', (
+      tester,
+    ) async {
+      await pumpStatistics(tester, [
+        completed(DateTime(2025, 1, 5, 9), 25, 'study'),
+        completed(DateTime(2026, 9, 29, 9), 50, 'work'),
+        completed(DateTime(2026, 9, 30, 9), 40, 'work'),
+      ]);
+      final card = find.byKey(const Key('all-time'));
+      await tester.scrollUntilVisible(card, 200);
+
+      expect(inCard('all-time', find.text('All time')), findsOneWidget);
+      expect(inCard('all-time', find.text('1h 30 in total')), findsOneWidget);
+      expect(inCard('all-time', find.text('25 min in total')), findsOneWidget);
+      expect(
+        tester.getTopLeft(inCard('all-time', find.text('Work'))).dy,
+        lessThan(tester.getTopLeft(inCard('all-time', find.text('Study'))).dy),
+      );
+    });
+
+    testWidgets('shows the goal progress in the all-time card', (
+      tester,
+    ) async {
+      await pumpStatistics(
+        tester,
+        [
+          for (var day = 1; day <= 12; day++)
+            completed(DateTime(2026, 8, day, 9), 60, 'exam'),
+        ],
+        labelList: [
+          FocusLabel(
+            id: 'exam',
+            name: 'Exam',
+            goal: const Duration(hours: 20),
+          ),
+        ],
+      );
+      final card = find.byKey(const Key('all-time'));
+      await tester.scrollUntilVisible(card, 200);
+
+      expect(inCard('all-time', find.text('12h of 20h')), findsOneWidget);
+      expect(
+        inCard('all-time', find.byType(LinearProgressIndicator)),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('keeps the all-time card when switching the period', (
+      tester,
+    ) async {
+      await pumpStatistics(tester, [
+        completed(DateTime(2025, 1, 5, 9), 25, 'study'),
+      ]);
+
+      await tester.tap(find.text('Month'));
+      await tester.pump();
+      final card = find.byKey(const Key('all-time'));
+      await tester.scrollUntilVisible(card, 200);
+
+      expect(inCard('all-time', find.text('25 min in total')), findsOneWidget);
     });
   });
 }
