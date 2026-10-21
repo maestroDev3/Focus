@@ -316,11 +316,23 @@ void main() {
       expect(find.text('25 min'), findsOneWidget);
     });
 
-    testWidgets('sets the daily goal from the goal ring', (tester) async {
+    testWidgets('starts a session when the ring is tapped', (tester) async {
       await tester.pumpWidget(buildApp());
       await tester.pump();
 
-      await tester.tap(find.text('of 2h daily goal'));
+      await tester.tap(find.text('Today'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(repository.active?.planned, const Duration(minutes: 25));
+      expect(find.text('25:00'), findsOneWidget);
+    });
+
+    testWidgets('sets the daily goal by holding the ring', (tester) async {
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+
+      await tester.longPress(find.text('of 2h daily goal'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('4h'));
       await tester.pumpAndSettle();
