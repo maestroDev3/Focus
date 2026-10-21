@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
+import 'neural_background.dart';
+
 /// The calm backdrop of the main screens: the surface color, a soft radial
 /// glow of the accent color and a gentle vignette at the bottom. Uses theme
-/// colors only, so light mode gets a warm ivory glow.
+/// colors only, so light mode gets a warm ivory glow. Behind the content lies
+/// the still neural network (#308).
 class FocusBackground extends StatelessWidget {
   const FocusBackground({
     super.key,
@@ -52,7 +55,12 @@ class FocusBackground extends StatelessWidget {
               ],
             ),
           ),
-          child: child,
+          child: Stack(
+            children: [
+              const Positioned.fill(child: NeuralBackground()),
+              child,
+            ],
+          ),
         ),
       ),
     );
