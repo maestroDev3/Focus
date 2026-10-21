@@ -308,3 +308,8 @@ commit comment).
 - 2026-10-21 – The ring on home starts the session (epic #302, story #303):
   one tap begins, holding the ring opens the daily goal wheel (settings keep
   it), the golden “Begin focus” button is removed.
+- 2026-10-21 – Calm, living design (epic #306), A then B: the champagne
+  progress arc breathes once every ~5.5 s (#307); behind the main screens a
+  still neural network – nodes don't move, spread widely like a brain – with
+  two or three slow light pulses (#308). Respects Android's “Remove
+  animations”.
