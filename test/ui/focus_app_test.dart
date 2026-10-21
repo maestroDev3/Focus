@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:focus_timer/domain/background_style.dart';
 import 'package:focus_timer/domain/ambient.dart';
 import 'package:focus_timer/domain/app_blocker.dart';
 import 'package:focus_timer/domain/app_language.dart';
@@ -14,6 +15,7 @@ import 'package:focus_timer/domain/pomodoro.dart';
 import 'package:focus_timer/l10n/app_localizations.dart';
 import 'package:focus_timer/ui/focus_app.dart';
 import 'package:focus_timer/ui/theme.dart';
+import 'package:focus_timer/ui/widgets/dendrite_background.dart';
 
 import '../support/backup_files_for_tests.dart';
 import '../support/fake_ambient_player.dart';
@@ -264,6 +266,27 @@ void main() {
       await tester.pump(const Duration(milliseconds: 500));
 
       expect(find.text('Begin focus'), findsOneWidget);
+    });
+  });
+
+  group('FocusApp background', () {
+    testWidgets('uses the chosen background', (tester) async {
+      settings.background = BackgroundStyle.mesh;
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+
+      final background = tester.widget<DendriteBackground>(
+        find.byType(DendriteBackground).first,
+      );
+      expect(background.style, BackgroundStyle.mesh);
+    });
+
+    testWidgets('shows no branches for none', (tester) async {
+      settings.background = BackgroundStyle.none;
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+
+      expect(find.byType(DendriteBackground), findsNothing);
     });
   });
 
