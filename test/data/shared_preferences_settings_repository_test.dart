@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:focus_timer/domain/ambient.dart';
+import 'package:focus_timer/domain/background_style.dart';
 import 'package:focus_timer/data/shared_preferences_settings_repository.dart';
 import 'package:focus_timer/domain/daily_goal.dart';
 import 'package:focus_timer/domain/pomodoro.dart';
@@ -7,6 +8,31 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   group('SharedPreferencesSettingsRepository', () {
+    test('shows the roots background until another is chosen', () async {
+      SharedPreferences.setMockInitialValues({});
+      final preferences = await SharedPreferences.getInstance();
+      final repository = SharedPreferencesSettingsRepository(preferences);
+      expect(await repository.loadBackground(), BackgroundStyle.roots);
+
+      await repository.saveBackground(BackgroundStyle.mesh);
+
+      expect(
+        await SharedPreferencesSettingsRepository(preferences).loadBackground(),
+        BackgroundStyle.mesh,
+      );
+    });
+
+    test('falls back to roots for an unknown stored background', () async {
+      SharedPreferences.setMockInitialValues({
+        SharedPreferencesSettingsRepository.backgroundKey: 'aurora',
+      });
+      final repository = SharedPreferencesSettingsRepository(
+        await SharedPreferences.getInstance(),
+      );
+
+      expect(await repository.loadBackground(), BackgroundStyle.roots);
+    });
+
     test('keeps the ambient sound off at 60 % until chosen', () async {
       SharedPreferences.setMockInitialValues({});
       final preferences = await SharedPreferences.getInstance();
