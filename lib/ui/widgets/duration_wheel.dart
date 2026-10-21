@@ -16,6 +16,8 @@ Future<Duration?> showDurationWheel(
 }) => showModalBottomSheet<Duration>(
   context: context,
   showDragHandle: true,
+  // Sized to its content, so the wheels never get squeezed.
+  isScrollControlled: true,
   builder: (context) => _DurationWheelSheet(
     title: title,
     initial: _rounded(initial, stepMinutes, min, max),
@@ -146,7 +148,7 @@ class _Wheel extends StatefulWidget {
     required this.onChanged,
   });
 
-  static const itemExtent = 44.0;
+  static const itemExtent = 40.0;
 
   final List<int> values;
   final int initial;
