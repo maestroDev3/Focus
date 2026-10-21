@@ -35,12 +35,16 @@ class HomeScreen extends StatelessWidget {
     this.intention,
     this.soundName,
     this.onChooseSound,
+    this.onChooseDuration,
     this.activeFocusTime,
     this.nextFocusTimeStart,
   });
 
   final Clock clock;
   final Duration focusDuration;
+
+  /// Opens the wheel for the session length; a plain chip without it.
+  final VoidCallback? onChooseDuration;
   final VoidCallback onStart;
 
   /// Name of the chosen ambient sound for its chip.
@@ -168,7 +172,8 @@ class HomeScreen extends StatelessWidget {
                           spacing: 10,
                           runSpacing: 10,
                           children: [
-                            Chip(
+                            ActionChip(
+                              onPressed: onChooseDuration,
                               avatar: Icon(
                                 Icons.timer_outlined,
                                 size: 18,
