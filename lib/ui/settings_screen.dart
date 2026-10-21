@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 import '../domain/app_language.dart';
+import '../domain/background_style.dart';
 import '../domain/backup.dart';
 import '../domain/block_list_repository.dart';
 import '../domain/daily_goal.dart';
@@ -13,6 +14,8 @@ import '../domain/pomodoro.dart';
 import '../domain/settings_repository.dart';
 import '../l10n/app_localizations.dart';
 import 'app_locale.dart';
+import 'background_screen.dart';
+import 'background_text.dart';
 import 'focus_time_text.dart';
 import 'focus_times_screen.dart';
 import 'mindful_settings_screen.dart';
@@ -36,6 +39,7 @@ class SettingsScreen extends StatefulWidget {
     this.onLanguageChanged,
     this.restoreLock = _unlocked,
     this.onLockScreenChanged,
+    this.onBackgroundChanged,
     this.onMindfulChanged,
     this.installedApps,
     this.mindfulApps,
@@ -54,6 +58,9 @@ class SettingsScreen extends StatefulWidget {
   /// Called after “Show on lock screen” changed, so a running countdown
   /// follows at once.
   final VoidCallback? onLockScreenChanged;
+
+  /// Called after another background was chosen, to apply it (#316).
+  final ValueChanged<BackgroundStyle>? onBackgroundChanged;
 
   /// Asked on every build and before restoring, so a focus time that starts
   /// while the settings are open still locks the restore.
@@ -86,6 +93,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   AppLanguage? _language;
   var _showOnLockScreen = true;
   var _mindfulOpening = false;
+  var _background = BackgroundStyle.initial;
 
   @override
   void initState() {
@@ -99,6 +107,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final language = await widget.language?.load();
     final showOnLockScreen = await widget.settings.loadShowOnLockScreen();
     final mindfulOpening = await widget.settings.loadMindfulOpening();
+    final background = await widget.settings.loadBackground();
     if (!mounted) return;
     setState(() {
       _pomodoro = pomodoro;
@@ -106,6 +115,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _language = language;
       _showOnLockScreen = showOnLockScreen;
       _mindfulOpening = mindfulOpening;
+      _background = background;
     });
   }
 
@@ -133,6 +143,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
     setState(() => _mindfulOpening = on);
     await widget.settings.saveMindfulOpening(on);
     widget.onMindfulChanged?.call();
+  }
+
+  Future<void> _openBackground() async {
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (context) => BackgroundScreen(
+          settings: widget.settings,
+          onChanged: (style) {
+            if (mounted) setState(() => _background = style);
+            widget.onBackgroundChanged?.call(style);
+          },
+        ),
+      ),
+    );
   }
 
   Future<void> _setShowOnLockScreen(bool show) async {
@@ -352,6 +376,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   onTap: _tapMindfulOpening,
                 ),
                 const Divider(height: 32),
+                ListTile(
+                  leading: const Icon(Icons.blur_on),
+                  title: Text(l10n.background),
+                  subtitle: Text(backgroundName(l10n, _background)),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: _openBackground,
+                ),
                 if (_language case final language?)
                   ListTile(
                     leading: const Icon(Icons.translate),

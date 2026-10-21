@@ -33,6 +33,34 @@
   "@done": {
     "description": "Confirms a value chosen in a picker."
   },
+  "background": "Background",
+  "@background": {
+    "description": "Settings entry and page title for the living background behind the main screens."
+  },
+  "backgroundFiveStems": "Five stems",
+  "@backgroundFiveStems": {
+    "description": "Background style: five branching stems from all edges."
+  },
+  "backgroundDense": "Dense branches",
+  "@backgroundDense": {
+    "description": "Background style: few stems with very fine branches."
+  },
+  "backgroundRoots": "Roots",
+  "@backgroundRoots": {
+    "description": "Background style: branches growing up from the bottom like roots."
+  },
+  "backgroundTwoTrees": "Two trees",
+  "@backgroundTwoTrees": {
+    "description": "Background style: two large trees from opposite corners."
+  },
+  "backgroundMesh": "Fine mesh",
+  "@backgroundMesh": {
+    "description": "Background style: many thin branches criss-crossing the screen."
+  },
+  "backgroundNone": "None",
+  "@backgroundNone": {
+    "description": "Background style: no branches, only the soft glow."
+  },
   "sessionLength": "Session length",
   "@sessionLength": {
     "description": "Title of the wheel for the focus session length."

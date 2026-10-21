@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../domain/ambient.dart';
 import '../domain/app_blocker.dart';
 import '../domain/app_language.dart';
+import '../domain/background_style.dart';
 import '../domain/backup.dart';
 import '../domain/block_list_repository.dart';
 import '../domain/clock.dart';
@@ -40,6 +41,7 @@ import 'statistics_screen.dart';
 import 'theme.dart';
 import 'widgets/calm_motion.dart';
 import 'widgets/duration_wheel.dart';
+import 'widgets/focus_background.dart';
 
 /// Root widget of Focus: wires theme, localization and the screens.
 class FocusApp extends StatefulWidget {
@@ -139,6 +141,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
   var _notificationGateEnabled = true;
   var _language = AppLanguage.system;
   var _ambient = AmbientChoice.initial;
+  var _background = BackgroundStyle.initial;
 
   /// False while apps are paused but the blocker is switched off; the
   /// session screen warns then.
@@ -228,6 +231,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
         .isNotificationGateEnabled();
     final language = await widget.language?.load() ?? _language;
     final ambient = await widget.settings.loadAmbient();
+    final background = await widget.settings.loadBackground();
     if (!mounted) return;
     final languageChanged = language != _language;
     setState(() {
@@ -240,6 +244,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
       _notificationGateEnabled = notificationGateEnabled;
       _language = language;
       _ambient = ambient;
+      _background = background;
     });
     _blockingActive.value = blockerEnabled || blockList.length == 0;
     if (languageChanged) {
@@ -363,8 +368,13 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       locale: localeOf(_language),
-      builder: (context, child) =>
-          CalmMotion(enabled: widget.motion, child: child ?? const SizedBox()),
+      builder: (context, child) => CalmMotion(
+        enabled: widget.motion,
+        child: BackgroundChoice(
+          style: _background,
+          child: child ?? const SizedBox(),
+        ),
+      ),
       home: AnimatedSwitcher(
         duration: const Duration(milliseconds: 600),
         child: _introDone
@@ -424,6 +434,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
         language: widget.language,
         onLanguageChanged: _onLanguageChanged,
         onLockScreenChanged: widget.timer.refreshCountdown,
+        onBackgroundChanged: (style) => setState(() => _background = style),
         onMindfulChanged: widget.timer.refreshBlocking,
         installedApps: widget.installedApps,
         mindfulApps: widget.mindfulApps,
