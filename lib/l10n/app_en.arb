@@ -288,6 +288,10 @@
   "@byLabel": {
     "description": "Heading of the label breakdown on the statistics screen."
   },
+  "allTime": "All time",
+  "@allTime": {
+    "description": "Title of the statistics card with every label's total over all time."
+  },
   "periodWeek": "Week",
   "@periodWeek": {
     "description": "Segment that shows the label breakdown for the current week."
