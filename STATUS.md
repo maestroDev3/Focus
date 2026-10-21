@@ -8,7 +8,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- Epic #306 A calm, living design – #307 and #308 built on `epic/calm-design`, waiting for your test on the phone (preview APK).
+- Epics #306 A calm, living design and #315 Choose your background – built together on `epic/calm-design`, waiting for your test on the phone (preview APK).
 
 ## Up next
 
@@ -20,6 +20,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 | Epic | State | Stories (in order) |
 |---|---|---|
+| #315 Choose your background | 0 of 1 closed | #316 Pick your background in the settings (`in-progress`, built) |
 | #306 A calm, living design | 0 of 2 closed | #307 Breathing glow on the ring (`in-progress`, built) → #308 Living neural background (`in-progress`, built) |
 | #123 Session ritual | 3 of 4 closed | #269 Spotify playlist, personal mode (`backlog`, needs your Spotify developer app) |
 | #195 Quick settings tile | 0 of 1 closed | #196 Start a session from the quick settings (`backlog`) |
@@ -48,6 +49,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## Open decisions (user only)
 
+- New epic #315 Choose your background – created, please confirm or re-sort
 - Epic #279 Every APK starts (Release & platform) – created, please confirm or re-sort
 - New epic #187 Block list per session (parked idea #188) – created, please confirm or re-sort.
 - #269 Spotify personal mode: waiting for your Spotify developer app (Client ID).

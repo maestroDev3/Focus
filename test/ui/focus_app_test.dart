@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:focus_timer/domain/background_style.dart';
 import 'package:focus_timer/domain/ambient.dart';
 import 'package:focus_timer/domain/app_blocker.dart';
 import 'package:focus_timer/domain/app_language.dart';
+import 'package:focus_timer/domain/background_style.dart';
 import 'package:focus_timer/domain/blocking.dart';
 import 'package:focus_timer/domain/daily_goal.dart';
 import 'package:focus_timer/domain/focus_label.dart';

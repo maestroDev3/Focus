@@ -313,3 +313,8 @@ commit comment).
   still neural network – nodes don't move, spread widely like a brain – with
   two or three slow light pulses (#308). Respects Android's “Remove
   animations”.
+- 2026-10-21 – The still grid network felt odd; replaced by branching
+  dendrites growing in from outside the screen, pulses entering from outside
+  (#314). Backgrounds to choose from (epic #315, story #316): Five stems,
+  Dense branches, Roots (default), Two trees, Fine mesh, None – in the
+  settings with live previews.
