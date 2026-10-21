@@ -279,6 +279,43 @@ void main() {
       expect(find.text('50:00'), findsOneWidget);
     });
 
+    testWidgets('changes the session length from the duration chip', (
+      tester,
+    ) async {
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+
+      await tester.ensureVisible(find.text('25 min'));
+      await tester.tap(find.text('25 min'));
+      await tester.pumpAndSettle();
+      expect(find.text('Session length'), findsOneWidget);
+      await tester.tap(find.text('35 min'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Done'));
+      await tester.pumpAndSettle();
+
+      expect(settings.pomodoro.focus, const Duration(minutes: 35));
+      expect(find.text('35 min'), findsOneWidget);
+      await beginFocus(tester);
+      expect(repository.active?.planned, const Duration(minutes: 35));
+    });
+
+    testWidgets('keeps the session length when the wheel is dismissed', (
+      tester,
+    ) async {
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+
+      await tester.ensureVisible(find.text('25 min'));
+      await tester.tap(find.text('25 min'));
+      await tester.pumpAndSettle();
+      await tester.tapAt(const Offset(20, 20));
+      await tester.pumpAndSettle();
+
+      expect(settings.pomodoro.focus, const Duration(minutes: 25));
+      expect(find.text('25 min'), findsOneWidget);
+    });
+
     testWidgets('starts the session with the typed intention', (
       tester,
     ) async {
