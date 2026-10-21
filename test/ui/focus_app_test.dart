@@ -411,6 +411,27 @@ void main() {
       expect(find.text('Focusing · Study'), findsOneWidget);
     });
 
+    testWidgets('shows the label totals in the label choice', (tester) async {
+      labels.labels.add(
+        FocusLabel(id: 'exam', name: 'Exam', goal: const Duration(hours: 20)),
+      );
+      repository.finished.add(
+        FocusSession(
+          start: now.subtract(const Duration(days: 3)),
+          planned: const Duration(minutes: 60),
+          labelId: 'exam',
+        ).complete(),
+      );
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+
+      await tester.tap(find.text('No label'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(find.text('1h of 20h'), findsOneWidget);
+    });
+
     testWidgets('remembers the chosen label', (tester) async {
       labels.labels.add(FocusLabel(id: 'work', name: 'Work'));
       settings.selectedLabelId = 'work';

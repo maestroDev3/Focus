@@ -21,6 +21,7 @@ import '../domain/label_repository.dart';
 import '../domain/named_block_list.dart';
 import '../domain/pomodoro.dart';
 import '../domain/settings_repository.dart';
+import '../domain/statistics.dart';
 import '../l10n/app_localizations.dart';
 import 'ambient_sheet.dart';
 import 'app_locale.dart';
@@ -505,11 +506,18 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
   }
 
   Future<void> _chooseLabel(BuildContext context) async {
+    final sessions = await widget.timer.watchFinished().first;
+    if (!context.mounted) return;
+    final totals = labelTotals(
+      sessions,
+      labelIds: {for (final label in _labels) label.id},
+    );
     await showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
       builder: (sheetContext) => LabelSheet(
         labels: _labels,
+        totals: totals,
         selectedId: _labelWithId(_selectedLabelId)?.id,
         onSelect: (id) {
           Navigator.of(sheetContext).pop();
@@ -518,7 +526,12 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
         },
         onManage: () {
           Navigator.of(sheetContext).pop();
-          _push((context) => LabelsScreen(labels: widget.labels));
+          _push(
+            (context) => LabelsScreen(
+              labels: widget.labels,
+              sessions: widget.timer.watchFinished(),
+            ),
+          );
         },
       ),
     );

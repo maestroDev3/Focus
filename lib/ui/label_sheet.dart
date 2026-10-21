@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../domain/focus_label.dart';
 import '../l10n/app_localizations.dart';
+import 'widgets/label_progress.dart';
 
 /// Bottom sheet to pick the label for the next session.
 class LabelSheet extends StatelessWidget {
@@ -11,12 +12,16 @@ class LabelSheet extends StatelessWidget {
     required this.selectedId,
     required this.onSelect,
     required this.onManage,
+    this.totals = const {},
   });
 
   final List<FocusLabel> labels;
   final String? selectedId;
   final ValueChanged<String?> onSelect;
   final VoidCallback onManage;
+
+  /// All-time focus time per label id, shown under each label (#285).
+  final Map<String, Duration> totals;
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +42,10 @@ class LabelSheet extends StatelessWidget {
           for (final label in labels)
             ListTile(
               title: Text(label.name),
+              subtitle: LabelProgress(
+                total: totals[label.id] ?? Duration.zero,
+                goal: label.goal,
+              ),
               trailing: check(label.id == selectedId),
               onTap: () => onSelect(label.id),
             ),
