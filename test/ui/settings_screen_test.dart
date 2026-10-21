@@ -382,6 +382,7 @@ void main() {
     testWidgets('chooses the background on its own page', (tester) async {
       final repository = await pumpSettings(tester);
 
+      await tester.scrollUntilVisible(find.text('Background'), 200);
       await tester.ensureVisible(find.text('Background'));
       await tester.pump();
       expect(find.text('Roots'), findsOneWidget);
