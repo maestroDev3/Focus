@@ -21,6 +21,7 @@ import '../domain/label_repository.dart';
 import '../domain/named_block_list.dart';
 import '../domain/pomodoro.dart';
 import '../domain/settings_repository.dart';
+import '../domain/statistics.dart';
 import '../l10n/app_localizations.dart';
 import 'ambient_sheet.dart';
 import 'app_locale.dart';
@@ -37,6 +38,7 @@ import 'session_screen.dart';
 import 'settings_screen.dart';
 import 'statistics_screen.dart';
 import 'theme.dart';
+import 'widgets/duration_wheel.dart';
 
 /// Root widget of Focus: wires theme, localization and the screens.
 class FocusApp extends StatefulWidget {
@@ -363,6 +365,8 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
                   clock: widget.clock,
                   focusDuration: _pomodoro.focus,
                   onStart: _startSession,
+                  onChooseDuration: () => _chooseDuration(homeContext),
+                  onChooseDailyGoal: () => _chooseDailyGoal(homeContext),
                   intention: _intention,
                   soundName: ambientSoundName(
                     AppLocalizations.of(homeContext),
@@ -504,12 +508,52 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
     if (widget.timer.current == null) await widget.ambientPlayer?.stop();
   }
 
+  /// The session length from the wheel; saved as the Pomodoro focus length,
+  /// so home and settings always show the same value (#287).
+  Future<void> _chooseDuration(BuildContext context) async {
+    final chosen = await showDurationWheel(
+      context,
+      title: AppLocalizations.of(context).sessionLength,
+      initial: _pomodoro.focus,
+      min: const Duration(minutes: 5),
+      max: Duration(minutes: PomodoroField.focus.max),
+    );
+    if (chosen == null || !mounted) return;
+    final next = _pomodoro.withValue(PomodoroField.focus, chosen.inMinutes);
+    setState(() => _pomodoro = next);
+    await widget.settings.savePomodoro(next);
+  }
+
+  /// The daily goal from the wheel, opened by holding the goal ring (#288,
+  /// #303).
+  Future<void> _chooseDailyGoal(BuildContext context) async {
+    final chosen = await showDurationWheel(
+      context,
+      title: AppLocalizations.of(context).settingsDailyGoal,
+      initial: _dailyGoal.duration,
+      min: const Duration(minutes: DailyGoal.minMinutes),
+      max: const Duration(minutes: DailyGoal.maxMinutes),
+    );
+    if (chosen == null || !mounted) return;
+    final goal = DailyGoal.validated(chosen.inMinutes);
+    setState(() => _dailyGoal = goal);
+    await widget.settings.saveDailyGoal(goal);
+    await _publishWidget();
+  }
+
   Future<void> _chooseLabel(BuildContext context) async {
+    final sessions = await widget.timer.watchFinished().first;
+    if (!context.mounted) return;
+    final totals = labelTotals(
+      sessions,
+      labelIds: {for (final label in _labels) label.id},
+    );
     await showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
       builder: (sheetContext) => LabelSheet(
         labels: _labels,
+        totals: totals,
         selectedId: _labelWithId(_selectedLabelId)?.id,
         onSelect: (id) {
           Navigator.of(sheetContext).pop();
@@ -518,7 +562,12 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
         },
         onManage: () {
           Navigator.of(sheetContext).pop();
-          _push((context) => LabelsScreen(labels: widget.labels));
+          _push(
+            (context) => LabelsScreen(
+              labels: widget.labels,
+              sessions: widget.timer.watchFinished(),
+            ),
+          );
         },
       ),
     );

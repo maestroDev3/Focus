@@ -146,5 +146,33 @@ void main() {
     test('rejects data that is not a Focus backup', () {
       expect(() => decodeBackup({'hello': 'world'}), throwsFormatException);
     });
+
+    test('round-trips label goals', () {
+      final withGoals = Backup(
+        createdAt: backup.createdAt,
+        sessions: backup.sessions,
+        labels: [
+          FocusLabel(
+            id: 'label-1',
+            name: 'Exam',
+            goal: const Duration(hours: 20),
+          ),
+          FocusLabel(id: 'label-2', name: 'Uni'),
+        ],
+        pomodoro: backup.pomodoro,
+        dailyGoal: backup.dailyGoal,
+      );
+
+      expect(decodeBackup(encodeBackup(withGoals)), withGoals);
+    });
+
+    test('restores labels of a backup without goals', () {
+      final json = encodeBackup(backup)
+        ..['labels'] = [
+          {'id': 'label-1', 'name': 'Study'},
+        ];
+
+      expect(decodeBackup(json).labels.single.goal, isNull);
+    });
   });
 }

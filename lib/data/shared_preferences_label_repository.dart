@@ -5,14 +5,17 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../domain/focus_label.dart';
 import '../domain/label_repository.dart';
+import 'label_codec.dart';
 
-/// Stores labels as versioned JSON (`labels.v1`) with a running id counter,
-/// so ids are never reused after a label was deleted.
+/// Stores labels as versioned JSON (`labels.v2`, with goals) with a running
+/// id counter, so ids are never reused after a label was deleted. Labels
+/// stored as `labels.v1` (before goals, #285) are read as they are.
 class SharedPreferencesLabelRepository implements LabelRepository {
   SharedPreferencesLabelRepository(this._preferences);
 
-  static const key = 'labels.v1';
-  static const _version = 1;
+  static const key = 'labels.v2';
+  static const _legacyKey = 'labels.v1';
+  static const _version = 2;
 
   final SharedPreferences _preferences;
   final _changes = StreamController<List<FocusLabel>>.broadcast();
@@ -38,7 +41,17 @@ class SharedPreferencesLabelRepository implements LabelRepository {
     checkUniqueLabelName(labels, name, exceptId: id);
     await _save([
       for (final label in labels)
-        label.id == id ? FocusLabel(id: id, name: name) : label,
+        label.id == id
+            ? FocusLabel(id: id, name: name, goal: label.goal)
+            : label,
+    ], nextId);
+  }
+
+  @override
+  Future<void> setGoal(String id, Duration? goal) async {
+    final (:labels, :nextId) = _load();
+    await _save([
+      for (final label in labels) label.id == id ? label.withGoal(goal) : label,
     ], nextId);
   }
 
@@ -63,11 +76,12 @@ class SharedPreferencesLabelRepository implements LabelRepository {
   }
 
   ({List<FocusLabel> labels, int nextId}) _load() {
-    final stored = _preferences.getString(key);
+    final stored =
+        _preferences.getString(key) ?? _preferences.getString(_legacyKey);
     if (stored == null) return (labels: const [], nextId: 1);
     return switch (jsonDecode(stored)) {
       {
-        'v': _version,
+        'v': 1 || _version,
         'nextId': final int nextId,
         'labels': final List<Object?> list,
       } =>
@@ -76,7 +90,11 @@ class SharedPreferencesLabelRepository implements LabelRepository {
             for (final item in list)
               switch (item) {
                 {'id': final String id, 'name': final String name} =>
-                  FocusLabel(id: id, name: name),
+                  FocusLabel(
+                    id: id,
+                    name: name,
+                    goal: decodeLabelGoal(item),
+                  ),
                 _ => throw FormatException('Malformed label: $item'),
               },
           ],
@@ -93,7 +111,7 @@ class SharedPreferencesLabelRepository implements LabelRepository {
         'v': _version,
         'nextId': nextId,
         'labels': [
-          for (final label in labels) {'id': label.id, 'name': label.name},
+          for (final label in labels) encodeLabel(label),
         ],
       }),
     );

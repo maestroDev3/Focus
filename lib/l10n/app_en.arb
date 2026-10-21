@@ -29,6 +29,14 @@
       }
     }
   },
+  "done": "Done",
+  "@done": {
+    "description": "Confirms a value chosen in a picker."
+  },
+  "sessionLength": "Session length",
+  "@sessionLength": {
+    "description": "Title of the wheel for the focus session length."
+  },
   "beginFocus": "Begin focus",
   "@beginFocus": {
     "description": "Main button on the home screen that starts a focus session."
@@ -192,6 +200,44 @@
   "@labelNameInvalid": {
     "description": "Shown when a label name is empty, too long or already used."
   },
+  "labelGoalHours": "Goal in hours (optional)",
+  "@labelGoalHours": {
+    "description": "Field in the label dialog for an optional goal in whole hours."
+  },
+  "labelGoalInvalid": "Please enter a goal of 1–999 hours or leave it empty.",
+  "@labelGoalInvalid": {
+    "description": "Shown when the label goal is not 1–999 hours."
+  },
+  "labelTotal": "{total} in total",
+  "@labelTotal": {
+    "description": "All-time focus time of a label without a goal, e.g. “12h in total”.",
+    "placeholders": {
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "labelGoalProgress": "{total} of {goal}",
+  "@labelGoalProgress": {
+    "description": "All-time focus time of a label towards its goal, e.g. “12h of 20h”.",
+    "placeholders": {
+      "total": {
+        "type": "String"
+      },
+      "goal": {
+        "type": "String"
+      }
+    }
+  },
+  "labelGoalReached": "{total} · Goal reached",
+  "@labelGoalReached": {
+    "description": "All-time focus time of a label that reached its goal.",
+    "placeholders": {
+      "total": {
+        "type": "String"
+      }
+    }
+  },
   "cancel": "Cancel",
   "@cancel": {
     "description": "Generic cancel button."
@@ -249,6 +295,10 @@
   "byLabel": "By label",
   "@byLabel": {
     "description": "Heading of the label breakdown on the statistics screen."
+  },
+  "allTime": "All time",
+  "@allTime": {
+    "description": "Title of the statistics card with every label's total over all time."
   },
   "periodWeek": "Week",
   "@periodWeek": {

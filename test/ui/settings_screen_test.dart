@@ -363,6 +363,21 @@ void main() {
       expect(repository.dailyGoal.minutes, 130);
     });
 
+    testWidgets('sets the daily goal with the wheel', (tester) async {
+      final repository = await pumpSettings(tester);
+
+      await tester.tap(find.text('Daily goal'));
+      await tester.pumpAndSettle();
+      expect(find.text('Done'), findsOneWidget);
+      await tester.tap(find.text('3h'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Done'));
+      await tester.pumpAndSettle();
+
+      expect(repository.dailyGoal.minutes, 180);
+      expect(find.text('3h'), findsOneWidget);
+    });
+
     testWidgets('exports a backup', (tester) async {
       await pumpSettings(tester);
 

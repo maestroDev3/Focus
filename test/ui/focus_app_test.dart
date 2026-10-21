@@ -279,6 +279,70 @@ void main() {
       expect(find.text('50:00'), findsOneWidget);
     });
 
+    testWidgets('changes the session length from the duration chip', (
+      tester,
+    ) async {
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+
+      await tester.ensureVisible(find.text('25 min'));
+      await tester.tap(find.text('25 min'));
+      await tester.pumpAndSettle();
+      expect(find.text('Session length'), findsOneWidget);
+      await tester.tap(find.text('35 min'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Done'));
+      await tester.pumpAndSettle();
+
+      expect(settings.pomodoro.focus, const Duration(minutes: 35));
+      expect(find.text('35 min'), findsOneWidget);
+      await beginFocus(tester);
+      expect(repository.active?.planned, const Duration(minutes: 35));
+    });
+
+    testWidgets('keeps the session length when the wheel is dismissed', (
+      tester,
+    ) async {
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+
+      await tester.ensureVisible(find.text('25 min'));
+      await tester.tap(find.text('25 min'));
+      await tester.pumpAndSettle();
+      await tester.tapAt(const Offset(20, 20));
+      await tester.pumpAndSettle();
+
+      expect(settings.pomodoro.focus, const Duration(minutes: 25));
+      expect(find.text('25 min'), findsOneWidget);
+    });
+
+    testWidgets('starts a session when the ring is tapped', (tester) async {
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+
+      await tester.tap(find.text('Today'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(repository.active?.planned, const Duration(minutes: 25));
+      expect(find.text('25:00'), findsOneWidget);
+    });
+
+    testWidgets('sets the daily goal by holding the ring', (tester) async {
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+
+      await tester.longPress(find.text('of 2h daily goal'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('4h'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Done'));
+      await tester.pumpAndSettle();
+
+      expect(settings.dailyGoal.minutes, 240);
+      expect(find.text('of 4h daily goal'), findsOneWidget);
+    });
+
     testWidgets('starts the session with the typed intention', (
       tester,
     ) async {
@@ -409,6 +473,27 @@ void main() {
       await beginFocus(tester);
       expect(repository.active?.labelId, 'study');
       expect(find.text('Focusing · Study'), findsOneWidget);
+    });
+
+    testWidgets('shows the label totals in the label choice', (tester) async {
+      labels.labels.add(
+        FocusLabel(id: 'exam', name: 'Exam', goal: const Duration(hours: 20)),
+      );
+      repository.finished.add(
+        FocusSession(
+          start: now.subtract(const Duration(days: 3)),
+          planned: const Duration(minutes: 60),
+          labelId: 'exam',
+        ).complete(),
+      );
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+
+      await tester.tap(find.text('No label'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(find.text('1h of 20h'), findsOneWidget);
     });
 
     testWidgets('remembers the chosen label', (tester) async {

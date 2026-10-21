@@ -10,6 +10,7 @@ import '../domain/streak.dart';
 import '../l10n/app_localizations.dart';
 import 'focus_time_text.dart';
 import 'reflection_text.dart';
+import 'widgets/label_progress.dart';
 
 /// Period of the whole statistics view.
 enum StatisticsPeriod { week, month }
@@ -161,6 +162,16 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     ],
                     const SizedBox(height: 12),
                     _LabelBreakdown(byLabel: byLabel, labels: labels),
+                    if (labels.isNotEmpty) ...[
+                      const SizedBox(height: 12),
+                      _AllTimeCard(
+                        labels: labels,
+                        totals: labelTotals(
+                          sessions,
+                          labelIds: {for (final label in labels) label.id},
+                        ),
+                      ),
+                    ],
                   ],
                 );
               },
@@ -294,6 +305,7 @@ class _LabelBreakdown extends StatelessWidget {
     ].firstOrNull ?? l10n.unlabeled;
 
     return Card(
+      key: const Key('by-label'),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -329,6 +341,49 @@ class _LabelBreakdown extends StatelessWidget {
                 backgroundColor: theme.colorScheme.outline,
                 borderRadius: BorderRadius.circular(2),
               ),
+              const SizedBox(height: 14),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Every label with its all-time total and goal progress, largest first –
+/// independent of the chosen period (#286).
+class _AllTimeCard extends StatelessWidget {
+  const _AllTimeCard({required this.labels, required this.totals});
+
+  final List<FocusLabel> labels;
+  final Map<String, Duration> totals;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    Duration totalOf(FocusLabel label) => totals[label.id] ?? Duration.zero;
+    final sorted = [...labels]
+      ..sort((a, b) => totalOf(b).compareTo(totalOf(a)));
+    return Card(
+      key: const Key('all-time'),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              l10n.allTime,
+              style: theme.textTheme.labelLarge?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+                letterSpacing: 2,
+              ),
+            ),
+            const SizedBox(height: 12),
+            for (final label in sorted) ...[
+              Text(label.name),
+              const SizedBox(height: 4),
+              LabelProgress(total: totalOf(label), goal: label.goal),
               const SizedBox(height: 14),
             ],
           ],

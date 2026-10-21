@@ -31,7 +31,14 @@ class FakeLabelRepository implements LabelRepository {
   Future<void> renameLabel(String id, String name) async {
     checkUniqueLabelName(labels, name, exceptId: id);
     final index = labels.indexWhere((label) => label.id == id);
-    labels[index] = FocusLabel(id: id, name: name);
+    labels[index] = FocusLabel(id: id, name: name, goal: labels[index].goal);
+    _changes.add(List.of(labels));
+  }
+
+  @override
+  Future<void> setGoal(String id, Duration? goal) async {
+    final index = labels.indexWhere((label) => label.id == id);
+    labels[index] = labels[index].withGoal(goal);
     _changes.add(List.of(labels));
   }
 
