@@ -27,6 +27,11 @@ void main() {
       expect(() => DailyGoal.validated(9), throwsArgumentError);
       expect(() => DailyGoal.validated(721), throwsArgumentError);
     });
+
+    test('accepts 5-minute values from the wheel', () {
+      expect(DailyGoal.validated(125).minutes, 125);
+      expect(DailyGoal.validated(5 * 60 + 35).duration.inMinutes, 335);
+    });
   });
 
   group('focusedOn', () {

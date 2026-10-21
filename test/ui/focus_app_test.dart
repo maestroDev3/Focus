@@ -316,6 +316,21 @@ void main() {
       expect(find.text('25 min'), findsOneWidget);
     });
 
+    testWidgets('sets the daily goal from the goal ring', (tester) async {
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+
+      await tester.tap(find.text('of 2h daily goal'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('4h'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Done'));
+      await tester.pumpAndSettle();
+
+      expect(settings.dailyGoal.minutes, 240);
+      expect(find.text('of 4h daily goal'), findsOneWidget);
+    });
+
     testWidgets('starts the session with the typed intention', (
       tester,
     ) async {
