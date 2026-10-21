@@ -6,6 +6,7 @@ import '../domain/focus_time_repository.dart';
 import '../domain/named_block_list.dart';
 import '../domain/pomodoro.dart';
 import 'focus_time_codec.dart';
+import 'label_codec.dart';
 import 'session_codec.dart';
 
 /// Version of the backup file format.
@@ -17,7 +18,7 @@ Map<String, Object?> encodeBackup(Backup backup) => {
   'createdAt': backup.createdAt.microsecondsSinceEpoch,
   'sessions': [for (final session in backup.sessions) encodeSession(session)],
   'labels': [
-    for (final label in backup.labels) {'id': label.id, 'name': label.name},
+    for (final label in backup.labels) encodeLabel(label),
   ],
   'pomodoro': {
     'focusMinutes': backup.pomodoro.focus.inMinutes,
@@ -116,7 +117,11 @@ Backup decodeBackup(Map<String, Object?> json) {
             for (final label in labels)
               switch (label) {
                 {'id': final String id, 'name': final String name} =>
-                  FocusLabel(id: id, name: name),
+                  FocusLabel(
+                    id: id,
+                    name: name,
+                    goal: decodeLabelGoal(label),
+                  ),
                 _ => throw FormatException('Malformed label: $label'),
               },
           ],
