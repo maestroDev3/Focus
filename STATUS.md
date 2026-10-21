@@ -8,7 +8,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- Nothing – ready to start: #283 Goals for your labels (stories `ready`).
+- #285 Set a goal for a label (`in-progress`) – epic #283 on branch `epic/label-goals`, preview APK for your test.
 
 ## Up next
 
@@ -22,7 +22,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 | Epic | State | Stories (in order) |
 |---|---|---|
-| #283 Goals for your labels | 0 of 2 closed | #285 Set a goal for a label (`ready`) → #286 Label goals in the statistics (`ready`) |
+| #283 Goals for your labels | 0 of 2 closed | #285 Set a goal for a label (`in-progress`) → #286 Label goals in the statistics (`ready`) |
 | #284 Adjust your day right from home | 0 of 2 closed | #287 Tap the duration to change it (`ready`) → #288 Set the daily goal with a wheel (`ready`) |
 | #123 Session ritual | 3 of 4 closed | #269 Spotify playlist, personal mode (`backlog`, needs your Spotify developer app) |
 | #195 Quick settings tile | 0 of 1 closed | #196 Start a session from the quick settings (`backlog`) |
