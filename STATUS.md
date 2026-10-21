@@ -8,7 +8,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- Epics #283 Goals for your labels and #284 Adjust your day right from home – built together on `epic/label-goals`, waiting for your test on the phone (preview APK).
+- Epics #283 Goals for your labels, #284 Adjust your day right from home and #302 Start focus from the ring – built together on `epic/label-goals`, waiting for your test on the phone (preview APK).
 
 ## Up next
 
@@ -23,6 +23,7 @@ The GitHub issues are authoritative; this file is the summary.
 | Epic | State | Stories (in order) |
 |---|---|---|
 | #283 Goals for your labels | 0 of 2 closed | #285 Set a goal for a label (`in-progress`, built) → #286 Label goals in the statistics (`in-progress`, built) |
+| #302 Start focus from the ring | 0 of 1 closed | #303 Tap the ring to begin (`in-progress`, built) |
 | #284 Adjust your day right from home | 0 of 2 closed | #287 Tap the duration to change it (`in-progress`, built) → #288 Set the daily goal with a wheel (`in-progress`, built) |
 | #123 Session ritual | 3 of 4 closed | #269 Spotify playlist, personal mode (`backlog`, needs your Spotify developer app) |
 | #195 Quick settings tile | 0 of 1 closed | #196 Start a session from the quick settings (`backlog`) |
@@ -51,7 +52,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## Open decisions (user only)
 
-- New epics #283 Goals for your labels and #284 Adjust your day right from home (Focus experience) – created, please confirm or re-sort
+- New epics #283 Goals for your labels, #284 Adjust your day right from home and #302 Start focus from the ring (Focus experience) – created, please confirm or re-sort
 - Epic #279 Every APK starts (Release & platform) – created, please confirm or re-sort
 - New epic #187 Block list per session (parked idea #188) – created, please confirm or re-sort.
 - #269 Spotify personal mode: waiting for your Spotify developer app (Client ID).

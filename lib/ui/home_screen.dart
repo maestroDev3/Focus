@@ -81,7 +81,7 @@ class HomeScreen extends StatelessWidget {
   final Duration focusedToday;
   final DailyGoal dailyGoal;
 
-  /// Opens the wheel for the daily goal when the ring is tapped (#288).
+  /// Opens the wheel for the daily goal when the ring is held (#288, #303).
   final VoidCallback? onChooseDailyGoal;
   final VoidCallback onOpenStatistics;
 
@@ -172,7 +172,8 @@ class HomeScreen extends StatelessWidget {
                         _GoalRing(
                           focused: focusedToday,
                           goal: dailyGoal,
-                          onTap: onChooseDailyGoal,
+                          onTap: onStart,
+                          onLongPress: onChooseDailyGoal,
                         ),
                         const SizedBox(height: 28),
                         Wrap(
@@ -276,13 +277,6 @@ class HomeScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 8),
                         ],
-                        FilledButton(
-                          onPressed: onStart,
-                          style: FilledButton.styleFrom(
-                            minimumSize: const Size.fromHeight(64),
-                          ),
-                          child: Text(l10n.beginFocus),
-                        ),
                       ],
                     ),
                   ),
@@ -297,13 +291,20 @@ class HomeScreen extends StatelessWidget {
 }
 
 /// Today's focus time inside a thin champagne ring that fills up towards the
-/// daily goal.
+/// daily goal. The ring is the start: a tap begins the session, holding it
+/// opens the daily goal (#303).
 class _GoalRing extends StatelessWidget {
-  const _GoalRing({required this.focused, required this.goal, this.onTap});
+  const _GoalRing({
+    required this.focused,
+    required this.goal,
+    required this.onTap,
+    this.onLongPress,
+  });
 
   final Duration focused;
   final DailyGoal goal;
-  final VoidCallback? onTap;
+  final VoidCallback onTap;
+  final VoidCallback? onLongPress;
 
   @override
   Widget build(BuildContext context) {
@@ -316,6 +317,7 @@ class _GoalRing extends StatelessWidget {
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: onTap,
+          onLongPress: onLongPress,
           child: SizedBox.square(
             dimension: 236,
             child: Stack(
@@ -347,6 +349,14 @@ class _GoalRing extends StatelessWidget {
                       l10n.dailyGoalOf(focusTimeText(l10n, goal.duration)),
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    Text(
+                      l10n.beginFocus,
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        color: theme.colorScheme.primary,
+                        letterSpacing: 2,
                       ),
                     ),
                   ],
