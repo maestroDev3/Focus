@@ -11,6 +11,9 @@ abstract interface class LabelRepository {
   /// Renames a label; throws [ArgumentError] for invalid or duplicate names.
   Future<void> renameLabel(String id, String name);
 
+  /// Sets the goal of a label, or clears it with null.
+  Future<void> setGoal(String id, Duration? goal);
+
   /// Deletes a label. Sessions keep its id and count as unlabeled later.
   Future<void> deleteLabel(String id);
 

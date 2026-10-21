@@ -86,3 +86,21 @@ List<LabelFocus> focusByLabel(
 }
 
 const _oneDay = Duration(days: 1);
+
+/// All-time focus time of every label in [labelIds] (zero without sessions),
+/// counting finished sessions only; sessions of deleted labels are ignored.
+Map<String, Duration> labelTotals(
+  List<FocusSession> sessions, {
+  required Set<String> labelIds,
+}) {
+  final totals = {for (final id in labelIds) id: Duration.zero};
+  for (final session in sessions) {
+    final end = session.end;
+    final labelId = session.labelId;
+    if (end == null || !session.isFinished || labelId == null) continue;
+    if (totals[labelId] case final total?) {
+      totals[labelId] = total + session.focusedTime(end);
+    }
+  }
+  return totals;
+}
