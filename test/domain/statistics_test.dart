@@ -168,4 +168,41 @@ void main() {
       );
     });
   });
+
+  group('labelTotals', () {
+    FocusSession labelled(DateTime start, int minutes, String? labelId) =>
+        FocusSession(
+          start: start,
+          planned: Duration(minutes: minutes),
+          labelId: labelId,
+        ).complete();
+
+    test('sums all finished sessions per label regardless of the date', () {
+      final sessions = [
+        labelled(DateTime(2025, 1, 5, 9), 60, 'exam'),
+        labelled(DateTime(2026, 9, 29, 9), 50, 'exam'),
+        labelled(DateTime(2026, 9, 30, 9), 25, 'uni'),
+        labelled(DateTime(2026, 9, 30, 11), 30, null),
+        FocusSession(
+          start: DateTime(2026, 10, 1, 9),
+          planned: const Duration(minutes: 25),
+          labelId: 'exam',
+        ),
+      ];
+
+      expect(labelTotals(sessions, labelIds: {'exam', 'uni', 'empty'}), {
+        'exam': const Duration(minutes: 110),
+        'uni': const Duration(minutes: 25),
+        'empty': Duration.zero,
+      });
+    });
+
+    test('ignores sessions of deleted labels', () {
+      final sessions = [labelled(DateTime(2026, 9, 29, 9), 50, 'gone')];
+
+      expect(labelTotals(sessions, labelIds: {'exam'}), {
+        'exam': Duration.zero,
+      });
+    });
+  });
 }

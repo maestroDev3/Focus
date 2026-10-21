@@ -104,5 +104,53 @@ void main() {
       ]);
       expect(added.id, 'label-8');
     });
+
+    test('sets and clears a goal and emits the change', () async {
+      final exam = await repository.addLabel('Exam');
+      final emitted = <List<FocusLabel>>[];
+      final subscription = repository.watchLabels().listen(emitted.add);
+      addTearDown(subscription.cancel);
+      await Future<void>.delayed(Duration.zero);
+
+      await repository.setGoal(exam.id, const Duration(hours: 20));
+      await Future<void>.delayed(Duration.zero);
+      expect(emitted.last.single.goal, const Duration(hours: 20));
+
+      await repository.setGoal(exam.id, null);
+      await Future<void>.delayed(Duration.zero);
+      expect(emitted.last.single.goal, isNull);
+    });
+
+    test('keeps the goal when renaming and for a new instance', () async {
+      final exam = await repository.addLabel('Exam');
+      await repository.setGoal(exam.id, const Duration(hours: 20));
+
+      await repository.renameLabel(exam.id, 'Final exam');
+      final reopened = SharedPreferencesLabelRepository(preferences);
+
+      final label = (await reopened.watchLabels().first).single;
+      expect(label.name, 'Final exam');
+      expect(label.goal, const Duration(hours: 20));
+    });
+
+    test('loads labels stored as labels.v1 without a goal', () async {
+      SharedPreferences.setMockInitialValues({
+        'labels.v1':
+            '{"v":1,"nextId":3,"labels":[{"id":"label-2","name":"Uni"}]}',
+      });
+      final old = SharedPreferencesLabelRepository(
+        await SharedPreferences.getInstance(),
+      );
+
+      final labels = await old.watchLabels().first;
+      expect(labels, [FocusLabel(id: 'label-2', name: 'Uni')]);
+      expect((await old.addLabel('Exam')).id, 'label-3');
+    });
+
+    test('writes labels.v2 when saving', () async {
+      await repository.addLabel('Exam');
+
+      expect(preferences.getString('labels.v2'), contains('"v":2'));
+    });
   });
 }
