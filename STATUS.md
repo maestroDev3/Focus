@@ -8,8 +8,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- Epic #123 Session ritual on branch `epic/session-ritual`: #121 Intention and reflection (tasks #257 → #258), then #122 Ambient sounds (#259 → #260); merged after your test.
-- #273 One blocked screen, not a pile (bug fix) – on the same branch, merged with it.
+- Nothing – next: #269 Spotify personal mode (needs your Spotify developer app), #207 Focus insights, #196 Quick settings tile, #194 Google Play release.
 
 ## Up next
 
@@ -21,7 +20,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 | Epic | State | Stories (in order) |
 |---|---|---|
-| #123 Session ritual | 0 of 2 closed | #121 Intention and reflection (`in-progress`) → #122 Ambient sounds (`in-progress`) → #266 Play my own music (`in-progress`, option A) → #269 Spotify playlist, personal mode (`backlog`, needs your Spotify developer app) |
+| #123 Session ritual | 3 of 4 closed | #269 Spotify playlist, personal mode (`backlog`, needs your Spotify developer app) |
 | #195 Quick settings tile | 0 of 1 closed | #196 Start a session from the quick settings (`backlog`) |
 | #205 Statistics you can explore | 1 of 2 closed | #207 Focus insights (`backlog`) |
 
@@ -29,7 +28,6 @@ The GitHub issues are authoritative; this file is the summary.
 
 | Epic | State | Stories (in order) |
 |---|---|---|
-| #272 Blocked screen that doesn't pile up | 0 of 1 closed | #273 One blocked screen, not a pile (`in-progress`) |
 | #187 Block list per session | 0 of 1 closed | #188 Choose a block list when starting a session (`backlog`, parked – only on real need) |
 
 
@@ -42,10 +40,10 @@ The GitHub issues are authoritative; this file is the summary.
 ## Recently done
 
 - #280 Focus opens after every update: start-up crash from a plugin update fixed, every APK is start-tested on an emulator in CI; epic #279 closed
-- #247 Different hours per day in one focus time (time ranges); epic #246 closed
-- #254 Breathing pause always fits the app being opened (bug fix); epic #253 closed
-- #243 Mindful apps stay free while in use and 10 minutes after leaving; epic #242 closed
-- #237 Mindful opening settings: own app list and pause length (3/5/10/20 s); epic #141 closed
+- #276 Blocked screen closes when a session ends or starts (bug fix); epic #272 closed
+- #273 Only one blocked screen however often paused apps are opened (bug fix)
+- #266 Your music app plays and pauses with the session (Spotify, podcasts, …)
+- #122 Ambient sounds during sessions (rain, soft noise, deep noise, fireplace, ocean waves)
 
 ## Open decisions (user only)
 

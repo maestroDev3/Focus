@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'ambient.dart';
 import 'blocking.dart';
 import 'clock.dart';
 import 'daily_goal.dart';
@@ -20,6 +21,7 @@ class FocusTimer {
     this._sessionEndAlarm,
     this._countdown,
     this._labels,
+    this._ambient,
   });
 
   final SessionRepository _repository;
@@ -37,6 +39,9 @@ class FocusTimer {
 
   /// Resolves label names for the countdown.
   final LabelRepository? _labels;
+
+  /// Plays the chosen ambient sound while a session runs.
+  final AmbientSync? _ambient;
   final _changes = StreamController<FocusSession?>.broadcast();
   FocusSession? _current;
 
@@ -56,16 +61,22 @@ class FocusTimer {
     await _blocking?.update(session);
     await _syncAlarm(session);
     await _syncCountdown(session);
+    await _ambient?.update(session);
     _changes.add(session);
     return session;
   }
 
-  Future<FocusSession> start(Duration planned, {String? labelId}) async {
+  Future<FocusSession> start(
+    Duration planned, {
+    String? labelId,
+    String? intention,
+  }) async {
     if (_current != null) throw StateError('A session is already running.');
     final session = FocusSession(
       start: _clock(),
       planned: planned,
       labelId: labelId,
+      intention: intention,
     );
     await _setActive(session);
     return session;
@@ -101,6 +112,10 @@ class FocusTimer {
     return true;
   }
 
+  /// Stores how the finished [session] felt.
+  Future<void> reflect(FocusSession session, SessionReflection reflection) =>
+      _repository.updateFinished(session.withReflection(reflection));
+
   /// All completed and cancelled sessions, now and after every change.
   Stream<List<FocusSession>> watchFinished() => _repository.watchFinished();
 
@@ -133,6 +148,10 @@ class FocusTimer {
   /// Publishes the blocking state again, e.g. after the block list changed.
   Future<void> refreshBlocking() async => _blocking?.update(_current);
 
+  /// Plays the ambient sound again, e.g. after another sound or volume was
+  /// chosen.
+  Future<void> refreshAmbient() async => _ambient?.update(_current);
+
   /// Shows the countdown notice again, e.g. after the lock screen setting
   /// changed.
   Future<void> refreshCountdown() => _syncCountdown(_current);
@@ -143,6 +162,7 @@ class FocusTimer {
     await _blocking?.update(session);
     await _syncAlarm(session);
     await _syncCountdown(session);
+    await _ambient?.update(session);
     _changes.add(session);
   }
 

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../domain/ambient.dart';
 import '../domain/app_blocker.dart';
 import '../domain/app_language.dart';
 import '../domain/backup.dart';
@@ -21,6 +22,7 @@ import '../domain/named_block_list.dart';
 import '../domain/pomodoro.dart';
 import '../domain/settings_repository.dart';
 import '../l10n/app_localizations.dart';
+import 'ambient_sheet.dart';
 import 'app_locale.dart';
 import 'block_lists_screen.dart';
 import 'breath_screen.dart';
@@ -54,6 +56,7 @@ class FocusApp extends StatefulWidget {
     this.language,
     this.onLanguageChanged,
     this.mindfulApps,
+    this.ambientPlayer,
     this.clock = DateTime.now,
     this.showIntro = false,
   });
@@ -102,6 +105,9 @@ class FocusApp extends StatefulWidget {
   /// test needs it.
   final BlockListRepository? mindfulApps;
 
+  /// Previews ambient sounds while choosing one; optional for tests.
+  final AmbientPlayer? ambientPlayer;
+
   /// Source of the current time for every screen.
   final Clock clock;
 
@@ -124,6 +130,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
   var _blockerEnabled = true;
   var _notificationGateEnabled = true;
   var _language = AppLanguage.system;
+  var _ambient = AmbientChoice.initial;
 
   /// False while apps are paused but the blocker is switched off; the
   /// session screen warns then.
@@ -135,6 +142,13 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
   /// The open breathing pause, if any: a new request or leaving Focus
   /// removes it, so it never stays with a ready “Open” (#254).
   Route<void>? _breathRoute;
+
+  /// The open blocked screen, if any: a new attempt replaces it, so they
+  /// never pile up (#273).
+  Route<void>? _blockedRoute;
+
+  /// The sentence typed on the home screen for the next session.
+  final _intention = TextEditingController();
   StreamSubscription<void>? _startRequests;
   StreamSubscription<FocusSession?>? _sessionChanges;
 
@@ -177,6 +191,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
     _sessionChanges?.cancel();
     _focusTimeChanges?.cancel();
     _blockingActive.dispose();
+    _intention.dispose();
     super.dispose();
   }
 
@@ -204,6 +219,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
     final notificationGateEnabled = await widget.appBlocker
         .isNotificationGateEnabled();
     final language = await widget.language?.load() ?? _language;
+    final ambient = await widget.settings.loadAmbient();
     if (!mounted) return;
     final languageChanged = language != _language;
     setState(() {
@@ -215,6 +231,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
       _blockerEnabled = blockerEnabled;
       _notificationGateEnabled = notificationGateEnabled;
       _language = language;
+      _ambient = ambient;
     });
     _blockingActive.value = blockerEnabled || blockList.length == 0;
     if (languageChanged) {
@@ -346,6 +363,12 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
                   clock: widget.clock,
                   focusDuration: _pomodoro.focus,
                   onStart: _startSession,
+                  intention: _intention,
+                  soundName: ambientSoundName(
+                    AppLocalizations.of(homeContext),
+                    _ambient.sound,
+                  ),
+                  onChooseSound: () => _chooseSound(homeContext),
                   onOpenSettings: _openSettings,
                   blockedAppCount: _blockedAppCount,
                   onOpenBlockedApps: _openBlockedApps,
@@ -453,6 +476,34 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
     await _loadState();
   }
 
+  /// Sound and volume for sessions; without a session the choice is
+  /// previewed while the sheet is open.
+  Future<void> _chooseSound(BuildContext context) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => AmbientSheet(
+        initial: _ambient,
+        onChanged: (choice) async {
+          setState(() => _ambient = choice);
+          await widget.settings.saveAmbient(choice);
+          if (widget.timer.current != null) {
+            await widget.timer.refreshAmbient();
+          } else if (!choice.sound.isBundled) {
+            // Off, or the music app – which mustn't start just for a preview.
+            await widget.ambientPlayer?.stop();
+          } else {
+            await widget.ambientPlayer?.play(
+              choice.sound,
+              volume: choice.volume,
+            );
+          }
+        },
+      ),
+    );
+    if (widget.timer.current == null) await widget.ambientPlayer?.stop();
+  }
+
   Future<void> _chooseLabel(BuildContext context) async {
     await showModalBottomSheet<void>(
       context: context,
@@ -474,16 +525,21 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
   }
 
   Future<void> _startSession() async {
+    final intention = _intention.text;
     await widget.timer.start(
       _pomodoro.focus,
       labelId: _labelWithId(_selectedLabelId)?.id,
+      intention: intention,
     );
+    _intention.clear();
     await _pushSession();
   }
 
   /// Shows the running session; home is refreshed once it is done.
   Future<void> _pushSession() async {
     final labelName = _labelWithId(widget.timer.current?.labelId)?.name;
+    // A blocked screen from a focus time would return after the session.
+    _closeBlocked();
     _sessionShown = true;
     await _push(
       (context) => SessionScreen(
@@ -521,8 +577,10 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
         if (app.packageName == packageName) app.label,
     ].firstOrNull;
     final now = widget.clock();
-    await _push(
-      (context) => BlockedScreen(
+    if (!mounted) return;
+    _closeBlocked();
+    final route = MaterialPageRoute<void>(
+      builder: (context) => BlockedScreen(
         appLabel: label ?? packageName,
         remaining: switch (session) {
           final session? when !session.isPaused => session.remaining(now),
@@ -534,6 +592,18 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
         onReturn: () => Navigator.of(context).pop(),
       ),
     );
+    _blockedRoute = route;
+    await _navigator.currentState?.push(route);
+    if (_blockedRoute == route) _blockedRoute = null;
+  }
+
+  /// Removes the open blocked screen, e.g. before showing a newer one.
+  void _closeBlocked() {
+    final route = _blockedRoute;
+    _blockedRoute = null;
+    if (route != null && route.isActive) {
+      _navigator.currentState?.removeRoute(route);
+    }
   }
 
   /// A paused app was opened with mindful opening on: breathe first, then
@@ -578,6 +648,12 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
     }
   }
 
+  /// Stores the reflection on the session that just ended.
+  Future<void> _reflectOnLastSession(SessionReflection reflection) async {
+    final last = (await widget.timer.watchFinished().first).lastOrNull;
+    if (last != null) await widget.timer.reflect(last, reflection);
+  }
+
   /// A completed session is followed by the right break; a cancelled one
   /// returns home.
   Future<void> _afterSession(
@@ -585,6 +661,8 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
     SessionOutcome outcome,
   ) async {
     final navigator = Navigator.of(context);
+    // The apps are free again; the session screen must be on top.
+    _closeBlocked();
     switch (outcome) {
       case SessionCancelled():
         navigator.pop();
@@ -601,6 +679,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
               duration: breakDuration(kind, pomodoro),
               clock: widget.clock,
               onDone: () => Navigator.of(context).pop(),
+              onReflect: _reflectOnLastSession,
             ),
           ),
         );

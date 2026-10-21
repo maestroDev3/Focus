@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:focus_timer/domain/ambient.dart';
 import 'package:focus_timer/domain/app_blocker.dart';
 import 'package:focus_timer/domain/app_language.dart';
 import 'package:focus_timer/domain/blocking.dart';
@@ -15,6 +16,7 @@ import 'package:focus_timer/ui/focus_app.dart';
 import 'package:focus_timer/ui/theme.dart';
 
 import '../support/backup_files_for_tests.dart';
+import '../support/fake_ambient_player.dart';
 import '../support/fake_app_language_setting.dart';
 import '../support/fake_app_blocker.dart';
 import '../support/fake_block_list_repository.dart';
@@ -45,7 +47,9 @@ void main() {
     FakeHomeWidgetBridge? homeWidget,
     FakeAppLanguageSetting? language,
     ValueChanged<AppLanguage>? onLanguageChanged,
+    FakeAmbientPlayer? ambientPlayer,
   }) => FocusApp(
+    ambientPlayer: ambientPlayer,
     language: language,
     onLanguageChanged: onLanguageChanged,
     showIntro: showIntro,
@@ -86,6 +90,9 @@ void main() {
   }
 
   Future<void> beginFocus(WidgetTester tester) async {
+    await tester.ensureVisible(find.text('Begin focus'));
+    await tester.pump();
+    await tester.ensureVisible(find.text('Begin focus'));
     await tester.tap(find.text('Begin focus'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 500));
@@ -187,6 +194,8 @@ void main() {
     testWidgets('Begin focus opens the session screen', (tester) async {
       await tester.pumpWidget(buildApp());
 
+      await tester.ensureVisible(find.text('Begin focus'));
+
       await tester.tap(find.text('Begin focus'));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
@@ -196,6 +205,7 @@ void main() {
 
     testWidgets('ending the session returns home', (tester) async {
       await tester.pumpWidget(buildApp());
+      await tester.ensureVisible(find.text('Begin focus'));
       await tester.tap(find.text('Begin focus'));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
@@ -267,6 +277,78 @@ void main() {
 
       await beginFocus(tester);
       expect(find.text('50:00'), findsOneWidget);
+    });
+
+    testWidgets('starts the session with the typed intention', (
+      tester,
+    ) async {
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+
+      await tester.enterText(find.byType(TextField), 'Chapter 3');
+      await beginFocus(tester);
+
+      expect(repository.active?.intention, 'Chapter 3');
+      expect(find.text('Chapter 3'), findsOneWidget);
+    });
+
+    testWidgets('stores the reflection after a completed session', (
+      tester,
+    ) async {
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+      await beginFocus(tester);
+      await elapse(tester, const Duration(minutes: 25));
+      expect(find.text('How did it go?'), findsOneWidget);
+
+      await tester.tap(find.text('Flowing'));
+      await tester.pump();
+      await tester.pump();
+
+      expect(repository.finished.single.reflection, SessionReflection.flowing);
+    });
+
+    testWidgets('chooses a sound on the home screen and previews it', (
+      tester,
+    ) async {
+      final player = FakeAmbientPlayer();
+      await tester.pumpWidget(buildApp(ambientPlayer: player));
+      await tester.pump();
+      expect(find.text('Sound · Off'), findsOneWidget);
+
+      await tester.tap(find.text('Sound · Off'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      await tester.tap(find.text('Rain'));
+      await tester.pump();
+      await tester.pump();
+      expect(settings.ambient.sound, AmbientSound.rain);
+      expect(player.playing?.$1, AmbientSound.rain);
+
+      await tester.tapAt(const Offset(20, 20));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(find.text('Sound · Rain'), findsOneWidget);
+      expect(player.playing, isNull);
+    });
+
+    testWidgets('does not preview the music app', (tester) async {
+      final player = FakeAmbientPlayer();
+      await tester.pumpWidget(buildApp(ambientPlayer: player));
+      await tester.pump();
+
+      await tester.tap(find.text('Sound · Off'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      await tester.ensureVisible(find.text('Your music app'));
+      await tester.pump();
+      await tester.tap(find.text('Your music app'));
+      await tester.pump();
+      await tester.pump();
+
+      expect(settings.ambient.sound, AmbientSound.musicApp);
+      expect(player.plays, 0);
     });
 
     testWidgets('uses the configured break duration', (tester) async {
@@ -433,6 +515,94 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
       expect(find.text('25:00'), findsOneWidget);
+    });
+
+    testWidgets('keeps one blocked screen for repeated attempts', (
+      tester,
+    ) async {
+      // 2026-09-29 is a Tuesday; now is 20:00.
+      final focusTimes = FakeFocusTimeRepository([
+        FocusTime(
+          id: 'focus-time-1',
+          weekdays: const {2},
+          startMinute: 19 * 60,
+          endMinute: 21 * 60,
+        ),
+      ]);
+      await tester.pumpWidget(buildApp(focusTimes: focusTimes));
+      await tester.pump();
+
+      for (final app in [
+        'org.telegram.messenger',
+        'com.instagram.android',
+        'org.telegram.messenger',
+      ]) {
+        blocker.emit(app);
+        await tester.pump();
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+      }
+      expect(find.text('Telegram is resting while you focus.'), findsOneWidget);
+      expect(find.text('Instagram is resting while you focus.'), findsNothing);
+
+      await tester.tap(find.text('Return to focus'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(find.text('Return to focus'), findsNothing);
+    });
+
+    testWidgets('closes the blocked screen when the session ends', (
+      tester,
+    ) async {
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+      await beginFocus(tester);
+      blocker.emit('org.telegram.messenger');
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      await elapse(tester, const Duration(minutes: 25));
+
+      expect(find.text('Short break · 5 min'), findsOneWidget);
+      expect(
+        find.text('Telegram is resting while you focus.', skipOffstage: false),
+        findsNothing,
+      );
+      await tester.tap(find.text('Skip'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(find.text('Begin focus'), findsOneWidget);
+    });
+
+    testWidgets('closes the blocked screen when a session starts', (
+      tester,
+    ) async {
+      // 2026-09-29 is a Tuesday; now is 20:00.
+      final focusTimes = FakeFocusTimeRepository([
+        FocusTime(
+          id: 'focus-time-1',
+          weekdays: const {2},
+          startMinute: 19 * 60,
+          endMinute: 21 * 60,
+        ),
+      ]);
+      await tester.pumpWidget(buildApp(focusTimes: focusTimes));
+      await tester.pump();
+      blocker.emit('org.telegram.messenger');
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      reminders.emitStart();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(find.text('25:00'), findsOneWidget);
+      expect(
+        find.text('Telegram is resting while you focus.', skipOffstage: false),
+        findsNothing,
+      );
     });
 
     testWidgets('shows the blocked screen during a focus time', (
@@ -891,12 +1061,22 @@ void main() {
         await tester.pump(const Duration(milliseconds: 500));
         expect(find.text('Take a breath.'), findsOneWidget);
 
-        tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+        for (final state in [
+          AppLifecycleState.inactive,
+          AppLifecycleState.hidden,
+          AppLifecycleState.paused,
+        ]) {
+          tester.binding.handleAppLifecycleStateChanged(state);
+        }
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 500));
-        tester.binding.handleAppLifecycleStateChanged(
+        for (final state in [
+          AppLifecycleState.hidden,
+          AppLifecycleState.inactive,
           AppLifecycleState.resumed,
-        );
+        ]) {
+          tester.binding.handleAppLifecycleStateChanged(state);
+        }
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 500));
 

@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../domain/clock.dart';
 import '../domain/daily_goal.dart';
 import '../domain/day_part.dart';
+import '../domain/focus_session.dart';
 import '../domain/focus_time.dart';
 import '../l10n/app_localizations.dart';
 import 'focus_time_label.dart';
@@ -31,6 +32,9 @@ class HomeScreen extends StatelessWidget {
     required this.focusedToday,
     required this.dailyGoal,
     required this.onOpenStatistics,
+    this.intention,
+    this.soundName,
+    this.onChooseSound,
     this.activeFocusTime,
     this.nextFocusTimeStart,
   });
@@ -38,6 +42,15 @@ class HomeScreen extends StatelessWidget {
   final Clock clock;
   final Duration focusDuration;
   final VoidCallback onStart;
+
+  /// Name of the chosen ambient sound for its chip.
+  final String? soundName;
+
+  /// Opens the sound choice; no chip without it.
+  final VoidCallback? onChooseSound;
+
+  /// The optional sentence about the next session; no field without it.
+  final TextEditingController? intention;
   final VoidCallback onOpenSettings;
 
   /// Number of apps paused during sessions.
@@ -177,6 +190,20 @@ class HomeScreen extends StatelessWidget {
                                     (hasLabels ? l10n.noLabel : l10n.addLabel),
                               ),
                             ),
+                            if (onChooseSound case final choose?)
+                              ActionChip(
+                                onPressed: choose,
+                                avatar: Icon(
+                                  Icons.graphic_eq,
+                                  size: 18,
+                                  color: theme.colorScheme.primary,
+                                ),
+                                label: Text(
+                                  l10n.ambientSound(
+                                    soundName ?? l10n.ambientOff,
+                                  ),
+                                ),
+                              ),
                             ActionChip(
                               onPressed: onOpenBlockedApps,
                               avatar: Icon(
@@ -222,6 +249,20 @@ class HomeScreen extends StatelessWidget {
                           ),
                         ],
                         const Spacer(),
+                        if (intention case final controller?) ...[
+                          TextField(
+                            controller: controller,
+                            maxLength: maxIntentionLength,
+                            textAlign: TextAlign.center,
+                            textCapitalization: TextCapitalization.sentences,
+                            decoration: InputDecoration(
+                              hintText: l10n.intentionHint,
+                              counterText: '',
+                              border: InputBorder.none,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                        ],
                         FilledButton(
                           onPressed: onStart,
                           style: FilledButton.styleFrom(

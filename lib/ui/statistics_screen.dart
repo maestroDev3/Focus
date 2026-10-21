@@ -9,6 +9,7 @@ import '../domain/statistics.dart';
 import '../domain/streak.dart';
 import '../l10n/app_localizations.dart';
 import 'focus_time_text.dart';
+import 'reflection_text.dart';
 
 /// Period of the whole statistics view.
 enum StatisticsPeriod { week, month }
@@ -153,12 +154,85 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                         focusTimeText(l10n, widget.dailyGoal.duration),
                       ),
                     ),
+                    if (_sessionsOn(sessions, selectedDate) case final daily
+                        when daily.isNotEmpty) ...[
+                      const SizedBox(height: 12),
+                      _DaySessions(sessions: daily, labels: labels),
+                    ],
                     const SizedBox(height: 12),
                     _LabelBreakdown(byLabel: byLabel, labels: labels),
                   ],
                 );
               },
             ),
+      ),
+    );
+  }
+}
+
+/// Finished sessions that ended on the local calendar day of [day], in
+/// order.
+List<FocusSession> _sessionsOn(List<FocusSession> sessions, DateTime day) => [
+  for (final session in sessions)
+    if (session.end case final end?
+        when end.year == day.year &&
+            end.month == day.month &&
+            end.day == day.day)
+      session,
+]..sort((a, b) => a.start.compareTo(b.start));
+
+/// The sessions of the selected day with label, intention and reflection.
+class _DaySessions extends StatelessWidget {
+  const _DaySessions({required this.sessions, required this.labels});
+
+  final List<FocusSession> sessions;
+  final List<FocusLabel> labels;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final locale = Localizations.localeOf(context).toLanguageTag();
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(l10n.daySessions, style: theme.textTheme.titleSmall),
+            const SizedBox(height: 8),
+            for (final session in sessions)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      [
+                        DateFormat.Hm(locale).format(session.start),
+                        focusTimeText(
+                          l10n,
+                          session.focusedTime(session.end ?? session.start),
+                        ),
+                        ?[
+                          for (final label in labels)
+                            if (label.id == session.labelId) label.name,
+                        ].firstOrNull,
+                        if (session.reflection case final reflection?)
+                          reflectionText(l10n, reflection),
+                      ].join(' · '),
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    if (session.intention case final intention?)
+                      Text(intention, style: theme.textTheme.bodyLarge),
+                  ],
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

@@ -1,3 +1,4 @@
+import 'ambient.dart';
 import 'daily_goal.dart';
 import 'pomodoro.dart';
 
@@ -35,4 +36,9 @@ abstract interface class SettingsRepository {
   Future<Duration> loadMindfulPause();
 
   Future<void> saveMindfulPause(Duration pause);
+
+  /// The ambient sound and volume; [AmbientChoice.initial] until chosen.
+  Future<AmbientChoice> loadAmbient();
+
+  Future<void> saveAmbient(AmbientChoice choice);
 }
