@@ -455,6 +455,8 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
         labels: widget.labels.watchLabels(),
         dailyGoal: _dailyGoal,
         clock: widget.clock,
+        focusTimes: widget.focusTimes.watchFocusTimes(),
+        pausedAppCount: _blockedAppCount,
       ),
     );
   }

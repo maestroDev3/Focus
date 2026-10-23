@@ -328,6 +328,35 @@
   "@allTime": {
     "description": "Title of the statistics card with every label's total over all time."
   },
+  "insights": "Insights",
+  "@insights": {
+    "description": "Title of the statistics card with focus insights."
+  },
+  "protectedTime": "Your paused apps rested {time}",
+  "@protectedTime": {
+    "description": "How long paused apps were blocked in the period (sessions and focus times).",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "protectedTimeHint": "Pause apps to protect your focus time.",
+  "@protectedTimeHint": {
+    "description": "Shown in the insights when no apps are paused and there are no focus times."
+  },
+  "focusDaysOf": "{days, plural, one{Focused on {focused} of 1 day} other{Focused on {focused} of {days} days}}",
+  "@focusDaysOf": {
+    "description": "On how many days of the period so far at least one session ended.",
+    "placeholders": {
+      "focused": {
+        "type": "int"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
   "periodWeek": "Week",
   "@periodWeek": {
     "description": "Segment that shows the label breakdown for the current week."
