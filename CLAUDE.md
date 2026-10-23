@@ -318,3 +318,6 @@ commit comment).
   (#314). Backgrounds to choose from (epic #315, story #316): Five stems,
   Dense branches, Roots (default), Two trees, Fine mesh, None – in the
   settings with live previews.
+- 2026-10-23 – Focus insights (#207): a card in the statistics following
+  Week/Month with “protected time” (how long paused apps rested – sessions
+  and focus times, counted once) and “calm rhythm” (focused on x of y days).
