@@ -21,6 +21,7 @@ The GitHub issues are authoritative; this file is the summary.
 | Epic | State | Stories (in order) |
 |---|---|---|
 | #123 Session ritual | 3 of 4 closed | #269 Spotify playlist, personal mode (`backlog`, needs your Spotify developer app) |
+| #324 Focus times show in your day | 0 of 1 closed | #325 Protected time on the daily ring (`backlog`) |
 | #195 Quick settings tile | 0 of 1 closed | #196 Start a session from the quick settings (`backlog`) |
 | #205 Statistics you can explore | 1 of 2 closed | #207 Focus insights (`in-progress`) |
 
@@ -47,6 +48,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## Open decisions (user only)
 
+- New epic #324 Focus times show in your day – created, please confirm or re-sort (recommendation in chat 2026-10-23)
 - Epic #279 Every APK starts (Release & platform) – created, please confirm or re-sort
 - New epic #187 Block list per session (parked idea #188) – created, please confirm or re-sort.
 - #269 Spotify personal mode: waiting for your Spotify developer app (Client ID).
