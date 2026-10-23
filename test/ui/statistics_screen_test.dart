@@ -46,6 +46,11 @@ void main() {
   Finder inCard(String key, Finder finder) =>
       find.descendant(of: find.byKey(Key(key)), matching: finder);
 
+  /// Scrolls the label breakdown into view; it lies below the insights.
+  Future<void> showByLabel(WidgetTester tester) async {
+    await tester.scrollUntilVisible(find.byKey(const Key('by-label')), 200);
+  }
+
   group('StatisticsScreen', () {
     testWidgets('shows today and this week', (tester) async {
       await pumpStatistics(tester, [
@@ -84,6 +89,7 @@ void main() {
         completed(DateTime(2026, 9, 29, 9), 50, 'study'),
         completed(DateTime(2026, 9, 29, 14), 40, 'work'),
       ]);
+      await showByLabel(tester);
 
       expect(find.text('By label'), findsOneWidget);
       expect(find.text('1h 15'), findsOneWidget);
@@ -101,10 +107,13 @@ void main() {
         completed(DateTime(2026, 9, 3, 9), 25, 'study'),
         completed(DateTime(2026, 9, 29, 9), 40, 'work'),
       ]);
+      await showByLabel(tester);
       expect(inCard('by-label', find.text('Study')), findsNothing);
 
+      await tester.scrollUntilVisible(find.text('Month'), -200);
       await tester.tap(find.text('Month'));
       await tester.pump();
+      await showByLabel(tester);
 
       expect(inCard('by-label', find.text('Study')), findsOneWidget);
       expect(inCard('by-label', find.text('Work')), findsOneWidget);
@@ -112,6 +121,7 @@ void main() {
 
     testWidgets('shows sessions without label as Unlabeled', (tester) async {
       await pumpStatistics(tester, [completed(DateTime(2026, 9, 29, 9), 35)]);
+      await showByLabel(tester);
 
       expect(find.text('Unlabeled'), findsOneWidget);
     });
