@@ -28,6 +28,7 @@ void main() {
       VoidCallback? onAllowNotifications,
       FocusTime? activeFocusTime,
       DateTime? nextFocusTimeStart,
+      Duration protectedToday = Duration.zero,
     }) {
       return tester.pumpApp(
         HomeScreen(
@@ -49,6 +50,7 @@ void main() {
           onAllowNotifications: onAllowNotifications ?? () {},
           activeFocusTime: activeFocusTime,
           nextFocusTimeStart: nextFocusTimeStart,
+          protectedToday: protectedToday,
         ),
       );
     }
@@ -173,6 +175,60 @@ void main() {
           tester.widget<CustomPaint>(find.byKey(BreathingRing.paintKey)).painter
               as GoalRingPainter;
       expect(ring.progress, closeTo(100 / 180, 0.001));
+    });
+
+    testWidgets('shows today\'s protected time beside the sessions', (
+      tester,
+    ) async {
+      await pumpHome(
+        tester,
+        now: DateTime(2026, 9, 29, 20),
+        focusedToday: const Duration(minutes: 60),
+        dailyGoal: DailyGoal.validated(240),
+        protectedToday: const Duration(minutes: 130),
+      );
+
+      expect(find.text('2h 10 protected today'), findsOneWidget);
+      expect(find.text('of 4h daily goal'), findsOneWidget);
+      final ring =
+          tester.widget<CustomPaint>(find.byKey(BreathingRing.paintKey)).painter
+              as GoalRingPainter;
+      expect(ring.progress, closeTo(60 / 240, 0.001));
+      expect(ring.protectedProgress, closeTo(130 / 240, 0.001));
+    });
+
+    testWidgets('shows no protected line without protected time', (
+      tester,
+    ) async {
+      await pumpHome(tester, now: DateTime(2026, 9, 29, 20));
+
+      expect(find.textContaining('protected today'), findsNothing);
+      final ring =
+          tester.widget<CustomPaint>(find.byKey(BreathingRing.paintKey)).painter
+              as GoalRingPainter;
+      expect(ring.protectedProgress, 0);
+    });
+
+    testWidgets('invites to a session during a focus time', (tester) async {
+      var starts = 0;
+      await pumpHome(
+        tester,
+        now: DateTime(2026, 9, 29, 20),
+        onStart: () => starts++,
+        activeFocusTime: FocusTime(
+          id: 'evening',
+          weekdays: const {2},
+          startMinute: 19 * 60,
+          endMinute: 21 * 60,
+        ),
+      );
+
+      expect(find.text('Focus time · begin a session'), findsOneWidget);
+      expect(find.text('Begin focus'), findsNothing);
+      await tester.tap(find.text('Focus time · begin a session'));
+      await tester.pump();
+
+      expect(starts, 1);
     });
 
     testWidgets('opens the statistics from a button with a tooltip', (
