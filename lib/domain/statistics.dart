@@ -1,5 +1,6 @@
 import 'clock.dart';
 import 'focus_session.dart';
+import 'focus_time.dart';
 
 /// Focus time per calendar day from [from] to [to] (inclusive), derived
 /// from the stored sessions; a session counts for the day it ended and days
@@ -103,4 +104,80 @@ Map<String, Duration> labelTotals(
     }
   }
   return totals;
+}
+
+/// How long paused apps rested between [from] and [to] (until [now]): the
+/// union of all session intervals – pauses included, blocking stays strict
+/// while paused – and all focus time ranges on their weekdays, so overlaps
+/// count once (#207). Running sessions count up to [now].
+Duration protectedTime(
+  List<FocusSession> sessions,
+  List<FocusTime> focusTimes, {
+  required DateTime from,
+  required DateTime to,
+  required DateTime now,
+}) {
+  final end = now.isBefore(to) ? now : to;
+  if (!end.isAfter(from)) return Duration.zero;
+  final intervals = <(DateTime, DateTime)>[
+    for (final session in sessions) (session.start, session.end ?? now),
+    for (
+      var day = DateTime(from.year, from.month, from.day);
+      day.isBefore(end);
+      day = DateTime(day.year, day.month, day.day + 1)
+    )
+      for (final time in focusTimes)
+        for (final range in time.ranges)
+          if (range.weekdays.contains(day.weekday))
+            (
+              DateTime(day.year, day.month, day.day, 0, range.startMinute),
+              DateTime(day.year, day.month, day.day, 0, range.endMinute),
+            ),
+  ];
+  final clipped = [
+    for (final (start, stop) in intervals)
+      if (stop.isAfter(from) && start.isBefore(end))
+        (start.isBefore(from) ? from : start, stop.isAfter(end) ? end : stop),
+  ]..sort((a, b) => a.$1.compareTo(b.$1));
+  var total = Duration.zero;
+  DateTime? openStart;
+  DateTime? openEnd;
+  for (final (start, stop) in clipped) {
+    if (openEnd == null || start.isAfter(openEnd)) {
+      if (openStart != null && openEnd != null) {
+        total += openEnd.difference(openStart);
+      }
+      openStart = start;
+      openEnd = stop;
+    } else if (stop.isAfter(openEnd)) {
+      openEnd = stop;
+    }
+  }
+  if (openStart != null && openEnd != null) {
+    total += openEnd.difference(openStart);
+  }
+  return total;
+}
+
+/// On how many days from [from] to [today] (both local calendar days) at
+/// least one session ended – and how many days that period has so far.
+({int focused, int days}) focusDays(
+  List<FocusSession> sessions, {
+  required DateTime from,
+  required DateTime today,
+}) {
+  final first = DateTime(from.year, from.month, from.day);
+  final last = DateTime(today.year, today.month, today.day);
+  final focused = <DateTime>{
+    for (final session in sessions)
+      if (session.end case final end? when session.isFinished)
+        if (DateTime(end.year, end.month, end.day) case final day
+            when !day.isBefore(first) && !day.isAfter(last))
+          day,
+  };
+  final days = DateTime.utc(last.year, last.month, last.day)
+          .difference(DateTime.utc(first.year, first.month, first.day))
+          .inDays +
+      1;
+  return (focused: focused.length, days: days);
 }
