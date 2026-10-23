@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:focus_timer/domain/daily_goal.dart';
 import 'package:focus_timer/domain/focus_label.dart';
 import 'package:focus_timer/domain/focus_session.dart';
+import 'package:focus_timer/domain/focus_time.dart';
 import 'package:focus_timer/ui/statistics_screen.dart';
 
 import '../support/pump_app.dart';
@@ -25,11 +26,15 @@ void main() {
     List<FocusSession> sessions, {
     DailyGoal dailyGoal = const DailyGoal(),
     List<FocusLabel>? labelList,
+    List<FocusTime> focusTimes = const [],
+    int pausedAppCount = 3,
   }) async {
     await tester.pumpApp(
       StatisticsScreen(
         finishedSessions: Stream.value(sessions),
         labels: Stream.value(labelList ?? labels),
+        focusTimes: Stream.value(focusTimes),
+        pausedAppCount: pausedAppCount,
         dailyGoal: dailyGoal,
         clock: () => now,
       ),
@@ -262,6 +267,80 @@ void main() {
       await tester.scrollUntilVisible(card, 200);
 
       expect(inCard('all-time', find.text('25 min in total')), findsOneWidget);
+    });
+
+    testWidgets('shows how long the paused apps rested this week', (
+      tester,
+    ) async {
+      await pumpStatistics(
+        tester,
+        [completed(DateTime(2026, 9, 28, 9), 50)],
+        focusTimes: [
+          FocusTime(
+            id: 'tuesday',
+            weekdays: const {2},
+            startMinute: 7 * 60,
+            endMinute: 10 * 60,
+          ),
+        ],
+      );
+      await tester.scrollUntilVisible(find.byKey(const Key('insights')), 200);
+
+      expect(inCard('insights', find.text('Insights')), findsOneWidget);
+      expect(
+        inCard('insights', find.text('Your paused apps rested 3h 50')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('shows on how many days of the week I focused', (
+      tester,
+    ) async {
+      await pumpStatistics(tester, [
+        completed(DateTime(2026, 9, 28, 9), 25),
+        completed(DateTime(2026, 9, 30, 9), 25),
+      ]);
+      await tester.scrollUntilVisible(find.byKey(const Key('insights')), 200);
+
+      expect(
+        inCard('insights', find.text('Focused on 2 of 3 days')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('covers the month after switching to Month', (tester) async {
+      await pumpStatistics(tester, [
+        completed(DateTime(2026, 9, 3, 9), 50),
+        completed(DateTime(2026, 9, 28, 9), 25),
+        completed(DateTime(2026, 9, 30, 9), 25),
+      ]);
+
+      await tester.tap(find.text('Month'));
+      await tester.pump();
+      await tester.scrollUntilVisible(find.byKey(const Key('insights')), 200);
+
+      expect(
+        inCard('insights', find.text('Focused on 3 of 30 days')),
+        findsOneWidget,
+      );
+      expect(
+        inCard('insights', find.text('Your paused apps rested 1h 40')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('invites to pause apps without any', (tester) async {
+      await pumpStatistics(
+        tester,
+        [completed(DateTime(2026, 9, 28, 9), 25)],
+        pausedAppCount: 0,
+      );
+      await tester.scrollUntilVisible(find.byKey(const Key('insights')), 200);
+
+      expect(
+        inCard('insights', find.text('Pause apps to protect your focus time.')),
+        findsOneWidget,
+      );
     });
   });
 }
