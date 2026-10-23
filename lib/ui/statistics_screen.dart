@@ -5,6 +5,7 @@ import '../domain/clock.dart';
 import '../domain/daily_goal.dart';
 import '../domain/focus_label.dart';
 import '../domain/focus_session.dart';
+import '../domain/focus_time.dart';
 import '../domain/statistics.dart';
 import '../domain/streak.dart';
 import '../l10n/app_localizations.dart';
@@ -23,6 +24,8 @@ class StatisticsScreen extends StatefulWidget {
     required this.labels,
     required this.dailyGoal,
     required this.clock,
+    this.focusTimes,
+    this.pausedAppCount = 0,
   });
 
   final Stream<List<FocusSession>> finishedSessions;
@@ -31,6 +34,13 @@ class StatisticsScreen extends StatefulWidget {
   /// Goal a day must reach to count for the streak.
   final DailyGoal dailyGoal;
   final Clock clock;
+
+  /// Focus times, for the protected time in the insights (#207).
+  final Stream<List<FocusTime>>? focusTimes;
+
+  /// Apps paused during sessions; without any (and without focus times) the
+  /// insights invite to pause apps.
+  final int pausedAppCount;
 
   @override
   State<StatisticsScreen> createState() => _StatisticsScreenState();
@@ -43,6 +53,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   int? _selected;
   late final Stream<List<FocusSession>> _sessions = widget.finishedSessions;
   late final Stream<List<FocusLabel>> _labels = widget.labels;
+  late final Stream<List<FocusTime>> _focusTimes =
+      widget.focusTimes ?? Stream.value(const []);
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +62,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     final locale = Localizations.localeOf(context).toLanguageTag();
     return Scaffold(
       appBar: AppBar(title: Text(l10n.statistics)),
-      body: StreamBuilder<List<FocusLabel>>(
+      body: StreamBuilder<List<FocusTime>>(
+        stream: _focusTimes,
+        builder: (context, focusTimeSnapshot) => StreamBuilder<List<FocusLabel>>(
         stream: _labels,
         builder: (context, labelSnapshot) =>
             StreamBuilder<List<FocusSession>>(
@@ -161,6 +175,23 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                       _DaySessions(sessions: daily, labels: labels),
                     ],
                     const SizedBox(height: 12),
+                    _InsightsCard(
+                      protectedTime: protectedTime(
+                        sessions,
+                        focusTimeSnapshot.data ?? const [],
+                        from: firstDay,
+                        to: DateTime(
+                          lastDay.year,
+                          lastDay.month,
+                          lastDay.day + 1,
+                        ),
+                        now: now,
+                      ),
+                      protects: widget.pausedAppCount > 0 ||
+                          (focusTimeSnapshot.data ?? const []).isNotEmpty,
+                      days: focusDays(sessions, from: firstDay, today: now),
+                    ),
+                    const SizedBox(height: 12),
                     _LabelBreakdown(byLabel: byLabel, labels: labels),
                     if (labels.isNotEmpty) ...[
                       const SizedBox(height: 12),
@@ -176,6 +207,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 );
               },
             ),
+      ),
       ),
     );
   }
@@ -386,6 +418,70 @@ class _AllTimeCard extends StatelessWidget {
               LabelProgress(total: totalOf(label), goal: label.goal),
               const SizedBox(height: 14),
             ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// How long paused apps rested and on how many days you focused in the
+/// chosen period (#207) – calm lines, no scores.
+class _InsightsCard extends StatelessWidget {
+  const _InsightsCard({
+    required this.protectedTime,
+    required this.protects,
+    required this.days,
+  });
+
+  final Duration protectedTime;
+
+  /// Whether any apps are paused or focus times exist.
+  final bool protects;
+  final ({int focused, int days}) days;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    return Card(
+      key: const Key('insights'),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              l10n.insights,
+              style: theme.textTheme.labelLarge?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+                letterSpacing: 2,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Icon(Icons.shield_outlined, color: theme.colorScheme.primary),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    protects
+                        ? l10n.protectedTime(focusTimeText(l10n, protectedTime))
+                        : l10n.protectedTimeHint,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Icon(Icons.wb_twilight, color: theme.colorScheme.primary),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(l10n.focusDaysOf(days.focused, days.days)),
+                ),
+              ],
+            ),
           ],
         ),
       ),

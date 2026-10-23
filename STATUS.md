@@ -8,7 +8,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- #207 Focus insights: protected time and calm rhythm (`in-progress`) – epic #205 on branch `epic/focus-insights`, preview APK for your test.
+- #207 Focus insights: protected time and calm rhythm – built on `epic/focus-insights`, waiting for your test on the phone (preview APK).
 
 ## Up next
 
@@ -22,7 +22,7 @@ The GitHub issues are authoritative; this file is the summary.
 |---|---|---|
 | #123 Session ritual | 3 of 4 closed | #269 Spotify playlist, personal mode (`backlog`, needs your Spotify developer app) |
 | #195 Quick settings tile | 0 of 1 closed | #196 Start a session from the quick settings (`backlog`) |
-| #205 Statistics you can explore | 1 of 2 closed | #207 Focus insights (`in-progress`) |
+| #205 Statistics you can explore | 1 of 2 closed | #207 Focus insights (`in-progress`, built) |
 
 **#139 Distraction blocking**
 
