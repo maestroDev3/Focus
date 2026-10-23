@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:focus_timer/domain/background_style.dart';
 import 'package:focus_timer/data/json_backup_codec.dart';
 import 'package:focus_timer/domain/app_language.dart';
 import 'package:focus_timer/domain/backup.dart';
@@ -376,6 +377,42 @@ void main() {
 
       expect(repository.dailyGoal.minutes, 180);
       expect(find.text('3h'), findsOneWidget);
+    });
+
+    testWidgets('chooses the background on its own page', (tester) async {
+      final repository = await pumpSettings(tester);
+
+      await tester.scrollUntilVisible(find.text('Background'), 200);
+      await tester.ensureVisible(find.text('Background'));
+      await tester.pump();
+      expect(find.text('Roots'), findsOneWidget);
+      await tester.tap(find.text('Background'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(find.byKey(const Key('background-roots-selected')), findsOneWidget);
+
+      for (final name in [
+        'Five stems',
+        'Dense branches',
+        'Roots',
+        'Two trees',
+        'Fine mesh',
+        'None',
+      ]) {
+        await tester.scrollUntilVisible(
+          find.text(name),
+          100,
+          scrollable: find.byType(Scrollable).last,
+        );
+        expect(find.text(name), findsOneWidget);
+      }
+      await tester.ensureVisible(find.text('Fine mesh'));
+      await tester.pump();
+      await tester.tap(find.text('Fine mesh'));
+      await tester.pump();
+
+      expect(repository.background, BackgroundStyle.mesh);
+      expect(find.byKey(const Key('background-mesh-selected')), findsOneWidget);
     });
 
     testWidgets('exports a backup', (tester) async {

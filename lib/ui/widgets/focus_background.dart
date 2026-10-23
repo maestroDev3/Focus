@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 
+import '../../domain/background_style.dart';
+import 'dendrite_background.dart';
+
 /// The calm backdrop of the main screens: the surface color, a soft radial
 /// glow of the accent color and a gentle vignette at the bottom. Uses theme
-/// colors only, so light mode gets a warm ivory glow.
+/// colors only, so light mode gets a warm ivory glow. Behind the content lies
+/// the chosen living background (#308, #316).
 class FocusBackground extends StatelessWidget {
   const FocusBackground({
     super.key,
@@ -52,9 +56,32 @@ class FocusBackground extends StatelessWidget {
               ],
             ),
           ),
-          child: child,
+          child: Stack(
+            children: [
+              if (BackgroundChoice.of(context) case final style
+                  when style != BackgroundStyle.none)
+                Positioned.fill(child: DendriteBackground(style: style)),
+              child,
+            ],
+          ),
         ),
       ),
     );
   }
+}
+
+/// The background style chosen in the settings, for every [FocusBackground]
+/// below; [BackgroundStyle.initial] without one (#316).
+class BackgroundChoice extends InheritedWidget {
+  const BackgroundChoice({super.key, required this.style, required super.child});
+
+  final BackgroundStyle style;
+
+  static BackgroundStyle of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<BackgroundChoice>()?.style ??
+      BackgroundStyle.initial;
+
+  @override
+  bool updateShouldNotify(BackgroundChoice oldWidget) =>
+      style != oldWidget.style;
 }

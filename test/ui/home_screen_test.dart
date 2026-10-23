@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:focus_timer/domain/daily_goal.dart';
 import 'package:focus_timer/domain/focus_time.dart';
 import 'package:focus_timer/ui/home_screen.dart';
+import 'package:focus_timer/ui/widgets/breathing_ring.dart';
 
 import '../support/pump_app.dart';
 
@@ -168,10 +169,10 @@ void main() {
 
       expect(find.text('1h 40'), findsOneWidget);
       expect(find.text('of 3h daily goal'), findsOneWidget);
-      final ring = tester.widget<CircularProgressIndicator>(
-        find.byType(CircularProgressIndicator),
-      );
-      expect(ring.value, closeTo(100 / 180, 0.001));
+      final ring =
+          tester.widget<CustomPaint>(find.byKey(BreathingRing.paintKey)).painter
+              as GoalRingPainter;
+      expect(ring.progress, closeTo(100 / 180, 0.001));
     });
 
     testWidgets('opens the statistics from a button with a tooltip', (

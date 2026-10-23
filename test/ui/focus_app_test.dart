@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:focus_timer/domain/ambient.dart';
 import 'package:focus_timer/domain/app_blocker.dart';
 import 'package:focus_timer/domain/app_language.dart';
+import 'package:focus_timer/domain/background_style.dart';
 import 'package:focus_timer/domain/blocking.dart';
 import 'package:focus_timer/domain/daily_goal.dart';
 import 'package:focus_timer/domain/focus_label.dart';
@@ -14,6 +15,7 @@ import 'package:focus_timer/domain/pomodoro.dart';
 import 'package:focus_timer/l10n/app_localizations.dart';
 import 'package:focus_timer/ui/focus_app.dart';
 import 'package:focus_timer/ui/theme.dart';
+import 'package:focus_timer/ui/widgets/dendrite_background.dart';
 
 import '../support/backup_files_for_tests.dart';
 import '../support/fake_ambient_player.dart';
@@ -49,6 +51,8 @@ void main() {
     ValueChanged<AppLanguage>? onLanguageChanged,
     FakeAmbientPlayer? ambientPlayer,
   }) => FocusApp(
+    // Breathing and pulses would keep pumpAndSettle from settling.
+    motion: false,
     ambientPlayer: ambientPlayer,
     language: language,
     onLanguageChanged: onLanguageChanged,
@@ -262,6 +266,56 @@ void main() {
       await tester.pump(const Duration(milliseconds: 500));
 
       expect(find.text('Begin focus'), findsOneWidget);
+    });
+  });
+
+  group('FocusApp background', () {
+    testWidgets('uses the chosen background', (tester) async {
+      settings.background = BackgroundStyle.mesh;
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+
+      final background = tester.widget<DendriteBackground>(
+        find.byType(DendriteBackground).first,
+      );
+      expect(background.style, BackgroundStyle.mesh);
+    });
+
+    testWidgets('shows no branches for none', (tester) async {
+      settings.background = BackgroundStyle.none;
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+
+      expect(find.byType(DendriteBackground), findsNothing);
+    });
+  });
+
+  group('FocusApp motion', () {
+    testWidgets('lets the ring breathe when motion is on', (tester) async {
+      await tester.pumpWidget(
+        FocusApp(
+          timer: FocusTimer(repository: repository, clock: () => now),
+          settings: settings,
+          labels: labels,
+          backupFiles: backupFilesForTests(
+            sessions: repository,
+            labels: labels,
+            settings: settings,
+            documents: FakeDocumentStore(),
+          ),
+          blockList: blockList,
+          namedBlockLists: FakeNamedBlockListRepository(),
+          installedApps: FakeInstalledAppsSource(),
+          appBlocker: blocker,
+          focusTimes: FakeFocusTimeRepository(),
+          reminders: reminders,
+          clock: () => now,
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 1));
+
+      expect(tester.binding.hasScheduledFrame, isTrue);
     });
   });
 
