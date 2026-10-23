@@ -8,7 +8,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- #207 Focus insights: protected time and calm rhythm – built on `epic/focus-insights`, waiting for your test on the phone (preview APK).
+- #207 Focus insights and #325 Protected time on the daily ring – built together on `epic/focus-insights`, waiting for your test on the phone (preview APK).
 
 ## Up next
 
