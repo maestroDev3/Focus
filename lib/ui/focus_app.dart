@@ -134,6 +134,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
   late var _introDone = !widget.showIntro;
   var _dailyGoal = const DailyGoal();
   var _focusedToday = Duration.zero;
+  var _protectedToday = Duration.zero;
   var _labels = const <FocusLabel>[];
   String? _selectedLabelId;
   var _blockedAppCount = 0;
@@ -225,6 +226,18 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
     final selectedLabelId = await widget.settings.loadSelectedLabelId();
     final dailyGoal = await widget.settings.loadDailyGoal();
     final focusedToday = await widget.timer.focusedToday();
+    final now = widget.clock();
+    final today = DateTime(now.year, now.month, now.day);
+    final protectedToday = protectedTime(
+      [
+        ...await widget.timer.watchFinished().first,
+        ?widget.timer.current,
+      ],
+      await widget.focusTimes.watchFocusTimes().first,
+      from: today,
+      to: DateTime(today.year, today.month, today.day + 1),
+      now: now,
+    );
     final blockList = await widget.blockList.loadBlockList();
     final blockerEnabled = await widget.appBlocker.isBlockerEnabled();
     final notificationGateEnabled = await widget.appBlocker
@@ -239,6 +252,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
       _selectedLabelId = selectedLabelId;
       _dailyGoal = dailyGoal;
       _focusedToday = focusedToday;
+      _protectedToday = protectedToday;
       _blockedAppCount = blockList.length;
       _blockerEnabled = blockerEnabled;
       _notificationGateEnabled = notificationGateEnabled;
@@ -404,6 +418,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
                   hasLabels: _labels.isNotEmpty,
                   onChooseLabel: () => _chooseLabel(homeContext),
                   focusedToday: _focusedToday,
+                  protectedToday: _protectedToday,
                   dailyGoal: _dailyGoal,
                   onOpenStatistics: _openStatistics,
                   activeFocusTime: activeFocusTime(_focusTimes, widget.clock()),
@@ -455,6 +470,8 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
         labels: widget.labels.watchLabels(),
         dailyGoal: _dailyGoal,
         clock: widget.clock,
+        focusTimes: widget.focusTimes.watchFocusTimes(),
+        pausedAppCount: _blockedAppCount,
       ),
     );
   }

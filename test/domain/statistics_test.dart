@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:focus_timer/domain/clock.dart';
 import 'package:focus_timer/domain/focus_session.dart';
+import 'package:focus_timer/domain/focus_time.dart';
 import 'package:focus_timer/domain/statistics.dart';
 
 void main() {
@@ -203,6 +204,117 @@ void main() {
       expect(labelTotals(sessions, labelIds: {'exam'}), {
         'exam': Duration.zero,
       });
+    });
+  });
+
+  group('protectedTime', () {
+    // 2026-09-28 is a Monday.
+    final monday = DateTime(2026, 9, 28);
+    final nextMonday = DateTime(2026, 10, 5);
+    FocusSession between(DateTime start, DateTime end) =>
+        FocusSession(start: start, planned: const Duration(hours: 3))
+            .cancel(end);
+    final weekdayMornings = FocusTime(
+      id: 'mornings',
+      weekdays: const {1, 2, 3, 4, 5},
+      startMinute: 7 * 60,
+      endMinute: 10 * 60,
+    );
+
+    test('counts a session overlapping a focus time once', () {
+      final tuesdayMorning = FocusTime(
+        id: 'tuesday',
+        weekdays: const {2},
+        startMinute: 7 * 60,
+        endMinute: 10 * 60,
+      );
+
+      expect(
+        protectedTime(
+          [between(DateTime(2026, 9, 29, 9), DateTime(2026, 9, 29, 11))],
+          [tuesdayMorning],
+          from: monday,
+          to: nextMonday,
+          now: DateTime(2026, 9, 29, 20),
+        ),
+        const Duration(hours: 4),
+      );
+    });
+
+    test('counts pauses inside a session as protected', () {
+      final session = FocusSession(
+        start: DateTime(2026, 9, 29, 14),
+        planned: const Duration(minutes: 30),
+      )
+          .pause(DateTime(2026, 9, 29, 14, 10))
+          .resume(DateTime(2026, 9, 29, 14, 20))
+          .cancel(DateTime(2026, 9, 29, 14, 40));
+
+      expect(
+        protectedTime(
+          [session],
+          const [],
+          from: monday,
+          to: nextMonday,
+          now: DateTime(2026, 9, 29, 20),
+        ),
+        const Duration(minutes: 40),
+      );
+    });
+
+    test('counts focus times on their weekdays up to now', () {
+      expect(
+        protectedTime(
+          const [],
+          [weekdayMornings],
+          from: monday,
+          to: nextMonday,
+          now: DateTime(2026, 9, 30, 8),
+        ),
+        const Duration(hours: 7),
+      );
+    });
+
+    test('clips to the period and counts a running session up to now', () {
+      final overnight = between(
+        DateTime(2026, 9, 27, 23),
+        DateTime(2026, 9, 28, 1),
+      );
+      final running = FocusSession(
+        start: DateTime(2026, 9, 30, 12),
+        planned: const Duration(minutes: 50),
+      );
+
+      expect(
+        protectedTime(
+          [overnight, running],
+          const [],
+          from: monday,
+          to: nextMonday,
+          now: DateTime(2026, 9, 30, 12, 30),
+        ),
+        const Duration(minutes: 90),
+      );
+    });
+  });
+
+  group('focusDays', () {
+    test('counts days with a finished session and the days so far', () {
+      final sessions = [
+        completed(DateTime(2026, 9, 28, 9)),
+        completed(DateTime(2026, 9, 28, 15)),
+        completed(DateTime(2026, 9, 30, 9)),
+        completed(DateTime(2026, 9, 25, 9)),
+      ];
+
+      expect(
+        focusDays(
+          sessions,
+          from: DateTime(2026, 9, 28),
+          today: DateTime(2026, 10, 1),
+        ),
+        (focused: 2, days: 4),
+      );
     });
   });
 }

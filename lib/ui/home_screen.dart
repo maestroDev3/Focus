@@ -40,7 +40,11 @@ class HomeScreen extends StatelessWidget {
     this.onChooseDailyGoal,
     this.activeFocusTime,
     this.nextFocusTimeStart,
+    this.protectedToday = Duration.zero,
   });
+
+  /// Key of the goal ring (the start), for tests.
+  static const ringKey = ValueKey('goal-ring');
 
   final Clock clock;
   final Duration focusDuration;
@@ -88,6 +92,9 @@ class HomeScreen extends StatelessWidget {
 
   /// The focus time running now, if any.
   final FocusTime? activeFocusTime;
+
+  /// How long paused apps rested today – sessions and focus times (#325).
+  final Duration protectedToday;
 
   /// Start of the next focus time, shown when none is running.
   final DateTime? nextFocusTimeStart;
@@ -173,6 +180,7 @@ class HomeScreen extends StatelessWidget {
                         _GoalRing(
                           focused: focusedToday,
                           goal: dailyGoal,
+                          protectedToday: protectedToday,
                           onTap: onStart,
                           onLongPress: onChooseDailyGoal,
                         ),
@@ -263,6 +271,19 @@ class HomeScreen extends StatelessWidget {
                             ),
                           ),
                         ],
+                        if (protectedToday > Duration.zero) ...[
+                          const SizedBox(height: 6),
+                          Text(
+                            l10n.protectedToday(
+                              focusTimeText(l10n, protectedToday),
+                            ),
+                            textAlign: TextAlign.center,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                              letterSpacing: 1,
+                            ),
+                          ),
+                        ],
                         const Spacer(),
                         if (intention case final controller?) ...[
                           TextField(
@@ -298,12 +319,14 @@ class _GoalRing extends StatelessWidget {
   const _GoalRing({
     required this.focused,
     required this.goal,
+    required this.protectedToday,
     required this.onTap,
     this.onLongPress,
   });
 
   final Duration focused;
   final DailyGoal goal;
+  final Duration protectedToday;
   final VoidCallback onTap;
   final VoidCallback? onLongPress;
 
@@ -317,6 +340,7 @@ class _GoalRing extends StatelessWidget {
         shape: const CircleBorder(),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
+          key: HomeScreen.ringKey,
           onTap: onTap,
           onLongPress: onLongPress,
           child: SizedBox.square(
@@ -324,7 +348,10 @@ class _GoalRing extends StatelessWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                BreathingRing(progress: goalProgress(focused, goal)),
+                BreathingRing(
+                  progress: goalProgress(focused, goal),
+                  protectedProgress: goalProgress(protectedToday, goal),
+                ),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
