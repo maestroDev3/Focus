@@ -43,6 +43,9 @@ class HomeScreen extends StatelessWidget {
     this.protectedToday = Duration.zero,
   });
 
+  /// Key of the goal ring (the start), for tests.
+  static const ringKey = ValueKey('goal-ring');
+
   final Clock clock;
   final Duration focusDuration;
 
@@ -178,7 +181,6 @@ class HomeScreen extends StatelessWidget {
                           focused: focusedToday,
                           goal: dailyGoal,
                           protectedToday: protectedToday,
-                          inFocusTime: activeFocusTime != null,
                           onTap: onStart,
                           onLongPress: onChooseDailyGoal,
                         ),
@@ -269,6 +271,19 @@ class HomeScreen extends StatelessWidget {
                             ),
                           ),
                         ],
+                        if (protectedToday > Duration.zero) ...[
+                          const SizedBox(height: 6),
+                          Text(
+                            l10n.protectedToday(
+                              focusTimeText(l10n, protectedToday),
+                            ),
+                            textAlign: TextAlign.center,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                              letterSpacing: 1,
+                            ),
+                          ),
+                        ],
                         const Spacer(),
                         if (intention case final controller?) ...[
                           TextField(
@@ -305,7 +320,6 @@ class _GoalRing extends StatelessWidget {
     required this.focused,
     required this.goal,
     required this.protectedToday,
-    required this.inFocusTime,
     required this.onTap,
     this.onLongPress,
   });
@@ -313,9 +327,6 @@ class _GoalRing extends StatelessWidget {
   final Duration focused;
   final DailyGoal goal;
   final Duration protectedToday;
-
-  /// While a focus time runs, the hint invites to begin a session.
-  final bool inFocusTime;
   final VoidCallback onTap;
   final VoidCallback? onLongPress;
 
@@ -329,6 +340,7 @@ class _GoalRing extends StatelessWidget {
         shape: const CircleBorder(),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
+          key: HomeScreen.ringKey,
           onTap: onTap,
           onLongPress: onLongPress,
           child: SizedBox.square(
@@ -362,20 +374,9 @@ class _GoalRing extends StatelessWidget {
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
-                    if (protectedToday > Duration.zero) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        l10n.protectedToday(
-                          focusTimeText(l10n, protectedToday),
-                        ),
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
                     const SizedBox(height: 14),
                     Text(
-                      inFocusTime ? l10n.focusTimeBeginSession : l10n.beginFocus,
+                      l10n.beginFocus,
                       style: theme.textTheme.labelLarge?.copyWith(
                         color: theme.colorScheme.primary,
                         letterSpacing: 2,
