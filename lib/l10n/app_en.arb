@@ -228,7 +228,7 @@
   "@labelNameInvalid": {
     "description": "Shown when a label name is empty, too long or already used."
   },
-  "labelGoalHours": "Goal in hours (optional)",
+  "labelGoalHours": "Total goal in hours (optional)",
   "@labelGoalHours": {
     "description": "Field in the label dialog for an optional goal in whole hours."
   },
@@ -262,6 +262,35 @@
     "description": "All-time focus time of a label that reached its goal.",
     "placeholders": {
       "total": {
+        "type": "String"
+      }
+    }
+  },
+  "labelWeeklyGoalHours": "Goal per week in hours (optional)",
+  "@labelWeeklyGoalHours": {
+    "description": "Field in the label dialog for an optional weekly goal in whole hours."
+  },
+  "labelWeeklyGoalInvalid": "Please enter a weekly goal of 1–168 hours or leave it empty.",
+  "@labelWeeklyGoalInvalid": {
+    "description": "Shown when the weekly label goal is not 1–168 hours."
+  },
+  "labelWeekProgress": "{week} of {goal} this week",
+  "@labelWeekProgress": {
+    "description": "This week's focus time of a label towards its weekly goal.",
+    "placeholders": {
+      "week": {
+        "type": "String"
+      },
+      "goal": {
+        "type": "String"
+      }
+    }
+  },
+  "labelWeekReached": "{week} this week · Weekly goal reached",
+  "@labelWeekReached": {
+    "description": "This week's focus time of a label that reached its weekly goal.",
+    "placeholders": {
+      "week": {
         "type": "String"
       }
     }

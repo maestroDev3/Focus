@@ -230,6 +230,11 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                           sessions,
                           labelIds: {for (final label in labels) label.id},
                         ),
+                        weekTotals: labelWeekTotals(
+                          sessions,
+                          labelIds: {for (final label in labels) label.id},
+                          today: now,
+                        ),
                       ),
                     ],
                   ],
@@ -414,10 +419,15 @@ class _LabelBreakdown extends StatelessWidget {
 /// Every label with its all-time total and goal progress, largest first –
 /// independent of the chosen period (#286).
 class _AllTimeCard extends StatelessWidget {
-  const _AllTimeCard({required this.labels, required this.totals});
+  const _AllTimeCard({
+    required this.labels,
+    required this.totals,
+    required this.weekTotals,
+  });
 
   final List<FocusLabel> labels;
   final Map<String, Duration> totals;
+  final Map<String, Duration> weekTotals;
 
   @override
   Widget build(BuildContext context) {
@@ -444,7 +454,12 @@ class _AllTimeCard extends StatelessWidget {
             for (final label in sorted) ...[
               Text(label.name),
               const SizedBox(height: 4),
-              LabelProgress(total: totalOf(label), goal: label.goal),
+              LabelProgress(
+                total: totalOf(label),
+                goal: label.goal,
+                weekTotal: weekTotals[label.id] ?? Duration.zero,
+                weeklyGoal: label.weeklyGoal,
+              ),
               const SizedBox(height: 14),
             ],
           ],

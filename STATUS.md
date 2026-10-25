@@ -8,7 +8,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- Round on branch `epic/next-round`: #337 Weekly goal for a label (`in-progress`) → #196 Quick settings tile → #194 Play Store preparation; one preview APK at the end.
+- Round on branch `epic/next-round`: #337 Weekly goal for a label (built) → #196 Quick settings tile (`in-progress`) → #194 Play Store preparation; one preview APK at the end.
 
 ## Up next
 
@@ -21,7 +21,7 @@ The GitHub issues are authoritative; this file is the summary.
 | Epic | State | Stories (in order) |
 |---|---|---|
 | #123 Session ritual | 3 of 4 closed | #269 Spotify playlist, personal mode (`backlog`, needs your Spotify developer app) |
-| #336 Weekly goals for labels | 0 of 1 closed | #337 Set a weekly goal for a label (`in-progress`) |
+| #336 Weekly goals for labels | 0 of 1 closed | #337 Set a weekly goal for a label (`in-progress`, built) |
 | #195 Quick settings tile | 0 of 1 closed | #196 Start a session from the quick settings (`backlog`) |
 
 **#139 Distraction blocking**

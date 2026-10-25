@@ -13,6 +13,7 @@ class LabelSheet extends StatelessWidget {
     required this.onSelect,
     required this.onManage,
     this.totals = const {},
+    this.weekTotals = const {},
   });
 
   final List<FocusLabel> labels;
@@ -22,6 +23,9 @@ class LabelSheet extends StatelessWidget {
 
   /// All-time focus time per label id, shown under each label (#285).
   final Map<String, Duration> totals;
+
+  /// This week's focus time per label id, for weekly goals (#337).
+  final Map<String, Duration> weekTotals;
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +49,8 @@ class LabelSheet extends StatelessWidget {
               subtitle: LabelProgress(
                 total: totals[label.id] ?? Duration.zero,
                 goal: label.goal,
+                weekTotal: weekTotals[label.id] ?? Duration.zero,
+                weeklyGoal: label.weeklyGoal,
               ),
               trailing: check(label.id == selectedId),
               onTap: () => onSelect(label.id),
