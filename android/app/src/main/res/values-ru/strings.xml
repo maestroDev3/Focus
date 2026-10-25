@@ -9,4 +9,8 @@
     <string name="blocker_off_text">Снова включи «Focus — пауза приложений», чтобы приложения на паузе оставались закрытыми.</string>
     <string name="gate_off_title">Удержание уведомлений выключено</string>
     <string name="gate_off_text">Снова включи «Focus — удержание уведомлений», чтобы удерживать уведомления приложений на паузе.</string>
+    <string name="tile_label">Focus</string>
+    <string name="tile_until">до %1$s</string>
+    <string name="tile_paused">Пауза</string>
+    <string name="tile_minutes">%1$d мин</string>
 </resources>

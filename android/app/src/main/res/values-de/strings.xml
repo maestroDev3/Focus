@@ -9,4 +9,8 @@
     <string name="blocker_off_text">Schalte „Focus App-Sperre“ wieder ein, damit gesperrte Apps geschlossen bleiben.</string>
     <string name="gate_off_title">Benachrichtigungen werden nicht mehr zurückgehalten</string>
     <string name="gate_off_text">Schalte „Focus Benachrichtigungen“ wieder ein, damit Benachrichtigungen gesperrter Apps zurückgehalten werden.</string>
+    <string name="tile_label">Focus</string>
+    <string name="tile_until">bis %1$s</string>
+    <string name="tile_paused">Pausiert</string>
+    <string name="tile_minutes">%1$d Min.</string>
 </resources>
