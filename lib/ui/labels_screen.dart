@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../domain/clock.dart';
 import '../domain/focus_label.dart';
 import '../domain/focus_session.dart';
 import '../domain/label_repository.dart';
@@ -11,12 +12,20 @@ import 'widgets/label_progress.dart';
 /// Lets the user add, rename and delete labels and give them a goal in
 /// hours; each label shows what its sessions add up to (#285).
 class LabelsScreen extends StatelessWidget {
-  const LabelsScreen({super.key, required this.labels, required this.sessions});
+  const LabelsScreen({
+    super.key,
+    required this.labels,
+    required this.sessions,
+    this.clock = DateTime.now,
+  });
 
   final LabelRepository labels;
 
   /// Finished sessions, for the all-time total of each label.
   final Stream<List<FocusSession>> sessions;
+
+  /// Today, for the weekly goals.
+  final Clock clock;
 
   Future<void> _edit(BuildContext context, {FocusLabel? label}) async {
     final messenger = ScaffoldMessenger.of(context);
@@ -26,36 +35,52 @@ class LabelsScreen extends StatelessWidget {
       builder: (context) => _LabelDialog(
         initialName: label?.name ?? '',
         initialGoal: label?.goal,
+        initialWeeklyGoal: label?.weeklyGoal,
       ),
     );
     if (input == null) return;
-    final Duration? goal;
-    switch (input.goal.trim()) {
-      case '':
-        goal = null;
-      case final typed:
-        final hours = int.tryParse(typed);
-        if (hours == null || hours < 1 || hours > FocusLabel.maxGoalHours) {
-          messenger.showSnackBar(
-            SnackBar(content: Text(l10n.labelGoalInvalid)),
-          );
-          return;
-        }
-        goal = Duration(hours: hours);
+    final goal = _hours(input.goal, FocusLabel.maxGoalHours);
+    if (goal == null) {
+      messenger.showSnackBar(SnackBar(content: Text(l10n.labelGoalInvalid)));
+      return;
+    }
+    final weeklyGoal = _hours(input.weeklyGoal, FocusLabel.maxWeeklyGoalHours);
+    if (weeklyGoal == null) {
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.labelWeeklyGoalInvalid)),
+      );
+      return;
     }
     try {
       if (label == null) {
         final added = await labels.addLabel(input.name);
-        if (goal != null) await labels.setGoal(added.id, goal);
+        if (goal.hours case final hours?) await labels.setGoal(added.id, hours);
+        if (weeklyGoal.hours case final hours?) {
+          await labels.setWeeklyGoal(added.id, hours);
+        }
       } else {
         if (input.name.trim() != label.name) {
           await labels.renameLabel(label.id, input.name);
         }
-        if (goal != label.goal) await labels.setGoal(label.id, goal);
+        if (goal.hours != label.goal) {
+          await labels.setGoal(label.id, goal.hours);
+        }
+        if (weeklyGoal.hours != label.weeklyGoal) {
+          await labels.setWeeklyGoal(label.id, weeklyGoal.hours);
+        }
       }
     } on ArgumentError {
       messenger.showSnackBar(SnackBar(content: Text(l10n.labelNameInvalid)));
     }
+  }
+
+  /// Typed whole hours: `(hours: null)` for an empty field, null if invalid.
+  static ({Duration? hours})? _hours(String typed, int max) {
+    final text = typed.trim();
+    if (text.isEmpty) return (hours: null);
+    final hours = int.tryParse(text);
+    if (hours == null || hours < 1 || hours > max) return null;
+    return (hours: Duration(hours: hours));
   }
 
   @override
@@ -70,9 +95,15 @@ class LabelsScreen extends StatelessWidget {
               stream: labels.watchLabels(),
               builder: (context, snapshot) {
                 final items = snapshot.data ?? const <FocusLabel>[];
+                final ids = {for (final label in items) label.id};
                 final totals = labelTotals(
                   sessionSnapshot.data ?? const [],
-                  labelIds: {for (final label in items) label.id},
+                  labelIds: ids,
+                );
+                final weekTotals = labelWeekTotals(
+                  sessionSnapshot.data ?? const [],
+                  labelIds: ids,
+                  today: clock(),
                 );
                 return ListView.builder(
                   itemCount: items.length,
@@ -85,6 +116,8 @@ class LabelsScreen extends StatelessWidget {
                         child: LabelProgress(
                           total: totals[label.id] ?? Duration.zero,
                           goal: label.goal,
+                          weekTotal: weekTotals[label.id] ?? Duration.zero,
+                          weeklyGoal: label.weeklyGoal,
                         ),
                       ),
                       onTap: () => _edit(context, label: label),
@@ -113,14 +146,19 @@ class LabelsScreen extends StatelessWidget {
 }
 
 /// What the label dialog returns: the name and the goal as typed.
-typedef _LabelInput = ({String name, String goal});
+typedef _LabelInput = ({String name, String goal, String weeklyGoal});
 
 /// Asks for a label name and an optional goal in hours; null when cancelled.
 class _LabelDialog extends StatefulWidget {
-  const _LabelDialog({required this.initialName, required this.initialGoal});
+  const _LabelDialog({
+    required this.initialName,
+    required this.initialGoal,
+    required this.initialWeeklyGoal,
+  });
 
   final String initialName;
   final Duration? initialGoal;
+  final Duration? initialWeeklyGoal;
 
   @override
   State<_LabelDialog> createState() => _LabelDialogState();
@@ -131,11 +169,15 @@ class _LabelDialogState extends State<_LabelDialog> {
   late final _goal = TextEditingController(
     text: widget.initialGoal?.inHours.toString() ?? '',
   );
+  late final _weeklyGoal = TextEditingController(
+    text: widget.initialWeeklyGoal?.inHours.toString() ?? '',
+  );
 
   @override
   void dispose() {
     _name.dispose();
     _goal.dispose();
+    _weeklyGoal.dispose();
     super.dispose();
   }
 
@@ -164,6 +206,16 @@ class _LabelDialogState extends State<_LabelDialog> {
             ],
             decoration: InputDecoration(labelText: l10n.labelGoalHours),
           ),
+          TextField(
+            key: const Key('label-weekly-goal'),
+            controller: _weeklyGoal,
+            keyboardType: TextInputType.number,
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+              LengthLimitingTextInputFormatter(3),
+            ],
+            decoration: InputDecoration(labelText: l10n.labelWeeklyGoalHours),
+          ),
         ],
       ),
       actions: [
@@ -173,7 +225,11 @@ class _LabelDialogState extends State<_LabelDialog> {
         ),
         TextButton(
           onPressed: () =>
-              Navigator.of(context).pop((name: _name.text, goal: _goal.text)),
+              Navigator.of(context).pop((
+                name: _name.text,
+                goal: _goal.text,
+                weeklyGoal: _weeklyGoal.text,
+              )),
           child: Text(l10n.save),
         ),
       ],

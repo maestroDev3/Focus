@@ -572,9 +572,12 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
   Future<void> _chooseLabel(BuildContext context) async {
     final sessions = await widget.timer.watchFinished().first;
     if (!context.mounted) return;
-    final totals = labelTotals(
+    final ids = {for (final label in _labels) label.id};
+    final totals = labelTotals(sessions, labelIds: ids);
+    final weekTotals = labelWeekTotals(
       sessions,
-      labelIds: {for (final label in _labels) label.id},
+      labelIds: ids,
+      today: widget.clock(),
     );
     await showModalBottomSheet<void>(
       context: context,
@@ -582,6 +585,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
       builder: (sheetContext) => LabelSheet(
         labels: _labels,
         totals: totals,
+        weekTotals: weekTotals,
         selectedId: _labelWithId(_selectedLabelId)?.id,
         onSelect: (id) {
           Navigator.of(sheetContext).pop();
@@ -594,6 +598,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
             (context) => LabelsScreen(
               labels: widget.labels,
               sessions: widget.timer.watchFinished(),
+              clock: widget.clock,
             ),
           );
         },
