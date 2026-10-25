@@ -32,10 +32,18 @@ class PermissionOnboardingScreen extends StatelessWidget {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(),
+      // Scrolls on small screens and with large fonts; the buttons still sit
+      // at the bottom when there is room.
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(28, 8, 28, 32),
-          child: Column(
+        child: LayoutBuilder(
+          builder: (context, constraints) => SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(28, 8, 28, 32),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: (constraints.maxHeight - 40).clamp(0, double.infinity),
+              ),
+              child: IntrinsicHeight(
+                child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(title, style: theme.textTheme.displaySmall),
@@ -77,6 +85,9 @@ class PermissionOnboardingScreen extends StatelessWidget {
                 ),
               ],
             ],
+                ),
+              ),
+            ),
           ),
         ),
       ),
