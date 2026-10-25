@@ -21,6 +21,7 @@ The GitHub issues are authoritative; this file is the summary.
 | Epic | State | Stories (in order) |
 |---|---|---|
 | #123 Session ritual | 3 of 4 closed | #269 Spotify playlist, personal mode (`backlog`, needs your Spotify developer app) |
+| #336 Weekly goals for labels | 0 of 1 closed | #337 Set a weekly goal for a label (`backlog`) |
 | #195 Quick settings tile | 0 of 1 closed | #196 Start a session from the quick settings (`backlog`) |
 | #205 Statistics you can explore | 1 of 3 closed | #207 Focus insights (`in-progress`, built) → #333 Which apps rested, and why (`in-progress`, built) |
 
@@ -47,6 +48,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## Open decisions (user only)
 
+- New epic #336 Weekly goals for labels – created, please confirm or re-sort
 - Epic #279 Every APK starts (Release & platform) – created, please confirm or re-sort
 - New epic #187 Block list per session (parked idea #188) – created, please confirm or re-sort.
 - #269 Spotify personal mode: waiting for your Spotify developer app (Client ID).
