@@ -537,7 +537,7 @@
   "@blockerOnboardingTitle": {
     "description": "Title of the screen explaining the accessibility permission."
   },
-  "blockerOnboardingBody": "To keep paused apps closed while you focus, Android needs your permission. In the next screen, open “Focus app pause” and switch it on. Focus only notices which app is opened – it never reads what is on your screen.",
+  "blockerOnboardingBody": "To keep paused apps closed while you focus, Focus uses Android's accessibility service. It only notices which app is opened, so it can bring you back to Focus when that app is paused. It never reads what is on your screen, and nothing is collected or leaves your phone. In the next screen, open “Focus app pause” and switch it on.",
   "@blockerOnboardingBody": {
     "description": "Explanation of the accessibility permission before opening the system settings."
   },
@@ -552,6 +552,14 @@
   "openSettings": "Open settings",
   "@openSettings": {
     "description": "Button that opens the Android settings."
+  },
+  "agreeAndOpenSettings": "Agree and open settings",
+  "@agreeAndOpenSettings": {
+    "description": "Consent button of the accessibility disclosure; opens the accessibility settings."
+  },
+  "notNow": "Not now",
+  "@notNow": {
+    "description": "Closes a permission disclosure without granting anything."
   },
   "allowHoldingNotifications": "Allow holding notifications",
   "@allowHoldingNotifications": {

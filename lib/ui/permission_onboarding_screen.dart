@@ -11,6 +11,7 @@ class PermissionOnboardingScreen extends StatelessWidget {
     required this.body,
     required this.onOpenSettings,
     required this.onOpenAppInfo,
+    this.consentLabel,
   });
 
   final String title;
@@ -19,6 +20,11 @@ class PermissionOnboardingScreen extends StatelessWidget {
 
   /// Opens Focus' app info, the way out when Android greys out the switch.
   final VoidCallback onOpenAppInfo;
+
+  /// When set, the main button asks for consent with this label and a
+  /// “Not now” button leaves – the prominent disclosure Google Play requires
+  /// for the accessibility service.
+  final String? consentLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -61,8 +67,15 @@ class PermissionOnboardingScreen extends StatelessWidget {
                 style: FilledButton.styleFrom(
                   minimumSize: const Size.fromHeight(64),
                 ),
-                child: Text(l10n.openSettings),
+                child: Text(consentLabel ?? l10n.openSettings),
               ),
+              if (consentLabel != null) ...[
+                const SizedBox(height: 4),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text(l10n.notNow),
+                ),
+              ],
             ],
           ),
         ),
