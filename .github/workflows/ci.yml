@@ -76,6 +76,12 @@ jobs:
         run: flutter build apk --release --build-number=${{ github.run_number }} 2>&1 | tee build.log; exit ${PIPESTATUS[0]}
         env:
           FOCUS_KEYSTORE_PASSWORD: ${{ secrets.FOCUS_KEYSTORE_PASSWORD }}
+      # The Play Store takes an app bundle, signed with the same release
+      # (upload) key; same build number as the APK (#352).
+      - name: Build app bundle
+        run: flutter build appbundle --release --build-number=${{ github.run_number }} 2>&1 | tee -a build.log; exit ${PIPESTATUS[0]}
+        env:
+          FOCUS_KEYSTORE_PASSWORD: ${{ secrets.FOCUS_KEYSTORE_PASSWORD }}
       # Post the build errors as a commit comment so they can be read via the API.
       - name: Report build failure
         if: failure()
@@ -140,6 +146,10 @@ jobs:
         with:
           name: focus_timer-apk
           path: build/app/outputs/flutter-apk/app-release.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: focus_timer-aab
+          path: build/app/outputs/bundle/release/app-release.aab
       # On main: publish the APK as release “latest” (direct download on the phone)
       - name: Release latest
         if: github.ref == 'refs/heads/main'
@@ -148,12 +158,13 @@ jobs:
         run: |
           set -x
           cp build/app/outputs/flutter-apk/app-release.apk focus_timer.apk
-          NOTES="Built automatically from ${GITHUB_SHA::7} (build ${{ github.run_number }}). To install, download focus_timer.apk on your phone and open it."
+          cp build/app/outputs/bundle/release/app-release.aab focus_timer.aab
+          NOTES="Built automatically from ${GITHUB_SHA::7} (build ${{ github.run_number }}). To install, download focus_timer.apk on your phone and open it. focus_timer.aab is the app bundle for the Play Store."
           # Recreate the release on every build, so its date and the
           # `latest` tag match this build. The download link
           # (…/releases/download/latest/focus_timer.apk) stays the same.
           gh release delete latest --yes --cleanup-tag || true
-          gh release create latest focus_timer.apk --target "$GITHUB_SHA" \
+          gh release create latest focus_timer.apk focus_timer.aab --target "$GITHUB_SHA" \
             --title "Focus (latest) · build ${{ github.run_number }}" --notes "$NOTES"
       # Epic branches (collected for a user test, CLAUDE.md “Merging”): publish
       # the APK as pre-release “preview”, so it installs on the phone over the
