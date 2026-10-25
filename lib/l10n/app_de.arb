@@ -64,8 +64,6 @@
   "byLabel": "Nach Label",
   "allTime": "Gesamt",
   "insights": "Einblicke",
-  "protectedToday": "{time} heute geschützt",
-  "focusTimeBeginSession": "Fokuszeit · Session beginnen",
   "protectedTime": "Deine pausierten Apps haben {time} geruht",
   "protectedTimeHint": "Pausiere Apps, um deine Fokuszeit zu schützen.",
   "focusDaysOf": "{days, plural, one{An {focused} von 1 Tag fokussiert} other{An {focused} von {days} Tagen fokussiert}}",

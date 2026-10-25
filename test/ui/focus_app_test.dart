@@ -744,27 +744,6 @@ void main() {
       );
     });
 
-    testWidgets('shows today\'s protected time from a focus time', (
-      tester,
-    ) async {
-      // 2026-09-29 is a Tuesday; now is 20:00.
-      final focusTimes = FakeFocusTimeRepository([
-        FocusTime(
-          id: 'focus-time-1',
-          weekdays: const {2},
-          startMinute: 19 * 60,
-          endMinute: 21 * 60,
-        ),
-      ]);
-      await tester.pumpWidget(buildApp(focusTimes: focusTimes));
-      await tester.pump();
-      await tester.pump();
-
-      expect(find.text('1h protected today'), findsOneWidget);
-      expect(find.text('0 min'), findsOneWidget);
-      expect(find.text('Focus time · begin a session'), findsOneWidget);
-    });
-
     testWidgets('shows the blocked screen during a focus time', (
       tester,
     ) async {

@@ -321,7 +321,3 @@ commit comment).
 - 2026-10-23 – Focus insights (#207): a card in the statistics following
   Week/Month with “protected time” (how long paused apps rested – sessions
   and focus times, counted once) and “calm rhythm” (focused on x of y days).
-- 2026-10-23 – Focus times on the ring (epic #324, story #325): the daily
-  goal stays honest (sessions only); today's protected time shows as a faint
-  second arc plus “… protected today”, and during a focus time the ring
-  invites to begin a session.

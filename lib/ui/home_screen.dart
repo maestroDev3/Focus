@@ -40,7 +40,6 @@ class HomeScreen extends StatelessWidget {
     this.onChooseDailyGoal,
     this.activeFocusTime,
     this.nextFocusTimeStart,
-    this.protectedToday = Duration.zero,
   });
 
   final Clock clock;
@@ -89,9 +88,6 @@ class HomeScreen extends StatelessWidget {
 
   /// The focus time running now, if any.
   final FocusTime? activeFocusTime;
-
-  /// How long paused apps rested today – sessions and focus times (#325).
-  final Duration protectedToday;
 
   /// Start of the next focus time, shown when none is running.
   final DateTime? nextFocusTimeStart;
@@ -177,8 +173,6 @@ class HomeScreen extends StatelessWidget {
                         _GoalRing(
                           focused: focusedToday,
                           goal: dailyGoal,
-                          protectedToday: protectedToday,
-                          inFocusTime: activeFocusTime != null,
                           onTap: onStart,
                           onLongPress: onChooseDailyGoal,
                         ),
@@ -304,18 +298,12 @@ class _GoalRing extends StatelessWidget {
   const _GoalRing({
     required this.focused,
     required this.goal,
-    required this.protectedToday,
-    required this.inFocusTime,
     required this.onTap,
     this.onLongPress,
   });
 
   final Duration focused;
   final DailyGoal goal;
-  final Duration protectedToday;
-
-  /// While a focus time runs, the hint invites to begin a session.
-  final bool inFocusTime;
   final VoidCallback onTap;
   final VoidCallback? onLongPress;
 
@@ -336,10 +324,7 @@ class _GoalRing extends StatelessWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                BreathingRing(
-                  progress: goalProgress(focused, goal),
-                  protectedProgress: goalProgress(protectedToday, goal),
-                ),
+                BreathingRing(progress: goalProgress(focused, goal)),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -362,20 +347,9 @@ class _GoalRing extends StatelessWidget {
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
-                    if (protectedToday > Duration.zero) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        l10n.protectedToday(
-                          focusTimeText(l10n, protectedToday),
-                        ),
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
                     const SizedBox(height: 14),
                     Text(
-                      inFocusTime ? l10n.focusTimeBeginSession : l10n.beginFocus,
+                      l10n.beginFocus,
                       style: theme.textTheme.labelLarge?.copyWith(
                         color: theme.colorScheme.primary,
                         letterSpacing: 2,
