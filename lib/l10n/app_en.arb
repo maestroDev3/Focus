@@ -345,6 +345,28 @@
   "@protectedTimeHint": {
     "description": "Shown in the insights when no apps are paused and there are no focus times."
   },
+  "pausedApps": "Paused apps",
+  "@pausedApps": {
+    "description": "Title of the statistics card listing how long each paused app rested."
+  },
+  "restInFocusTimes": "{time} focus time",
+  "@restInFocusTimes": {
+    "description": "Part of an app's rest time that came from focus times.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "restInSessions": "{time} sessions",
+  "@restInSessions": {
+    "description": "Part of an app's rest time that came from sessions outside focus times.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
   "focusDaysOf": "{days, plural, one{Focused on {focused} of 1 day} other{Focused on {focused} of {days} days}}",
   "@focusDaysOf": {
     "description": "On how many days of the period so far at least one session ended.",
