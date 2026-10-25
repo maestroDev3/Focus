@@ -321,3 +321,7 @@ commit comment).
 - 2026-10-23 – Focus insights (#207): a card in the statistics following
   Week/Month with “protected time” (how long paused apps rested – sessions
   and focus times, counted once) and “calm rhythm” (focused on x of y days).
+- 2026-10-25 – One ring on home, for active focus only (sessions); the
+  protected-time ring and line from #325 were taken out again after the phone
+  test (epic #324 dropped). Focus times count in the statistics: protected
+  time (#207) and per paused app (#333).
