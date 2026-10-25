@@ -26,6 +26,9 @@ class StatisticsScreen extends StatefulWidget {
     required this.clock,
     this.focusTimes,
     this.pausedAppCount = 0,
+    this.defaultApps = const {},
+    this.listApps = const {},
+    this.appNames = const {},
   });
 
   final Stream<List<FocusSession>> finishedSessions;
@@ -41,6 +44,15 @@ class StatisticsScreen extends StatefulWidget {
   /// Apps paused during sessions; without any (and without focus times) the
   /// insights invite to pause apps.
   final int pausedAppCount;
+
+  /// Apps paused in sessions and focus times without their own list.
+  final Set<String> defaultApps;
+
+  /// Apps of each named block list, by list id.
+  final Map<String, Set<String>> listApps;
+
+  /// App names by package, for the paused apps card.
+  final Map<String, String> appNames;
 
   @override
   State<StatisticsScreen> createState() => _StatisticsScreenState();
@@ -191,6 +203,23 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                           (focusTimeSnapshot.data ?? const []).isNotEmpty,
                       days: focusDays(sessions, from: firstDay, today: now),
                     ),
+                    if (appRestTimes(
+                          sessions,
+                          focusTimeSnapshot.data ?? const [],
+                          defaultApps: widget.defaultApps,
+                          listApps: widget.listApps,
+                          from: firstDay,
+                          to: DateTime(
+                            lastDay.year,
+                            lastDay.month,
+                            lastDay.day + 1,
+                          ),
+                          now: now,
+                        )
+                        case final rests when rests.isNotEmpty) ...[
+                      const SizedBox(height: 12),
+                      _PausedAppsCard(rests: rests, names: widget.appNames),
+                    ],
                     const SizedBox(height: 12),
                     _LabelBreakdown(byLabel: byLabel, labels: labels),
                     if (labels.isNotEmpty) ...[
@@ -482,6 +511,63 @@ class _InsightsCard extends StatelessWidget {
                 ),
               ],
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// How long each paused app rested in the period and through what (#333);
+/// at most eight apps, the longest first.
+class _PausedAppsCard extends StatelessWidget {
+  const _PausedAppsCard({required this.rests, required this.names});
+
+  final List<AppRest> rests;
+  final Map<String, String> names;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    return Card(
+      key: const Key('paused-apps'),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              l10n.pausedApps,
+              style: theme.textTheme.labelLarge?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+                letterSpacing: 2,
+              ),
+            ),
+            const SizedBox(height: 12),
+            for (final rest in rests.take(8)) ...[
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(names[rest.packageName] ?? rest.packageName),
+                  ),
+                  Text(focusTimeText(l10n, rest.total)),
+                ],
+              ),
+              const SizedBox(height: 2),
+              Text(
+                [
+                  if (rest.focusTimes > Duration.zero)
+                    l10n.restInFocusTimes(focusTimeText(l10n, rest.focusTimes)),
+                  if (rest.sessions > Duration.zero)
+                    l10n.restInSessions(focusTimeText(l10n, rest.sessions)),
+                ].join(' · '),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 12),
+            ],
           ],
         ),
       ),
