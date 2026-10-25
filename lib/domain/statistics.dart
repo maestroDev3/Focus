@@ -118,22 +118,104 @@ Duration protectedTime(
   required DateTime now,
 }) {
   final end = now.isBefore(to) ? now : to;
-  if (!end.isAfter(from)) return Duration.zero;
-  final intervals = <(DateTime, DateTime)>[
-    for (final session in sessions) (session.start, session.end ?? now),
-    for (
-      var day = DateTime(from.year, from.month, from.day);
-      day.isBefore(end);
-      day = DateTime(day.year, day.month, day.day + 1)
-    )
+  return _unionLength([
+    ..._sessionIntervals(sessions, now),
+    ..._focusTimeIntervals(focusTimes, from, end),
+  ], from, end);
+}
+
+/// How long one paused app rested in a period, and through what (#333).
+typedef AppRest = ({
+  String packageName,
+  Duration total,
+  Duration focusTimes,
+  Duration sessions,
+});
+
+/// Per paused app: how long it rested between [from] and [to] (until
+/// [now]) – during sessions if it is in [defaultApps], and during the focus
+/// times that block it (their named list from [listApps], else
+/// [defaultApps]) – split into the focus-time part and the extra session
+/// time outside focus times. Sorted by total; apps that never rested are
+/// left out.
+List<AppRest> appRestTimes(
+  List<FocusSession> sessions,
+  List<FocusTime> focusTimes, {
+  required Set<String> defaultApps,
+  required Map<String, Set<String>> listApps,
+  required DateTime from,
+  required DateTime to,
+  required DateTime now,
+}) {
+  final end = now.isBefore(to) ? now : to;
+  Set<String> appsOf(FocusTime time) => switch (time.blockListId) {
+    final id? => listApps[id] ?? defaultApps,
+    null => defaultApps,
+  };
+  final apps = {
+    ...defaultApps,
+    for (final time in focusTimes) ...appsOf(time),
+  };
+  final sessionIntervals = _sessionIntervals(sessions, now);
+  final rests = <AppRest>[];
+  for (final app in apps) {
+    final focusIntervals = _focusTimeIntervals([
       for (final time in focusTimes)
-        for (final range in time.ranges)
-          if (range.weekdays.contains(day.weekday))
-            (
-              DateTime(day.year, day.month, day.day, 0, range.startMinute),
-              DateTime(day.year, day.month, day.day, 0, range.endMinute),
-            ),
-  ];
+        if (appsOf(time).contains(app)) time,
+    ], from, end);
+    final inFocusTimes = _unionLength(focusIntervals, from, end);
+    final total = _unionLength([
+      if (defaultApps.contains(app)) ...sessionIntervals,
+      ...focusIntervals,
+    ], from, end);
+    if (total == Duration.zero) continue;
+    rests.add((
+      packageName: app,
+      total: total,
+      focusTimes: inFocusTimes,
+      sessions: total - inFocusTimes,
+    ));
+  }
+  return rests..sort(
+    (a, b) => b.total != a.total
+        ? b.total.compareTo(a.total)
+        : a.packageName.compareTo(b.packageName),
+  );
+}
+
+/// Sessions as intervals; running ones last until [now].
+List<(DateTime, DateTime)> _sessionIntervals(
+  List<FocusSession> sessions,
+  DateTime now,
+) => [for (final session in sessions) (session.start, session.end ?? now)];
+
+/// The ranges of [focusTimes] on their weekdays from [from] until [end].
+List<(DateTime, DateTime)> _focusTimeIntervals(
+  List<FocusTime> focusTimes,
+  DateTime from,
+  DateTime end,
+) => [
+  for (
+    var day = DateTime(from.year, from.month, from.day);
+    day.isBefore(end);
+    day = DateTime(day.year, day.month, day.day + 1)
+  )
+    for (final time in focusTimes)
+      for (final range in time.ranges)
+        if (range.weekdays.contains(day.weekday))
+          (
+            DateTime(day.year, day.month, day.day, 0, range.startMinute),
+            DateTime(day.year, day.month, day.day, 0, range.endMinute),
+          ),
+];
+
+/// Length of the union of [intervals], clipped to [from]–[end].
+Duration _unionLength(
+  List<(DateTime, DateTime)> intervals,
+  DateTime from,
+  DateTime end,
+) {
+  if (!end.isAfter(from)) return Duration.zero;
   final clipped = [
     for (final (start, stop) in intervals)
       if (stop.isAfter(from) && start.isBefore(end))
@@ -143,7 +225,7 @@ Duration protectedTime(
   DateTime? openStart;
   DateTime? openEnd;
   for (final (start, stop) in clipped) {
-    if (openEnd == null || start.isAfter(openEnd)) {
+    if (openStart == null || openEnd == null || start.isAfter(openEnd)) {
       if (openStart != null && openEnd != null) {
         total += openEnd.difference(openStart);
       }

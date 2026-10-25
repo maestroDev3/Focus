@@ -317,4 +317,98 @@ void main() {
       );
     });
   });
+
+  group('appRestTimes', () {
+    // 2026-09-28 is a Monday; now is Tuesday 20:00.
+    final monday = DateTime(2026, 9, 28);
+    final nextMonday = DateTime(2026, 10, 5);
+    final now = DateTime(2026, 9, 29, 20);
+    FocusSession between(DateTime start, DateTime end) =>
+        FocusSession(start: start, planned: const Duration(hours: 3))
+            .cancel(end);
+    final mornings = FocusTime(
+      id: 'mornings',
+      weekdays: const {1, 2},
+      startMinute: 7 * 60,
+      endMinute: 10 * 60,
+    );
+    final evenings = FocusTime(
+      id: 'evenings',
+      weekdays: const {2},
+      startMinute: 18 * 60,
+      endMinute: 19 * 60,
+      blockListId: 'study',
+    );
+
+    List<AppRest> rests(List<FocusSession> sessions, List<FocusTime> times) =>
+        appRestTimes(
+          sessions,
+          times,
+          defaultApps: const {'insta', 'tiktok'},
+          listApps: const {
+            'study': {'youtube'},
+          },
+          from: monday,
+          to: nextMonday,
+          now: now,
+        );
+
+    test('lets default apps rest in sessions and default focus times', () {
+      final result = rests(
+        [between(DateTime(2026, 9, 29, 12), DateTime(2026, 9, 29, 13))],
+        [mornings],
+      );
+
+      final insta = result.firstWhere((rest) => rest.packageName == 'insta');
+      expect(insta.total, const Duration(hours: 7));
+      expect(insta.focusTimes, const Duration(hours: 6));
+      expect(insta.sessions, const Duration(hours: 1));
+    });
+
+    test('lets a named list app rest only in its focus time', () {
+      final result = rests(const [], [evenings]);
+
+      expect(result.map((rest) => rest.packageName), ['youtube']);
+      expect(result.single.total, const Duration(hours: 1));
+      expect(result.single.sessions, Duration.zero);
+    });
+
+    test('counts a session inside a focus time once', () {
+      final result = rests(
+        [between(DateTime(2026, 9, 29, 9), DateTime(2026, 9, 29, 11))],
+        [mornings],
+      );
+
+      final insta = result.firstWhere((rest) => rest.packageName == 'insta');
+      expect(insta.total, const Duration(hours: 7));
+      expect(insta.focusTimes, const Duration(hours: 6));
+      expect(insta.sessions, const Duration(hours: 1));
+    });
+
+    test('sorts by rest time and leaves out apps that never rested', () {
+      final result = rests(
+        [between(DateTime(2026, 9, 29, 12), DateTime(2026, 9, 29, 13))],
+        [evenings],
+      );
+
+      expect(result.map((rest) => rest.packageName), [
+        'insta',
+        'tiktok',
+        'youtube',
+      ]);
+      expect(result.first.total, const Duration(hours: 1));
+      expect(
+        appRestTimes(
+          const [],
+          const [],
+          defaultApps: const {'insta'},
+          listApps: const {},
+          from: monday,
+          to: nextMonday,
+          now: now,
+        ),
+        isEmpty,
+      );
+    });
+  });
 }
