@@ -332,15 +332,6 @@
   "@insights": {
     "description": "Title of the statistics card with focus insights."
   },
-  "protectedToday": "{time} protected today",
-  "@protectedToday": {
-    "description": "Under the daily goal: how long paused apps rested today (sessions and focus times).",
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
   "protectedTime": "Your paused apps rested {time}",
   "@protectedTime": {
     "description": "How long paused apps were blocked in the period (sessions and focus times).",

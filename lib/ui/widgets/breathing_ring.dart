@@ -8,11 +8,7 @@ import 'calm_motion.dart';
 /// on, the arc and its tip glow softly and breathe once every 5.5 seconds
 /// (#307); the ticker stops by itself when Focus isn't drawn.
 class BreathingRing extends StatefulWidget {
-  const BreathingRing({
-    super.key,
-    required this.progress,
-    this.protectedProgress = 0,
-  });
+  const BreathingRing({super.key, required this.progress});
 
   /// Key of the painted ring, for tests.
   static const paintKey = ValueKey('breathing-ring');
@@ -22,9 +18,6 @@ class BreathingRing extends StatefulWidget {
 
   /// Share of the goal reached, 0–1.
   final double progress;
-
-  /// Today's protected time as a share of the goal, drawn faintly (#325).
-  final double protectedProgress;
 
   @override
   State<BreathingRing> createState() => _BreathingRingState();
@@ -64,7 +57,6 @@ class _BreathingRingState extends State<BreathingRing>
         key: BreathingRing.paintKey,
         painter: GoalRingPainter(
           progress: widget.progress,
-          protectedProgress: widget.protectedProgress,
           // 0 → 1 → 0 over one breath, eased like a breath.
           breath: (1 - math.cos(_breath.value * 2 * math.pi)) / 2,
           arc: colors.primary,
@@ -80,17 +72,12 @@ class _BreathingRingState extends State<BreathingRing>
 class GoalRingPainter extends CustomPainter {
   GoalRingPainter({
     required this.progress,
-    this.protectedProgress = 0,
     required this.breath,
     required this.arc,
     required this.track,
   });
 
   final double progress;
-
-  /// Share of the goal protected today (focus times and sessions), shown on
-  /// its own thin, light ring just outside the gold one (#325).
-  final double protectedProgress;
 
   /// Glow strength, 0 (still) to 1 (full breath).
   final double breath;
@@ -99,17 +86,10 @@ class GoalRingPainter extends CustomPainter {
 
   static const _stroke = 2.0;
 
-  /// Radius of the gold session ring; leaves room for the outer ring and the
-  /// breathing glow.
-  static double innerRadius(Size size) => size.shortestSide / 2 - 14;
-
-  /// Radius of the light protected-time ring.
-  static double outerRadius(Size size) => size.shortestSide / 2 - 5;
-
   @override
   void paint(Canvas canvas, Size size) {
     final center = size.center(Offset.zero);
-    final radius = innerRadius(size);
+    final radius = size.shortestSide / 2 - _stroke * 4;
     canvas.drawCircle(
       center,
       radius,
@@ -118,24 +98,10 @@ class GoalRingPainter extends CustomPainter {
         ..strokeWidth = _stroke
         ..color = track,
     );
-    final rect = Rect.fromCircle(center: center, radius: radius);
-    const start = -math.pi / 2;
-    final protectedSweep = protectedProgress.clamp(0.0, 1.0) * 2 * math.pi;
-    if (protectedSweep > 0) {
-      canvas.drawArc(
-        Rect.fromCircle(center: center, radius: outerRadius(size)),
-        start,
-        protectedSweep,
-        false,
-        Paint()
-          ..style = PaintingStyle.stroke
-          ..strokeCap = StrokeCap.round
-          ..strokeWidth = _stroke
-          ..color = arc.withValues(alpha: 0.4),
-      );
-    }
     final sweep = progress.clamp(0.0, 1.0) * 2 * math.pi;
     if (sweep == 0) return;
+    final rect = Rect.fromCircle(center: center, radius: radius);
+    const start = -math.pi / 2;
     if (breath > 0) {
       canvas.drawArc(
         rect,
@@ -177,7 +143,6 @@ class GoalRingPainter extends CustomPainter {
   @override
   bool shouldRepaint(GoalRingPainter oldDelegate) =>
       progress != oldDelegate.progress ||
-      protectedProgress != oldDelegate.protectedProgress ||
       breath != oldDelegate.breath ||
       arc != oldDelegate.arc ||
       track != oldDelegate.track;
