@@ -88,8 +88,8 @@ class GoalRingPainter extends CustomPainter {
 
   final double progress;
 
-  /// Share of the goal protected today (focus times and sessions), shown as
-  /// a faint arc under the gold one.
+  /// Share of the goal protected today (focus times and sessions), shown on
+  /// its own thin, light ring just outside the gold one (#325).
   final double protectedProgress;
 
   /// Glow strength, 0 (still) to 1 (full breath).
@@ -99,10 +99,17 @@ class GoalRingPainter extends CustomPainter {
 
   static const _stroke = 2.0;
 
+  /// Radius of the gold session ring; leaves room for the outer ring and the
+  /// breathing glow.
+  static double innerRadius(Size size) => size.shortestSide / 2 - 14;
+
+  /// Radius of the light protected-time ring.
+  static double outerRadius(Size size) => size.shortestSide / 2 - 5;
+
   @override
   void paint(Canvas canvas, Size size) {
     final center = size.center(Offset.zero);
-    final radius = size.shortestSide / 2 - _stroke * 4;
+    final radius = innerRadius(size);
     canvas.drawCircle(
       center,
       radius,
@@ -116,15 +123,15 @@ class GoalRingPainter extends CustomPainter {
     final protectedSweep = protectedProgress.clamp(0.0, 1.0) * 2 * math.pi;
     if (protectedSweep > 0) {
       canvas.drawArc(
-        rect,
+        Rect.fromCircle(center: center, radius: outerRadius(size)),
         start,
         protectedSweep,
         false,
         Paint()
           ..style = PaintingStyle.stroke
           ..strokeCap = StrokeCap.round
-          ..strokeWidth = _stroke * 2
-          ..color = arc.withValues(alpha: 0.22),
+          ..strokeWidth = _stroke
+          ..color = arc.withValues(alpha: 0.4),
       );
     }
     final sweep = progress.clamp(0.0, 1.0) * 2 * math.pi;
