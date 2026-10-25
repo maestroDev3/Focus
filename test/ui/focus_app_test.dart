@@ -875,10 +875,37 @@ void main() {
       await tester.tap(find.text('Allow app blocking'));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
-      await tester.tap(find.text('Open settings'));
+      expect(
+        find.textContaining('uses Android\'s accessibility service'),
+        findsOneWidget,
+      );
+      expect(
+        find.textContaining('nothing is collected or leaves your phone'),
+        findsOneWidget,
+      );
+      await tester.ensureVisible(find.text('Agree and open settings'));
+      await tester.tap(find.text('Agree and open settings'));
       await tester.pump();
 
       expect(blocker.openedSettings, 1);
+    });
+
+    testWidgets('leaves the blocking disclosure with Not now', (tester) async {
+      blockList.blockList = const BlockList().add('org.telegram.messenger');
+      blocker.enabled = false;
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+
+      await tester.tap(find.text('Allow app blocking'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      await tester.ensureVisible(find.text('Not now'));
+      await tester.tap(find.text('Not now'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(blocker.openedSettings, 0);
+      expect(find.text('Allow app blocking'), findsOneWidget);
     });
 
     testWidgets('guides to notification access when it is missing', (

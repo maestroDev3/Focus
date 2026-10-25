@@ -488,6 +488,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
       return PermissionOnboardingScreen(
         title: l10n.blockerOnboardingTitle,
         body: l10n.blockerOnboardingBody,
+        consentLabel: l10n.agreeAndOpenSettings,
         onOpenSettings: widget.appBlocker.openBlockerSettings,
         onOpenAppInfo: widget.appBlocker.openAppInfo,
       );
