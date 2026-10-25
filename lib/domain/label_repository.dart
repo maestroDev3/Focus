@@ -14,6 +14,9 @@ abstract interface class LabelRepository {
   /// Sets the goal of a label, or clears it with null.
   Future<void> setGoal(String id, Duration? goal);
 
+  /// Sets the weekly goal of a label, or clears it with null.
+  Future<void> setWeeklyGoal(String id, Duration? goal);
+
   /// Deletes a label. Sessions keep its id and count as unlabeled later.
   Future<void> deleteLabel(String id);
 

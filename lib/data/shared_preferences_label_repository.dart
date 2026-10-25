@@ -42,7 +42,12 @@ class SharedPreferencesLabelRepository implements LabelRepository {
     await _save([
       for (final label in labels)
         label.id == id
-            ? FocusLabel(id: id, name: name, goal: label.goal)
+            ? FocusLabel(
+                id: id,
+                name: name,
+                goal: label.goal,
+                weeklyGoal: label.weeklyGoal,
+              )
             : label,
     ], nextId);
   }
@@ -52,6 +57,15 @@ class SharedPreferencesLabelRepository implements LabelRepository {
     final (:labels, :nextId) = _load();
     await _save([
       for (final label in labels) label.id == id ? label.withGoal(goal) : label,
+    ], nextId);
+  }
+
+  @override
+  Future<void> setWeeklyGoal(String id, Duration? goal) async {
+    final (:labels, :nextId) = _load();
+    await _save([
+      for (final label in labels)
+        label.id == id ? label.withWeeklyGoal(goal) : label,
     ], nextId);
   }
 
@@ -94,6 +108,7 @@ class SharedPreferencesLabelRepository implements LabelRepository {
                     id: id,
                     name: name,
                     goal: decodeLabelGoal(item),
+                    weeklyGoal: decodeLabelWeeklyGoal(item),
                   ),
                 _ => throw FormatException('Malformed label: $item'),
               },
