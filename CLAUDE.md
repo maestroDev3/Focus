@@ -325,3 +325,11 @@ commit comment).
   protected-time ring and line from #325 were taken out again after the phone
   test (epic #324 dropped). Focus times count in the statistics: protected
   time (#207) and per paused app (#333).
+- 2026-10-25 – Next round, built one after the other on one branch for a
+  single phone test: weekly label goals (#337: Mon–Sun, whole hours, optional
+  next to the total goal; shown on the labels page, in the label choice and
+  in the all-time card), quick settings tile (#196: tap starts a session with
+  the defaults like the widget, shows the end time while running, long press
+  opens Focus), Play Store preparation (#194: app bundle in CI, privacy
+  policy, store texts en/de/ru, accessibility declaration – the upload stays
+  with the user). Spotify (#269) keeps waiting for the Client ID.
