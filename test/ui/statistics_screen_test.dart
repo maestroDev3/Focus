@@ -270,6 +270,26 @@ void main() {
       );
     });
 
+    testWidgets('shows the weekly goal in the all-time card', (tester) async {
+      await pumpStatistics(
+        tester,
+        [
+          completed(DateTime(2026, 9, 28, 9), 60, 'uni'),
+          completed(DateTime(2026, 9, 29, 9), 60, 'uni'),
+        ],
+        labelList: [
+          FocusLabel(
+            id: 'uni',
+            name: 'Uni',
+            weeklyGoal: const Duration(hours: 5),
+          ),
+        ],
+      );
+      await tester.scrollUntilVisible(find.byKey(const Key('all-time')), 200);
+
+      expect(inCard('all-time', find.text('2h of 5h this week')), findsOneWidget);
+    });
+
     testWidgets('keeps the all-time card when switching the period', (
       tester,
     ) async {

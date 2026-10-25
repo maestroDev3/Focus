@@ -550,6 +550,33 @@ void main() {
       expect(find.text('1h of 20h'), findsOneWidget);
     });
 
+    testWidgets('shows the weekly progress in the label choice', (
+      tester,
+    ) async {
+      labels.labels.add(
+        FocusLabel(
+          id: 'uni',
+          name: 'Uni',
+          weeklyGoal: const Duration(hours: 5),
+        ),
+      );
+      repository.finished.add(
+        FocusSession(
+          start: now.subtract(const Duration(hours: 2)),
+          planned: const Duration(minutes: 60),
+          labelId: 'uni',
+        ).complete(),
+      );
+      await tester.pumpWidget(buildApp());
+      await tester.pump();
+
+      await tester.tap(find.text('No label'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(find.text('1h of 5h this week'), findsOneWidget);
+    });
+
     testWidgets('remembers the chosen label', (tester) async {
       labels.labels.add(FocusLabel(id: 'work', name: 'Work'));
       settings.selectedLabelId = 'work';
