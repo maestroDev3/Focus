@@ -75,5 +75,39 @@ void main() {
         isNot(FocusLabel(id: 'l1', name: 'Exam')),
       );
     });
+
+    test('accepts a weekly goal of 1 to 168 whole hours', () {
+      final label = FocusLabel(
+        id: 'l1',
+        name: 'Uni',
+        weeklyGoal: const Duration(hours: 5),
+      );
+
+      expect(label.weeklyGoal, const Duration(hours: 5));
+      for (final goal in const [
+        Duration.zero,
+        Duration(hours: 169),
+        Duration(minutes: 90),
+      ]) {
+        expect(
+          () => FocusLabel(id: 'l1', name: 'Uni', weeklyGoal: goal),
+          throwsArgumentError,
+        );
+      }
+    });
+
+    test('sets the weekly goal independently of the total goal', () {
+      final label = FocusLabel(
+        id: 'l1',
+        name: 'Uni',
+        goal: const Duration(hours: 20),
+      ).withWeeklyGoal(const Duration(hours: 5));
+
+      expect(label.goal, const Duration(hours: 20));
+      expect(label.weeklyGoal, const Duration(hours: 5));
+      expect(label.withGoal(null).weeklyGoal, const Duration(hours: 5));
+      expect(label.withWeeklyGoal(null).weeklyGoal, isNull);
+      expect(label, isNot(label.withWeeklyGoal(null)));
+    });
   });
 }

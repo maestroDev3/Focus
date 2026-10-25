@@ -152,5 +152,25 @@ void main() {
 
       expect(preferences.getString('labels.v2'), contains('"v":2'));
     });
+
+    test('sets and keeps the weekly goal next to the total goal', () async {
+      final uni = await repository.addLabel('Uni');
+      await repository.setGoal(uni.id, const Duration(hours: 20));
+
+      await repository.setWeeklyGoal(uni.id, const Duration(hours: 5));
+      await repository.renameLabel(uni.id, 'University');
+      final reopened = SharedPreferencesLabelRepository(preferences);
+
+      final label = (await reopened.watchLabels().first).single;
+      expect(label.goal, const Duration(hours: 20));
+      expect(label.weeklyGoal, const Duration(hours: 5));
+
+      await reopened.setWeeklyGoal(uni.id, null);
+      expect((await reopened.watchLabels().first).single.weeklyGoal, isNull);
+      expect(
+        (await reopened.watchLabels().first).single.goal,
+        const Duration(hours: 20),
+      );
+    });
   });
 }
