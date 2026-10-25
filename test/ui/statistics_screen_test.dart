@@ -28,6 +28,9 @@ void main() {
     List<FocusLabel>? labelList,
     List<FocusTime> focusTimes = const [],
     int pausedAppCount = 3,
+    Set<String> defaultApps = const {},
+    Map<String, Set<String>> listApps = const {},
+    Map<String, String> appNames = const {},
   }) async {
     await tester.pumpApp(
       StatisticsScreen(
@@ -35,6 +38,9 @@ void main() {
         labels: Stream.value(labelList ?? labels),
         focusTimes: Stream.value(focusTimes),
         pausedAppCount: pausedAppCount,
+        defaultApps: defaultApps,
+        listApps: listApps,
+        appNames: appNames,
         dailyGoal: dailyGoal,
         clock: () => now,
       ),
@@ -351,6 +357,86 @@ void main() {
         inCard('insights', find.text('Pause apps to protect your focus time.')),
         findsOneWidget,
       );
+    });
+
+    group('paused apps', () {
+      final studyEvening = FocusTime(
+        id: 'tuesday',
+        weekdays: const {2},
+        startMinute: 7 * 60,
+        endMinute: 10 * 60,
+        blockListId: 'study',
+      );
+
+      Future<void> pumpApps(
+        WidgetTester tester,
+        List<FocusSession> sessions,
+      ) async {
+        await pumpStatistics(
+          tester,
+          sessions,
+          focusTimes: [studyEvening],
+          defaultApps: const {'insta', 'tiktok'},
+          listApps: const {
+            'study': {'insta'},
+          },
+          appNames: const {'insta': 'Instagram'},
+        );
+      }
+
+      testWidgets('lists paused apps with their rest time, largest first', (
+        tester,
+      ) async {
+        await pumpApps(tester, [completed(DateTime(2026, 9, 28, 9), 50)]);
+        await tester.scrollUntilVisible(
+          find.byKey(const Key('paused-apps')),
+          200,
+        );
+
+        expect(inCard('paused-apps', find.text('Paused apps')), findsOneWidget);
+        expect(inCard('paused-apps', find.text('3h 50')), findsOneWidget);
+        expect(
+          inCard('paused-apps', find.text('3h focus time · 50 min sessions')),
+          findsOneWidget,
+        );
+        expect(
+          inCard('paused-apps', find.text('50 min sessions')),
+          findsOneWidget,
+        );
+        expect(
+          tester.getTopLeft(inCard('paused-apps', find.text('Instagram'))).dy,
+          lessThan(
+            tester.getTopLeft(inCard('paused-apps', find.text('tiktok'))).dy,
+          ),
+        );
+      });
+
+      testWidgets('covers the month after switching to Month', (
+        tester,
+      ) async {
+        await pumpApps(tester, [
+          completed(DateTime(2026, 9, 3, 9), 25),
+          completed(DateTime(2026, 9, 28, 9), 50),
+        ]);
+
+        await tester.tap(find.text('Month'));
+        await tester.pump();
+        await tester.scrollUntilVisible(
+          find.byKey(const Key('paused-apps')),
+          200,
+        );
+
+        expect(inCard('paused-apps', find.text('1h 15')), findsOneWidget);
+      });
+
+      testWidgets('is hidden without any rest time', (tester) async {
+        await pumpStatistics(tester, [
+          completed(DateTime(2026, 9, 28, 9), 50),
+        ]);
+        await tester.scrollUntilVisible(find.byKey(const Key('by-label')), 200);
+
+        expect(find.byKey(const Key('paused-apps')), findsNothing);
+      });
     });
   });
 }
