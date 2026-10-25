@@ -8,7 +8,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- Round on branch `epic/next-round`: #337 Weekly goal for a label (built) → #196 Quick settings tile (built) → #194 Play Store preparation (`in-progress`); one preview APK at the end.
+- Round on branch `epic/next-round`: #337 Weekly goal for a label (built) → #196 Quick settings tile (built) → #351 Play Store preparation (built); one preview APK – waiting for your test on the phone.
 
 ## Up next
 
@@ -35,7 +35,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 | Epic | State | Stories (in order) |
 |---|---|---|
-| #193 Focus on Google Play | 0 of 1 closed | #194 Publish Focus on Google Play (`backlog`) |
+| #193 Focus on Google Play | 0 of 2 closed | #351 Prepare the Play Store release (`in-progress`, built) → #194 Publish Focus on Google Play (`backlog`, your steps in `docs/store/release-checklist.md`) |
 
 ## Recently done
 
