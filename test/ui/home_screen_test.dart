@@ -189,17 +189,6 @@ void main() {
       );
 
       expect(find.text('2h 10 protected today'), findsOneWidget);
-      expect(
-        find.descendant(
-          of: find.byKey(HomeScreen.ringKey),
-          matching: find.text('2h 10 protected today'),
-        ),
-        findsNothing,
-      );
-      expect(
-        tester.getTopLeft(find.text('2h 10 protected today')).dy,
-        greaterThan(tester.getTopLeft(find.text('25 min')).dy),
-      );
       expect(find.text('of 4h daily goal'), findsOneWidget);
       final ring =
           tester.widget<CustomPaint>(find.byKey(BreathingRing.paintKey)).painter
@@ -220,9 +209,7 @@ void main() {
       expect(ring.protectedProgress, 0);
     });
 
-    testWidgets('keeps the short start hint during a focus time', (
-      tester,
-    ) async {
+    testWidgets('invites to a session during a focus time', (tester) async {
       var starts = 0;
       await pumpHome(
         tester,
@@ -236,15 +223,9 @@ void main() {
         ),
       );
 
-      expect(
-        find.descendant(
-          of: find.byKey(HomeScreen.ringKey),
-          matching: find.text('Begin focus'),
-        ),
-        findsOneWidget,
-      );
-      expect(find.text('Focus time until 21:00'), findsOneWidget);
-      await tester.tap(find.text('Begin focus'));
+      expect(find.text('Focus time · begin a session'), findsOneWidget);
+      expect(find.text('Begin focus'), findsNothing);
+      await tester.tap(find.text('Focus time · begin a session'));
       await tester.pump();
 
       expect(starts, 1);

@@ -762,8 +762,7 @@ void main() {
 
       expect(find.text('1h protected today'), findsOneWidget);
       expect(find.text('0 min'), findsOneWidget);
-      expect(find.text('Begin focus'), findsOneWidget);
-      expect(find.text('Focus time until 21:00'), findsOneWidget);
+      expect(find.text('Focus time · begin a session'), findsOneWidget);
     });
 
     testWidgets('shows the blocked screen during a focus time', (

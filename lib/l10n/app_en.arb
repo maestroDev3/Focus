@@ -341,6 +341,10 @@
       }
     }
   },
+  "focusTimeBeginSession": "Focus time · begin a session",
+  "@focusTimeBeginSession": {
+    "description": "The ring's hint while a focus time runs; tapping starts a session."
+  },
   "protectedTime": "Your paused apps rested {time}",
   "@protectedTime": {
     "description": "How long paused apps were blocked in the period (sessions and focus times).",
