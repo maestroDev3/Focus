@@ -449,12 +449,21 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
   }
 
   Future<void> _openStatistics() async {
+    final defaultList = await widget.blockList.loadBlockList();
+    final lists = await widget.namedBlockLists.watchLists().first;
+    final apps = await widget.installedApps.installedApps();
+    if (!mounted) return;
     await _push(
       (context) => StatisticsScreen(
         finishedSessions: widget.timer.watchFinished(),
         labels: widget.labels.watchLabels(),
         dailyGoal: _dailyGoal,
         clock: widget.clock,
+        focusTimes: widget.focusTimes.watchFocusTimes(),
+        pausedAppCount: _blockedAppCount,
+        defaultApps: defaultList.packageNames,
+        listApps: {for (final list in lists) list.id: list.apps.packageNames},
+        appNames: {for (final app in apps) app.packageName: app.label},
       ),
     );
   }
