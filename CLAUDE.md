@@ -333,3 +333,7 @@ commit comment).
   opens Focus), Play Store preparation (#194: app bundle in CI, privacy
   policy, store texts en/de/ru, accessibility declaration – the upload stays
   with the user). Spotify (#269) keeps waiting for the Client ID.
+- 2026-10-27 – Open decisions confirmed: #279 Every APK starts stands as built
+  (closed via #282); #187 Block list per session stays parked. New: see all
+  planned focus times in a week calendar (epic #361, story #362) – what runs
+  when, at a glance; no editing from the calendar for now.

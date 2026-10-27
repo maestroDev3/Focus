@@ -4,7 +4,7 @@ Current project state for planning and Claude projects. Maintained by Claude
 after every status change (see CLAUDE.md, “Keeping the status”).
 The GitHub issues are authoritative; this file is the summary.
 
-**Last updated:** 2026-10-25
+**Last updated:** 2026-10-27
 
 ## In progress
 
@@ -23,6 +23,7 @@ The GitHub issues are authoritative; this file is the summary.
 | #123 Session ritual | 3 of 4 closed | #269 Spotify playlist, personal mode (`backlog`, needs your Spotify developer app) |
 | #336 Weekly goals for labels | 0 of 1 closed | #337 Set a weekly goal for a label (`in-progress`) |
 | #195 Quick settings tile | 0 of 1 closed | #196 Start a session from the quick settings (`backlog`) |
+| #361 See your planned focus in a calendar | 0 of 1 closed | #362 See focus times in a calendar (`backlog`) |
 
 **#139 Distraction blocking**
 
@@ -47,6 +48,5 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## Open decisions (user only)
 
-- Epic #279 Every APK starts (Release & platform) – created, please confirm or re-sort
-- New epic #187 Block list per session (parked idea #188) – created, please confirm or re-sort.
+- Epic #361 See your planned focus in a calendar (Focus experience) – created, please confirm or re-sort.
 - #269 Spotify personal mode: waiting for your Spotify developer app (Client ID).
