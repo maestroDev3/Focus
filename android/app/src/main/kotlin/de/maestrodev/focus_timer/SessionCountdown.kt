@@ -8,7 +8,6 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.os.Bundle
 import android.os.SystemClock
 import android.widget.RemoteViews
 
@@ -29,27 +28,12 @@ object SessionCountdown {
     private const val FLUTTER_PREFERENCES = "FlutterSharedPreferences"
     private const val LOCK_SCREEN_KEY = "flutter.settings.lockScreen.v1"
 
-    /** `Notification.EXTRA_REQUEST_PROMOTED_ONGOING` (Android 16). */
-    private const val EXTRA_REQUEST_PROMOTED_ONGOING = "android.requestPromotedOngoing"
-    private const val BAKLAVA = 36
-
     /** Champagne gold, the theme's primary (`lib/ui/theme.dart`). */
     private val CHAMPAGNE = 0xFFC9A96E.toInt()
 
     private fun showsOnLockScreen(context: Context): Boolean =
         context.getSharedPreferences(FLUTTER_PREFERENCES, Context.MODE_PRIVATE)
             .getBoolean(LOCK_SCREEN_KEY, true)
-
-    /**
-     * Whether Android 16+ lets Focus post Live Updates (status bar chip, lock
-     * screen, Samsung's Now Bar). Looked up reflectively, so it builds with
-     * older SDKs too.
-     */
-    private fun canPromote(manager: NotificationManager): Boolean =
-        Build.VERSION.SDK_INT >= BAKLAVA && runCatching {
-            NotificationManager::class.java.getMethod("canPostPromotedNotifications")
-                .invoke(manager) as Boolean
-        }.getOrDefault(false)
 
     /** Stores and shows a notice; [endMillis] is null while paused. */
     fun show(
@@ -171,28 +155,20 @@ object SessionCountdown {
         builder.setVisibility(
             if (onLockScreen) Notification.VISIBILITY_PUBLIC else Notification.VISIBILITY_SECRET,
         )
-        // A Live Update must be a standard notification (no custom views).
-        val promoted = onLockScreen && canPromote(manager)
-        if (promoted) {
-            builder.addExtras(Bundle().apply { putBoolean(EXTRA_REQUEST_PROMOTED_ONGOING, true) })
-        }
+        // No Live Update: its standard template squeezes the remaining time
+        // into the header, and the large time wins (user decision 2026-10-27).
         if (!paused && endMillis != null) {
             val left = endMillis - System.currentTimeMillis()
-            if (promoted && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                builder
-                    .setWhen(endMillis + ROUND_UP_MILLIS)
-                    .setShowWhen(true)
-                    .setUsesChronometer(true)
-                    .setChronometerCountDown(true)
-                    .setContentText(text)
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 // The remaining time is the main thing (user test 2026-10-03):
                 // own views with a large live chronometer instead of the small
                 // one in the header.
                 builder
                     .setShowWhen(false)
                     .setStyle(Notification.DecoratedCustomViewStyle())
-                    .setCustomContentView(countdownViews(context, R.layout.notification_countdown, title, left))
+                    .setCustomContentView(
+                        countdownViews(context, R.layout.notification_countdown, title, left, text),
+                    )
                     .setCustomBigContentView(
                         countdownViews(context, R.layout.notification_countdown_big, title, left, text),
                     )
