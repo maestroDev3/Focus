@@ -8,7 +8,7 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- #370 Read the session at arm's length (`in-progress`) – glanceable lock screen countdown, on `epic/lock-screen` for a phone test.
+- #370 Read the session at arm's length (`in-progress`, built) – end time, champagne accent, prominent remaining time; preview APK from PR #375, waiting for your test on the phone.
 
 ## Up next
 
