@@ -23,7 +23,7 @@ The GitHub issues are authoritative; this file is the summary.
 | #123 Session ritual | 3 of 4 closed | #269 Spotify playlist, personal mode (`backlog`, needs your Spotify developer app) |
 | #336 Weekly goals for labels | 0 of 1 closed | #337 Set a weekly goal for a label (`in-progress`) |
 | #195 Quick settings tile | 0 of 1 closed | #196 Start a session from the quick settings (`backlog`) |
-| #361 See your planned focus in a calendar | 0 of 1 closed | #362 See focus times in a calendar (`backlog`) |
+| #361 See your planned focus in a calendar | 0 of 3 closed | #362 See focus times in a calendar → #363 See today and now in the calendar → #364 Plan a focus time from a free gap (all `backlog`) |
 
 **#139 Distraction blocking**
 
