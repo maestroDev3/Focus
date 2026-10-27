@@ -43,8 +43,10 @@ class FakeSettingsRepository implements SettingsRepository {
   @override
   Future<void> saveShowOnLockScreen(bool show) async => showOnLockScreen = show;
 
+  @override
   Future<bool> loadLiveUpdate() async => liveUpdate;
 
+  @override
   Future<void> saveLiveUpdate(bool on) async => liveUpdate = on;
 
   @override
