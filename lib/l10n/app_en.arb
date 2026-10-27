@@ -878,6 +878,14 @@
   "@showOnLockScreenDetails": {
     "description": "Subtitle of the lock screen switch."
   },
+  "statusBarCountdown": "Status bar countdown",
+  "statusBarCountdownDetails": "Live Update next to the clock; the remaining time in the notification stays small",
+  "@statusBarCountdown": {
+    "description": "Settings switch: promote the countdown to an Android 16 Live Update (status bar chip)."
+  },
+  "@statusBarCountdownDetails": {
+    "description": "Subtitle of the Live Update switch, naming the trade-off."
+  },
   "takeABreath": "Take a breath.",
   "@takeABreath": {
     "description": "Title of the breathing pause before a paused app opens."

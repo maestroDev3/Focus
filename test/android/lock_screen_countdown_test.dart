@@ -16,6 +16,20 @@ void main() {
       );
     });
 
+    test('the native countdown reads the Live Update setting', () {
+      final countdown = File(
+        'android/app/src/main/kotlin/de/maestrodev/focus_timer/'
+        'SessionCountdown.kt',
+      ).readAsStringSync();
+
+      expect(
+        countdown,
+        contains(
+          '"flutter.${SharedPreferencesSettingsRepository.liveUpdateKey}"',
+        ),
+      );
+    });
+
     test('the native countdown reads the setting the app writes', () {
       final countdown = File(
         'android/app/src/main/kotlin/de/maestrodev/focus_timer/'

@@ -19,6 +19,9 @@ class SharedPreferencesSettingsRepository implements SettingsRepository {
 
   /// Read by the native countdown as `flutter.settings.lockScreen.v1`.
   static const lockScreenKey = 'settings.lockScreen.v1';
+
+  /// Read by the native countdown as `flutter.settings.liveUpdate.v1`.
+  static const liveUpdateKey = 'settings.liveUpdate.v1';
   static const mindfulKey = 'settings.mindful.v1';
   static const mindfulPauseKey = 'settings.mindfulPause.v1';
   static const ambientKey = 'settings.ambient.v1';
@@ -104,6 +107,15 @@ class SharedPreferencesSettingsRepository implements SettingsRepository {
   @override
   Future<void> saveShowOnLockScreen(bool show) async {
     await _preferences.setBool(lockScreenKey, show);
+  }
+
+  @override
+  Future<bool> loadLiveUpdate() async =>
+      _preferences.getBool(liveUpdateKey) ?? false;
+
+  @override
+  Future<void> saveLiveUpdate(bool on) async {
+    await _preferences.setBool(liveUpdateKey, on);
   }
 
   @override

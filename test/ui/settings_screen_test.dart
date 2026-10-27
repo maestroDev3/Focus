@@ -177,6 +177,38 @@ void main() {
       expect(changes, 1);
     });
 
+    testWidgets('switches the countdown to a Live Update', (tester) async {
+      var changes = 0;
+      final repository = await pumpSettings(
+        tester,
+        const PomodoroSettings(),
+        null,
+        null,
+        null,
+        () => changes++,
+      );
+      final liveUpdate = find.byKey(const Key('live-update'));
+      await tester.scrollUntilVisible(liveUpdate, 200);
+      await tester.ensureVisible(liveUpdate);
+      await tester.pump();
+      expect(find.text('Status bar countdown'), findsOneWidget);
+      expect(
+        find.text(
+          'Live Update next to the clock; '
+          'the remaining time in the notification stays small',
+        ),
+        findsOneWidget,
+      );
+      expect(tester.widget<SwitchListTile>(liveUpdate).value, isFalse);
+
+      await tester.tap(liveUpdate);
+      await tester.pump();
+
+      expect(repository.liveUpdate, isTrue);
+      expect(tester.widget<SwitchListTile>(liveUpdate).value, isTrue);
+      expect(changes, 1);
+    });
+
     testWidgets('switches mindful opening on', (tester) async {
       var changes = 0;
       final repository = await pumpSettings(

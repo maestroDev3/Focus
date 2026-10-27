@@ -29,6 +29,9 @@ object SessionCountdown {
     private const val FLUTTER_PREFERENCES = "FlutterSharedPreferences"
     private const val LOCK_SCREEN_KEY = "flutter.settings.lockScreen.v1"
 
+    /** Written by the Focus settings (“Status bar countdown”, default off). */
+    private const val LIVE_UPDATE_KEY = "flutter.settings.liveUpdate.v1"
+
     /** `Notification.EXTRA_REQUEST_PROMOTED_ONGOING` (Android 16). */
     private const val EXTRA_REQUEST_PROMOTED_ONGOING = "android.requestPromotedOngoing"
     private const val BAKLAVA = 36
@@ -39,6 +42,10 @@ object SessionCountdown {
     private fun showsOnLockScreen(context: Context): Boolean =
         context.getSharedPreferences(FLUTTER_PREFERENCES, Context.MODE_PRIVATE)
             .getBoolean(LOCK_SCREEN_KEY, true)
+
+    private fun wantsLiveUpdate(context: Context): Boolean =
+        context.getSharedPreferences(FLUTTER_PREFERENCES, Context.MODE_PRIVATE)
+            .getBoolean(LIVE_UPDATE_KEY, false)
 
     /**
      * Whether Android 16+ lets Focus post Live Updates (status bar chip, lock
@@ -171,8 +178,10 @@ object SessionCountdown {
         builder.setVisibility(
             if (onLockScreen) Notification.VISIBILITY_PUBLIC else Notification.VISIBILITY_SECRET,
         )
-        // A Live Update must be a standard notification (no custom views).
-        val promoted = onLockScreen && canPromote(manager)
+        // The large time wins by default; the "Status bar countdown" setting
+        // opts into the Live Update, whose standard template keeps the time
+        // small in the header (user decision 2026-10-27).
+        val promoted = onLockScreen && wantsLiveUpdate(context) && canPromote(manager)
         if (promoted) {
             builder.addExtras(Bundle().apply { putBoolean(EXTRA_REQUEST_PROMOTED_ONGOING, true) })
         }
@@ -192,7 +201,9 @@ object SessionCountdown {
                 builder
                     .setShowWhen(false)
                     .setStyle(Notification.DecoratedCustomViewStyle())
-                    .setCustomContentView(countdownViews(context, R.layout.notification_countdown, title, left))
+                    .setCustomContentView(
+                        countdownViews(context, R.layout.notification_countdown, title, left, text),
+                    )
                     .setCustomBigContentView(
                         countdownViews(context, R.layout.notification_countdown_big, title, left, text),
                     )

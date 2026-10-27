@@ -12,6 +12,7 @@ class FakeSettingsRepository implements SettingsRepository {
   String? selectedLabelId;
   DailyGoal dailyGoal = const DailyGoal();
   bool showOnLockScreen = true;
+  bool liveUpdate = false;
   bool mindfulOpening = false;
   BackgroundStyle background = BackgroundStyle.roots;
   AmbientChoice ambient = AmbientChoice.initial;
@@ -41,6 +42,12 @@ class FakeSettingsRepository implements SettingsRepository {
 
   @override
   Future<void> saveShowOnLockScreen(bool show) async => showOnLockScreen = show;
+
+  @override
+  Future<bool> loadLiveUpdate() async => liveUpdate;
+
+  @override
+  Future<void> saveLiveUpdate(bool on) async => liveUpdate = on;
 
   @override
   Future<bool> loadMindfulOpening() async => mindfulOpening;
