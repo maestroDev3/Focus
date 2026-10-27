@@ -9,11 +9,16 @@ void main() {
   final messenger =
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
   final calls = <MethodCall>[];
+  String formatTime(DateTime time) =>
+      '${time.hour.toString().padLeft(2, '0')}:'
+      '${time.minute.toString().padLeft(2, '0')}';
   var texts = (
     channelName: 'Session countdown',
     focusing: 'Focusing',
     focusingWithLabel: 'Focusing · {label}',
     paused: 'Paused · {time} left',
+    until: 'until {time}',
+    formatTime: formatTime,
   );
   final countdown = MethodChannelSessionCountdown(texts: () => texts);
 
@@ -35,6 +40,8 @@ void main() {
         focusing: 'Фокус',
         focusingWithLabel: 'Фокус · {label}',
         paused: 'Пауза · осталось {time}',
+        until: 'до {time}',
+        formatTime: formatTime,
       );
       addTearDown(() => texts = english);
 
@@ -43,6 +50,7 @@ void main() {
       );
 
       expect((calls.single.arguments as Map)['title'], 'Фокус');
+      expect((calls.single.arguments as Map)['text'], 'до 10:00');
     });
 
     test('sends the end and the title with the label', () async {
@@ -56,8 +64,16 @@ void main() {
         'title': 'Focusing · Study',
         'paused': false,
         'endMillis': end.millisecondsSinceEpoch,
-        'text': null,
+        'text': 'until 10:25',
       });
+    });
+
+    test('names the end time after midnight', () async {
+      await countdown.show(
+        CountdownRunning(end: DateTime.utc(2026, 10, 4, 0, 10)),
+      );
+
+      expect((calls.single.arguments as Map)['text'], 'until 00:10');
     });
 
     test('uses the plain title without label', () async {
