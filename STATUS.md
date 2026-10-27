@@ -8,12 +8,12 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## In progress
 
-- Round on branch `epic/next-round`: #337 Weekly goal for a label (built) → #196 Quick settings tile (built) → #351 Play Store preparation (built) → #358 Info page and user guide (built); one preview APK – waiting for your test on the phone.
+- #370 Read the session at arm's length (`in-progress`) – glanceable lock screen countdown, on `epic/lock-screen` for a phone test.
 
 ## Up next
 
-1. Epic #369 Read the session at arm's length: #370 (`ready`) – glanceable lock screen countdown.
-2. Epic #361 See your planned focus in a calendar: #362 → #363 → #364 (all `ready`).
+1. Epic #361 See your planned focus in a calendar: #362 → #363 → #364 (all `ready`).
+2. #373 Held-back notifications stay quiet (`backlog`, suggested right after #370 – fixes the minute-by-minute ping).
 3. Later: #269 Spotify personal mode, #194 Google Play release.
 
 ## Backlog by initiative → epic
@@ -23,34 +23,32 @@ The GitHub issues are authoritative; this file is the summary.
 | Epic | State | Stories (in order) |
 |---|---|---|
 | #123 Session ritual | 3 of 4 closed | #269 Spotify playlist, personal mode (`backlog`, needs your Spotify developer app) |
-| #336 Weekly goals for labels | 0 of 1 closed | #337 Set a weekly goal for a label (`in-progress`, built) |
-| #195 Quick settings tile | 0 of 1 closed | #196 Start a session from the quick settings (`in-progress`, built) |
 | #361 See your planned focus in a calendar | 0 of 3 closed | #362 See focus times in a calendar → #363 See today and now in the calendar → #364 Plan a focus time from a free gap (all `ready`) |
-| #369 Read the session at arm's length | 0 of 1 closed | #370 Read the session at arm's length (`ready`) |
+| #369 Read the session at arm's length | 0 of 1 closed | #370 Read the session at arm's length (`in-progress`) |
 
 **#139 Distraction blocking**
 
 | Epic | State | Stories (in order) |
 |---|---|---|
 | #187 Block list per session | 0 of 1 closed | #188 Choose a block list when starting a session (`backlog`, parked – only on real need) |
+| #372 Held-back notifications stay quiet | 0 of 1 closed | #373 Held-back notifications stay quiet (`backlog`) |
 
 
 **#140 Release & platform**
 
 | Epic | State | Stories (in order) |
 |---|---|---|
-| #193 Focus on Google Play | 0 of 3 closed | #351 Prepare the Play Store release (`in-progress`, built) → #358 Info page and user guide (`in-progress`, built) → #194 Publish Focus on Google Play (`backlog`, your steps in `docs/store/release-checklist.md`) |
+| #193 Focus on Google Play | 2 of 3 closed | #194 Publish Focus on Google Play (`backlog`, your steps in `docs/store/release-checklist.md`) |
 
 ## Recently done
 
+- #337 Weekly label goals: Mon–Sun hours next to the total goal (epic #336 closed)
+- #196 Quick settings tile: tap starts a session, long press opens Focus (epic #195 closed)
+- #351 Play Store preparation: app bundle in CI, store texts, accessibility consent
+- #358 Info page and user guide (README, guide en/de)
 - #205 Statistics you can explore: insights (protected time, calm rhythm) and paused apps per app
-- #315 Choose your background: five branching styles or none, live previews in the settings
-- #306 A calm, living design: breathing champagne arc, living branching background
-- #302 Start focus from the ring: tap to begin, hold for the daily goal, no bottom button
-- #284 Adjust your day from home: duration chip and goal ring open a wheel
 
 ## Open decisions (user only)
 
-- Epic #369 Read the session at arm's length (Focus experience) – created, please confirm or re-sort.
-- Order after the running round: #370 lock screen first, then calendar #362–#364 – re-sort if you'd rather flip it.
+- Epic #372 Held-back notifications stay quiet (Distraction blocking) – created, please confirm or re-sort; suggested right after #370, before the calendar.
 - #269 Spotify personal mode: waiting for your Spotify developer app (Client ID).

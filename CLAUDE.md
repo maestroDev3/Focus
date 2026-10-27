@@ -344,3 +344,9 @@ commit comment).
   prominent, end time named ("until 11:38"), champagne accent; no buttons, no
   foreground service, no periodic updates. Order after the running round:
   #370, then the calendar.
+- 2026-10-27 – Round #347 tested on the phone (preview build 527) and merged:
+  #337 weekly label goals, #196 quick settings tile, #351 Play Store
+  preparation, #358 info page and user guide. Gate bug reported: held-back
+  notifications ping again every minute (one-minute snooze rounds); fix as
+  epic #372, story #373 – snooze to the block's end, bring notifications back
+  promptly when a block ends early.
