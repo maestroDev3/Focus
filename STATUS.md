@@ -4,7 +4,7 @@ Current project state for planning and Claude projects. Maintained by Claude
 after every status change (see CLAUDE.md, “Keeping the status”).
 The GitHub issues are authoritative; this file is the summary.
 
-**Last updated:** 2026-10-25
+**Last updated:** 2026-10-27
 
 ## In progress
 
@@ -12,7 +12,9 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## Up next
 
-1. Later: #269 Spotify personal mode, #196 Quick settings tile, #194 Google Play release.
+1. Epic #369 Read the session at arm's length: #370 (`ready`) – glanceable lock screen countdown.
+2. Epic #361 See your planned focus in a calendar: #362 → #363 → #364 (all `ready`).
+3. Later: #269 Spotify personal mode, #194 Google Play release.
 
 ## Backlog by initiative → epic
 
@@ -23,6 +25,8 @@ The GitHub issues are authoritative; this file is the summary.
 | #123 Session ritual | 3 of 4 closed | #269 Spotify playlist, personal mode (`backlog`, needs your Spotify developer app) |
 | #336 Weekly goals for labels | 0 of 1 closed | #337 Set a weekly goal for a label (`in-progress`, built) |
 | #195 Quick settings tile | 0 of 1 closed | #196 Start a session from the quick settings (`in-progress`, built) |
+| #361 See your planned focus in a calendar | 0 of 3 closed | #362 See focus times in a calendar → #363 See today and now in the calendar → #364 Plan a focus time from a free gap (all `ready`) |
+| #369 Read the session at arm's length | 0 of 1 closed | #370 Read the session at arm's length (`ready`) |
 
 **#139 Distraction blocking**
 
@@ -47,6 +51,6 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## Open decisions (user only)
 
-- Epic #279 Every APK starts (Release & platform) – created, please confirm or re-sort
-- New epic #187 Block list per session (parked idea #188) – created, please confirm or re-sort.
+- Epic #369 Read the session at arm's length (Focus experience) – created, please confirm or re-sort.
+- Order after the running round: #370 lock screen first, then calendar #362–#364 – re-sort if you'd rather flip it.
 - #269 Spotify personal mode: waiting for your Spotify developer app (Client ID).

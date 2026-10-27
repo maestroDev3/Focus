@@ -333,3 +333,14 @@ commit comment).
   opens Focus), Play Store preparation (#194: app bundle in CI, privacy
   policy, store texts en/de/ru, accessibility declaration – the upload stays
   with the user). Spotify (#269) keeps waiting for the Client ID.
+- 2026-10-27 – Open decisions confirmed: #279 Every APK starts stands as built
+  (closed via #282); #187 Block list per session stays parked. New: see all
+  planned focus times in a week calendar (epic #361, story #362) – what runs
+  when, at a glance; no editing from the calendar for now.
+- 2026-10-27 – Calendar epic #361 confirmed and refined to `ready`: #362 week
+  calendar → #363 today/now markers → #364 plan a focus time from a free gap
+  (creating from a gap is in, editing from the calendar stays out). Lock
+  screen display gets more glanceable (epic #369, story #370): remaining time
+  prominent, end time named ("until 11:38"), champagne accent; no buttons, no
+  foreground service, no periodic updates. Order after the running round:
+  #370, then the calendar.
