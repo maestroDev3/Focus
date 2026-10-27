@@ -23,7 +23,11 @@ void main() {
 
   Future<void> pumpLabels(WidgetTester tester) async {
     await tester.pumpApp(
-      LabelsScreen(labels: repository, sessions: Stream.value(sessions)),
+      LabelsScreen(
+        labels: repository,
+        sessions: Stream.value(sessions),
+        clock: () => DateTime(2026, 9, 30, 20),
+      ),
     );
     await tester.pump();
   }
@@ -35,6 +39,25 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
   }
+
+  Future<void> enterWeeklyGoal(WidgetTester tester, String goal) async {
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.enterText(find.byKey(const Key('label-weekly-goal')), goal);
+    await tester.tap(find.text('Save'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+  }
+
+  /// One 60-minute session with [labelId] on Monday to Wednesday of the week
+  /// of 2026-09-30.
+  List<FocusSession> thisWeek(String labelId) => [
+    for (var day = 28; day <= 30; day++)
+      FocusSession(
+        start: DateTime(2026, 9, day, 9),
+        planned: const Duration(minutes: 60),
+        labelId: labelId,
+      ).complete(),
+  ];
 
   Future<void> enterName(WidgetTester tester, String name) async {
     await tester.pump(const Duration(milliseconds: 300));
@@ -169,6 +192,62 @@ void main() {
         findsOneWidget,
       );
       expect(repository.labels.single.goal, isNull);
+    });
+
+    testWidgets('shows the progress towards the weekly goal', (tester) async {
+      repository.labels.add(
+        FocusLabel(
+          id: 'uni',
+          name: 'Uni',
+          weeklyGoal: const Duration(hours: 5),
+        ),
+      );
+      sessions = [...thisWeek('uni'), ...sessionsFor('uni', 2, 60)];
+      await pumpLabels(tester);
+
+      expect(find.text('3h of 5h this week'), findsOneWidget);
+      expect(find.text('5h in total'), findsOneWidget);
+    });
+
+    testWidgets('says when the weekly goal is reached', (tester) async {
+      repository.labels.add(
+        FocusLabel(
+          id: 'uni',
+          name: 'Uni',
+          weeklyGoal: const Duration(hours: 2),
+        ),
+      );
+      sessions = thisWeek('uni');
+      await pumpLabels(tester);
+
+      expect(find.text('3h this week · Weekly goal reached'), findsOneWidget);
+    });
+
+    testWidgets('sets the weekly goal next to the total goal', (tester) async {
+      repository.labels.add(
+        FocusLabel(id: 'uni', name: 'Uni', goal: const Duration(hours: 20)),
+      );
+      await pumpLabels(tester);
+
+      await tester.tap(find.text('Uni'));
+      await enterWeeklyGoal(tester, '5');
+
+      expect(repository.labels.single.weeklyGoal, const Duration(hours: 5));
+      expect(repository.labels.single.goal, const Duration(hours: 20));
+    });
+
+    testWidgets('explains an invalid weekly goal', (tester) async {
+      repository.labels.add(FocusLabel(id: 'uni', name: 'Uni'));
+      await pumpLabels(tester);
+
+      await tester.tap(find.text('Uni'));
+      await enterWeeklyGoal(tester, '200');
+
+      expect(
+        find.text('Please enter a weekly goal of 1–168 hours or leave it empty.'),
+        findsOneWidget,
+      );
+      expect(repository.labels.single.weeklyGoal, isNull);
     });
   });
 }

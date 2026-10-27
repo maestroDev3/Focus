@@ -228,7 +228,7 @@
   "@labelNameInvalid": {
     "description": "Shown when a label name is empty, too long or already used."
   },
-  "labelGoalHours": "Goal in hours (optional)",
+  "labelGoalHours": "Total goal in hours (optional)",
   "@labelGoalHours": {
     "description": "Field in the label dialog for an optional goal in whole hours."
   },
@@ -262,6 +262,35 @@
     "description": "All-time focus time of a label that reached its goal.",
     "placeholders": {
       "total": {
+        "type": "String"
+      }
+    }
+  },
+  "labelWeeklyGoalHours": "Goal per week in hours (optional)",
+  "@labelWeeklyGoalHours": {
+    "description": "Field in the label dialog for an optional weekly goal in whole hours."
+  },
+  "labelWeeklyGoalInvalid": "Please enter a weekly goal of 1–168 hours or leave it empty.",
+  "@labelWeeklyGoalInvalid": {
+    "description": "Shown when the weekly label goal is not 1–168 hours."
+  },
+  "labelWeekProgress": "{week} of {goal} this week",
+  "@labelWeekProgress": {
+    "description": "This week's focus time of a label towards its weekly goal.",
+    "placeholders": {
+      "week": {
+        "type": "String"
+      },
+      "goal": {
+        "type": "String"
+      }
+    }
+  },
+  "labelWeekReached": "{week} this week · Weekly goal reached",
+  "@labelWeekReached": {
+    "description": "This week's focus time of a label that reached its weekly goal.",
+    "placeholders": {
+      "week": {
         "type": "String"
       }
     }
@@ -508,7 +537,7 @@
   "@blockerOnboardingTitle": {
     "description": "Title of the screen explaining the accessibility permission."
   },
-  "blockerOnboardingBody": "To keep paused apps closed while you focus, Android needs your permission. In the next screen, open “Focus app pause” and switch it on. Focus only notices which app is opened – it never reads what is on your screen.",
+  "blockerOnboardingBody": "To keep paused apps closed while you focus, Focus uses Android's accessibility service. It only notices which app is opened, so it can bring you back to Focus when that app is paused. It never reads what is on your screen, and nothing is collected or leaves your phone. In the next screen, open “Focus app pause” and switch it on.",
   "@blockerOnboardingBody": {
     "description": "Explanation of the accessibility permission before opening the system settings."
   },
@@ -523,6 +552,14 @@
   "openSettings": "Open settings",
   "@openSettings": {
     "description": "Button that opens the Android settings."
+  },
+  "agreeAndOpenSettings": "Agree and open settings",
+  "@agreeAndOpenSettings": {
+    "description": "Consent button of the accessibility disclosure; opens the accessibility settings."
+  },
+  "notNow": "Not now",
+  "@notNow": {
+    "description": "Closes a permission disclosure without granting anything."
   },
   "allowHoldingNotifications": "Allow holding notifications",
   "@allowHoldingNotifications": {

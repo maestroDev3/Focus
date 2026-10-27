@@ -263,3 +263,26 @@ Duration _unionLength(
       1;
   return (focused: focused.length, days: days);
 }
+
+/// Focus time per label in [labelIds] (zero without sessions) from Monday of
+/// [today]'s week until [today], for weekly label goals (#337).
+Map<String, Duration> labelWeekTotals(
+  List<FocusSession> sessions, {
+  required Set<String> labelIds,
+  required DateTime today,
+}) {
+  final monday = DateTime(today.year, today.month, today.day - today.weekday + 1);
+  final last = DateTime(today.year, today.month, today.day);
+  final totals = {for (final id in labelIds) id: Duration.zero};
+  for (final session in sessions) {
+    final end = session.end;
+    final labelId = session.labelId;
+    if (end == null || !session.isFinished || labelId == null) continue;
+    final day = DateTime(end.year, end.month, end.day);
+    if (day.isBefore(monday) || day.isAfter(last)) continue;
+    if (totals[labelId] case final total?) {
+      totals[labelId] = total + session.focusedTime(end);
+    }
+  }
+  return totals;
+}

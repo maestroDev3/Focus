@@ -116,6 +116,7 @@ object HomeWidget {
 
     /** Redraws all Focus widgets from the current state. */
     fun refresh(context: Context) {
+        FocusTileService.refresh(context)
         val manager = AppWidgetManager.getInstance(context) ?: return
         val ids = manager.getAppWidgetIds(ComponentName(context, FocusWidgetProvider::class.java))
         if (ids.isNotEmpty()) render(context, manager, ids)

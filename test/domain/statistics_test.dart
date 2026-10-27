@@ -411,4 +411,35 @@ void main() {
       );
     });
   });
+
+  group('labelWeekTotals', () {
+    FocusSession labelled(DateTime start, String labelId) => FocusSession(
+      start: start,
+      planned: const Duration(minutes: 60),
+      labelId: labelId,
+    ).complete();
+
+    test('counts finished sessions from Monday until today', () {
+      // 2026-09-30 is a Wednesday.
+      final sessions = [
+        labelled(DateTime(2026, 9, 27, 9), 'uni'),
+        labelled(DateTime(2026, 9, 28, 9), 'uni'),
+        labelled(DateTime(2026, 9, 30, 9), 'uni'),
+        labelled(DateTime(2026, 9, 30, 11), 'work'),
+      ];
+
+      expect(
+        labelWeekTotals(
+          sessions,
+          labelIds: {'uni', 'work', 'idle'},
+          today: DateTime(2026, 9, 30, 20),
+        ),
+        {
+          'uni': const Duration(hours: 2),
+          'work': const Duration(hours: 1),
+          'idle': Duration.zero,
+        },
+      );
+    });
+  });
 }

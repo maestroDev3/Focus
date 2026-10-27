@@ -9,4 +9,8 @@
     <string name="blocker_off_text">Turn “Focus app pause” back on to keep paused apps closed.</string>
     <string name="gate_off_title">Notification hold is off</string>
     <string name="gate_off_text">Turn “Focus notification hold” back on to hold back notifications of paused apps.</string>
+    <string name="tile_label">Focus</string>
+    <string name="tile_until">until %1$s</string>
+    <string name="tile_paused">Paused</string>
+    <string name="tile_minutes">%1$d min</string>
 </resources>

@@ -121,6 +121,7 @@ Backup decodeBackup(Map<String, Object?> json) {
                     id: id,
                     name: name,
                     goal: decodeLabelGoal(label),
+                    weeklyGoal: decodeLabelWeeklyGoal(label),
                   ),
                 _ => throw FormatException('Malformed label: $label'),
               },

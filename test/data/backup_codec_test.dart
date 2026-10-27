@@ -174,5 +174,23 @@ void main() {
 
       expect(decodeBackup(json).labels.single.goal, isNull);
     });
+
+    test('round-trips weekly label goals', () {
+      final withWeekly = Backup(
+        createdAt: backup.createdAt,
+        sessions: backup.sessions,
+        labels: [
+          FocusLabel(
+            id: 'label-1',
+            name: 'Uni',
+            weeklyGoal: const Duration(hours: 5),
+          ),
+        ],
+        pomodoro: backup.pomodoro,
+        dailyGoal: backup.dailyGoal,
+      );
+
+      expect(decodeBackup(encodeBackup(withWeekly)), withWeekly);
+    });
   });
 }
