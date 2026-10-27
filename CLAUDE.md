@@ -194,7 +194,9 @@ configuration, load and follow the skill `.claude/skills/flutter-dart/SKILL.md`
   the user. App list via a launcher-intent `<queries>` entry, not
   `QUERY_ALL_PACKAGES`. Exact alarm (`USE_EXACT_ALARM`, Android 12:
   `SCHEDULE_EXACT_ALARM`) only for the on-time session-end notification.
-  No foreground service as long as the timestamp-based approach is enough.
+  `POST_PROMOTED_NOTIFICATIONS` (Android 16) only for the countdown as an
+  opt-in Live Update ("Status bar countdown", default off). No
+  foreground service as long as the timestamp-based approach is enough.
 - `flutter analyze` must report no issues.
 
 ## Environment note
@@ -348,9 +350,11 @@ commit comment).
   notifications ping again every minute (one-minute snooze rounds); fix as
   epic #372, story #373 – snooze to the block's end, bring notifications back
   promptly when a block ends early.
-- 2026-10-27 – The large remaining time wins over the Live Update (#376,
-  after the phone test of build 532): the countdown notification always uses
-  the custom views – title and end time ("until 16:03") left, the large
-  counting time right. No promoted notification any more;
-  `POST_PROMOTED_NOTIFICATIONS` removed. Replaces the Live Update part of the
-  2026-10-04 decision.
+- 2026-10-27 – Countdown style as a setting (#376, revised after clarifying
+  that only the Android 16 status bar chip is at stake, never the live
+  counting itself): default is the large display – title and end time
+  ("until 16:03") left, the large counting time right; the new switch
+  "Status bar countdown" opts into the Live Update (chip, system template,
+  time small in the header). `POST_PROMOTED_NOTIFICATIONS` stays for the
+  opt-in. Default chosen by Claude, to be confirmed on the phone. Replaces
+  the Live Update part of the 2026-10-04 decision.
