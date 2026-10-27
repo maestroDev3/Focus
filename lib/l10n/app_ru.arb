@@ -135,6 +135,7 @@
   "countdownFocusing": "Фокус",
   "countdownFocusingWithLabel": "Фокус · {label}",
   "countdownPaused": "Пауза · осталось {time}",
+  "countdownUntil": "до {time}",
   "widgetStart": "Фокус",
   "widgetProgress": "{today} из {goal}",
   "blockListsTitle": "Списки блокировки",

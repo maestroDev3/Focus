@@ -135,6 +135,7 @@
   "countdownFocusing": "Fokus",
   "countdownFocusingWithLabel": "Fokus · {label}",
   "countdownPaused": "Pausiert · noch {time}",
+  "countdownUntil": "bis {time}",
   "widgetStart": "Focus",
   "widgetProgress": "{today} von {goal}",
   "blockListsTitle": "Sperrlisten",

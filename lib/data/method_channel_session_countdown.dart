@@ -4,12 +4,15 @@ import '../domain/countdown.dart';
 import '../domain/session_countdown.dart';
 
 /// Localized texts of the countdown notification; `{label}` and `{time}` are
-/// replaced here, so the platform only shows finished strings.
+/// replaced here, so the platform only shows finished strings. [formatTime]
+/// turns the session's end into a clock time in the current locale.
 typedef CountdownTexts = ({
   String channelName,
   String focusing,
   String focusingWithLabel,
   String paused,
+  String until,
+  String Function(DateTime) formatTime,
 });
 
 /// Talks to `SessionCountdown` on Android: an ongoing notification that
@@ -33,7 +36,7 @@ class MethodChannelSessionCountdown implements SessionCountdown {
       CountdownRunning(:final end) => (
         false,
         end.millisecondsSinceEpoch,
-        null,
+        texts.until.replaceAll('{time}', texts.formatTime(end)),
       ),
       CountdownPaused(:final remaining) => (
         true,
