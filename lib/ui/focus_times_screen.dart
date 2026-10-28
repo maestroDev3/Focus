@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../domain/clock.dart';
 import '../domain/focus_time.dart';
 import '../domain/focus_time_repository.dart';
-import '../domain/focus_week.dart';
 import '../domain/named_block_list.dart';
 import '../l10n/app_localizations.dart';
 import 'focus_time_label.dart';
