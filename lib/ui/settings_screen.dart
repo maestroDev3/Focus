@@ -92,6 +92,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   var _dailyGoal = const DailyGoal();
   AppLanguage? _language;
   var _showOnLockScreen = true;
+  var _liveUpdate = false;
   var _mindfulOpening = false;
   var _background = BackgroundStyle.initial;
 
@@ -106,6 +107,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final dailyGoal = await widget.settings.loadDailyGoal();
     final language = await widget.language?.load();
     final showOnLockScreen = await widget.settings.loadShowOnLockScreen();
+    final liveUpdate = await widget.settings.loadLiveUpdate();
     final mindfulOpening = await widget.settings.loadMindfulOpening();
     final background = await widget.settings.loadBackground();
     if (!mounted) return;
@@ -114,6 +116,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _dailyGoal = dailyGoal;
       _language = language;
       _showOnLockScreen = showOnLockScreen;
+      _liveUpdate = liveUpdate;
       _mindfulOpening = mindfulOpening;
       _background = background;
     });
@@ -162,6 +165,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _setShowOnLockScreen(bool show) async {
     setState(() => _showOnLockScreen = show);
     await widget.settings.saveShowOnLockScreen(show);
+    widget.onLockScreenChanged?.call();
+  }
+
+  Future<void> _setLiveUpdate(bool on) async {
+    setState(() => _liveUpdate = on);
+    await widget.settings.saveLiveUpdate(on);
     widget.onLockScreenChanged?.call();
   }
 
@@ -363,6 +372,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   subtitle: Text(l10n.showOnLockScreenDetails),
                   value: _showOnLockScreen,
                   onChanged: _setShowOnLockScreen,
+                ),
+                SwitchListTile(
+                  key: const Key('live-update'),
+                  secondary: const Icon(Icons.schedule),
+                  title: Text(l10n.statusBarCountdown),
+                  subtitle: Text(l10n.statusBarCountdownDetails),
+                  value: _liveUpdate,
+                  onChanged: _setLiveUpdate,
                 ),
                 ListTile(
                   leading: const Icon(Icons.self_improvement),

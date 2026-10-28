@@ -723,6 +723,15 @@
       }
     }
   },
+  "countdownUntil": "until {time}",
+  "@countdownUntil": {
+    "description": "Text of the countdown notification while the session runs; time is the clock time the session ends at.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
   "widgetStart": "Focus",
   "@widgetStart": {
     "description": "Button on the home screen widget that starts a session."
@@ -868,6 +877,14 @@
   },
   "@showOnLockScreenDetails": {
     "description": "Subtitle of the lock screen switch."
+  },
+  "statusBarCountdown": "Status bar countdown",
+  "statusBarCountdownDetails": "Live Update next to the clock; the remaining time in the notification stays small",
+  "@statusBarCountdown": {
+    "description": "Settings switch: promote the countdown to an Android 16 Live Update (status bar chip)."
+  },
+  "@statusBarCountdownDetails": {
+    "description": "Subtitle of the Live Update switch, naming the trade-off."
   },
   "takeABreath": "Take a breath.",
   "@takeABreath": {

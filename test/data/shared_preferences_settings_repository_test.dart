@@ -118,6 +118,32 @@ void main() {
       );
     });
 
+    test('prefers the large display over the Live Update by default', () async {
+      SharedPreferences.setMockInitialValues({});
+      final repository = SharedPreferencesSettingsRepository(
+        await SharedPreferences.getInstance(),
+      );
+
+      expect(await repository.loadLiveUpdate(), isFalse);
+    });
+
+    test('stores the Live Update choice as a bool the native side reads', () async {
+      SharedPreferences.setMockInitialValues({});
+      final preferences = await SharedPreferences.getInstance();
+
+      await SharedPreferencesSettingsRepository(
+        preferences,
+      ).saveLiveUpdate(true);
+
+      expect(preferences.getBool('settings.liveUpdate.v1'), isTrue);
+      expect(
+        await SharedPreferencesSettingsRepository(
+          preferences,
+        ).loadLiveUpdate(),
+        isTrue,
+      );
+    });
+
     test('returns the defaults without stored data', () async {
       SharedPreferences.setMockInitialValues({});
       final repository = SharedPreferencesSettingsRepository(

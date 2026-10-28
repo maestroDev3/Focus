@@ -26,6 +26,13 @@ abstract interface class SettingsRepository {
 
   Future<void> saveShowOnLockScreen(bool show);
 
+  /// Whether the countdown may be promoted to an Android 16 Live Update
+  /// (status bar chip; the notification then uses the system template).
+  /// Off by default: the large remaining time wins (decision 2026-10-27).
+  Future<bool> loadLiveUpdate();
+
+  Future<void> saveLiveUpdate(bool on);
+
   /// Whether paused apps open after a breathing pause outside sessions and
   /// focus times; off unless switched on.
   Future<bool> loadMindfulOpening();

@@ -1,23 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Expanded countdown notification: title and a very large live time. -->
+<!-- Expanded countdown notification: title and end time left, very large
+     live time right (user decision 2026-10-27). -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/countdown_title"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:textAppearance="@android:style/TextAppearance.Material.Notification.Title"/>
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/countdown_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="@android:style/TextAppearance.Material.Notification.Title"/>
+
+        <TextView
+            android:id="@+id/countdown_until"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="@android:style/TextAppearance.Material.Notification"/>
+    </LinearLayout>
 
     <Chronometer
         android:id="@+id/countdown_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginStart="12dp"
         android:textAppearance="@android:style/TextAppearance.Material.Notification.Title"
         android:textSize="44sp"/>
 </LinearLayout>

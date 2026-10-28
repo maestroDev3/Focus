@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'data/json_backup_codec.dart';
@@ -80,6 +81,8 @@ Future<void> main() async {
         focusing: l10n().countdownFocusing,
         focusingWithLabel: l10n().countdownFocusingWithLabel('{label}'),
         paused: l10n().countdownPaused('{time}'),
+        until: l10n().countdownUntil('{time}'),
+        formatTime: (end) => DateFormat.jm(l10n().localeName).format(end),
       ),
     ),
     labels: labels,
