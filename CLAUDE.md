@@ -363,3 +363,8 @@ commit comment).
 - 2026-10-28 – New idea: a goal with a period may carry its difference over
   instead of resetting (epic #379, story #380); whether only the shortfall,
   a cap on the debt and monthly goals are open questions for the user.
+- 2026-10-28 – The calendar was too hidden (settings → focus times → icon):
+  the focus times page now opens as the week (list behind a Week|List
+  switch, #386) and home gets a calendar icon straight to it (#387) – built
+  on `epic/focus-calendar` before the phone test, so one preview covers the
+  whole calendar.
