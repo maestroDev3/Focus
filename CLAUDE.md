@@ -356,5 +356,7 @@ commit comment).
   ("until 16:03") left, the large counting time right; the new switch
   "Status bar countdown" opts into the Live Update (chip, system template,
   time small in the header). `POST_PROMOTED_NOTIFICATIONS` stays for the
-  opt-in. Default chosen by Claude, to be confirmed on the phone. Replaces
-  the Live Update part of the 2026-10-04 decision.
+  opt-in. Replaces the Live Update part of the 2026-10-04 decision.
+- 2026-10-28 – Lock screen round tested on the phone (builds 532/536) and
+  merged (#375); the default "large display" stands. Epic #369 closed. Next:
+  the calendar (epic #361, on `epic/focus-calendar`), then #373.

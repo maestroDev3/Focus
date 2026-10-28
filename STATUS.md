@@ -23,8 +23,7 @@ The GitHub issues are authoritative; this file is the summary.
 | Epic | State | Stories (in order) |
 |---|---|---|
 | #123 Session ritual | 3 of 4 closed | #269 Spotify playlist, personal mode (`backlog`, needs your Spotify developer app) |
-| #361 See your planned focus in a calendar | 0 of 3 closed | #362 See focus times in a calendar → #363 See today and now in the calendar → #364 Plan a focus time from a free gap (all `ready`) |
-| #369 Read the session at arm's length | 0 of 1 closed | #370 Read the session at arm's length (`in-progress`) |
+| #361 See your planned focus in a calendar | 0 of 3 closed | #362 See focus times in a calendar (`in-progress`) → #363 See today and now in the calendar → #364 Plan a focus time from a free gap (`ready`) |
 
 **#139 Distraction blocking**
 
@@ -42,11 +41,11 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## Recently done
 
+- #370 Read the session at arm's length: end time, champagne accent, large time right; "Status bar countdown" opts into the Live Update (epic #369 closed)
 - #337 Weekly label goals: Mon–Sun hours next to the total goal (epic #336 closed)
 - #196 Quick settings tile: tap starts a session, long press opens Focus (epic #195 closed)
 - #351 Play Store preparation: app bundle in CI, store texts, accessibility consent
 - #358 Info page and user guide (README, guide en/de)
-- #205 Statistics you can explore: insights (protected time, calm rhythm) and paused apps per app
 
 ## Open decisions (user only)
 
