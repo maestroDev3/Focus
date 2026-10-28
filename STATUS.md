@@ -24,6 +24,7 @@ The GitHub issues are authoritative; this file is the summary.
 |---|---|---|
 | #123 Session ritual | 3 of 4 closed | #269 Spotify playlist, personal mode (`backlog`, needs your Spotify developer app) |
 | #361 See your planned focus in a calendar | 0 of 3 closed | #362 See focus times in a calendar (`in-progress`) → #363 See today and now in the calendar → #364 Plan a focus time from a free gap (`ready`) |
+| #379 Choose how a goal resets | 0 of 1 closed | #380 Choose whether a weekly goal resets (`backlog`) |
 
 **#139 Distraction blocking**
 
@@ -49,5 +50,6 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## Open decisions (user only)
 
-- Epic #372 Held-back notifications stay quiet (Distraction blocking) – created, please confirm or re-sort; suggested right after #370, before the calendar.
+- Epic #372 Held-back notifications stay quiet (Distraction blocking) – created, please confirm or re-sort; suggested right after the calendar.
+- Epic #379 Choose how a goal resets (Focus experience, story #380) – created, please confirm or re-sort; open questions in the epic: carry shortfall and/or surplus, cap the debt, monthly goals as own story?
 - #269 Spotify personal mode: waiting for your Spotify developer app (Client ID).

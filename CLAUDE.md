@@ -360,3 +360,6 @@ commit comment).
 - 2026-10-28 – Lock screen round tested on the phone (builds 532/536) and
   merged (#375); the default "large display" stands. Epic #369 closed. Next:
   the calendar (epic #361, on `epic/focus-calendar`), then #373.
+- 2026-10-28 – New idea: a goal with a period may carry its difference over
+  instead of resetting (epic #379, story #380); whether only the shortfall,
+  a cap on the debt and monthly goals are open questions for the user.
