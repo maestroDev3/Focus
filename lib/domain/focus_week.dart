@@ -5,6 +5,7 @@ import 'focus_time.dart';
 /// stay readable next to each other (#362).
 class FocusWeekEntry {
   const FocusWeekEntry({
+    required this.weekday,
     required this.focusTimeId,
     required this.blockListId,
     required this.startMinute,
@@ -12,6 +13,9 @@ class FocusWeekEntry {
     required this.column,
     required this.columns,
   });
+
+  /// ISO weekday this entry belongs to: Monday = 1 … Sunday = 7.
+  final int weekday;
 
   final String focusTimeId;
 
@@ -71,7 +75,7 @@ class FocusWeek {
         }
         if (entry.range.endMinute > latest) latest = entry.range.endMinute;
       }
-      days[weekday] = _layOut(entries);
+      days[weekday] = _layOut(weekday, entries);
     }
 
     if (!hasEntries) return FocusWeek._(days, _fallbackFirst, _fallbackLast);
@@ -108,6 +112,7 @@ class FocusWeek {
   /// overlapping entries, each one takes the first free column; the cluster's
   /// column count is shared so the calendar divides its width evenly.
   static List<FocusWeekEntry> _layOut(
+    int weekday,
     List<({String id, String? list, FocusTimeRange range})> sorted,
   ) {
     final result = <FocusWeekEntry>[];
@@ -121,6 +126,7 @@ class FocusWeek {
         final entry = sorted[i];
         result.add(
           FocusWeekEntry(
+            weekday: weekday,
             focusTimeId: entry.id,
             blockListId: entry.list,
             startMinute: entry.range.startMinute,
@@ -153,4 +159,27 @@ class FocusWeek {
     finishCluster(sorted.length);
     return result;
   }
+}
+
+
+/// Where "now" sits in the planned week, computed once from the injected
+/// clock so the calendar can mark today, the current minute and the running
+/// range without ever asking for the time itself (#363).
+class FocusWeekNow {
+  const FocusWeekNow._(this.weekday, this.minuteOfDay);
+
+  factory FocusWeekNow.at(DateTime now) =>
+      FocusWeekNow._(now.weekday, now.hour * 60 + now.minute);
+
+  /// ISO weekday of today: Monday = 1 … Sunday = 7.
+  final int weekday;
+
+  /// Minutes after local midnight.
+  final int minuteOfDay;
+
+  /// Whether [entry] is running right now.
+  bool isActive(FocusWeekEntry entry) =>
+      entry.weekday == weekday &&
+      minuteOfDay >= entry.startMinute &&
+      minuteOfDay < entry.endMinute;
 }

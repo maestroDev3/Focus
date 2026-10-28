@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../domain/clock.dart';
 import '../domain/focus_time.dart';
 import '../domain/focus_time_repository.dart';
 import '../domain/focus_week.dart';
@@ -13,9 +14,14 @@ class FocusWeekScreen extends StatelessWidget {
     super.key,
     required this.focusTimes,
     this.onOpenFocusTime,
+    this.clock = DateTime.now,
   });
 
   final FocusTimeRepository focusTimes;
+
+  /// Decides today, the now line and the running range; read once per build,
+  /// nothing animates (#363).
+  final Clock clock;
 
   /// Called when an entry is tapped, with its focus time.
   final ValueChanged<FocusTime>? onOpenFocusTime;
@@ -36,6 +42,7 @@ class FocusWeekScreen extends StatelessWidget {
         builder: (context, snapshot) {
           final times = snapshot.data ?? const <FocusTime>[];
           final week = FocusWeek.from(times);
+          final now = FocusWeekNow.at(clock());
           if (week.isEmpty) {
             return Padding(
               padding: const EdgeInsets.all(28),
@@ -65,9 +72,17 @@ class FocusWeekScreen extends StatelessWidget {
                       Expanded(
                         child: Text(
                           weekdayName(day, locale),
+                          key: day == now.weekday
+                              ? Key('week-today-$day')
+                              : null,
                           textAlign: TextAlign.center,
                           style: theme.textTheme.labelSmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
+                            color: day == now.weekday
+                                ? theme.colorScheme.primary
+                                : theme.colorScheme.onSurfaceVariant,
+                            fontWeight: day == now.weekday
+                                ? FontWeight.w600
+                                : null,
                           ),
                         ),
                       ),
@@ -110,6 +125,7 @@ class FocusWeekScreen extends StatelessWidget {
                             child: _DayColumn(
                               weekday: day,
                               week: week,
+                              now: now,
                               hourHeight: _hourHeight,
                               onOpen: onOpenFocusTime == null
                                   ? null
@@ -139,12 +155,14 @@ class _DayColumn extends StatelessWidget {
   const _DayColumn({
     required this.weekday,
     required this.week,
+    required this.now,
     required this.hourHeight,
     this.onOpen,
   });
 
   final int weekday;
   final FocusWeek week;
+  final FocusWeekNow now;
   final double hourHeight;
   final ValueChanged<FocusWeekEntry>? onOpen;
 
@@ -183,7 +201,22 @@ class _DayColumn extends StatelessWidget {
                     '${entry.startMinute}',
                   ),
                   entry: entry,
+                  active: now.isActive(entry),
                   onOpen: onOpen,
+                ),
+              ),
+            if (weekday == now.weekday &&
+                now.minuteOfDay >= week.firstHour * 60 &&
+                now.minuteOfDay <= week.lastHour * 60)
+              Positioned(
+                key: const Key('week-now-line'),
+                top:
+                    (now.minuteOfDay - week.firstHour * 60) / 60 * hourHeight,
+                left: 0,
+                right: 0,
+                child: Container(
+                  height: 1.6,
+                  color: theme.colorScheme.primary,
                 ),
               ),
           ],
@@ -193,11 +226,18 @@ class _DayColumn extends StatelessWidget {
   }
 }
 
-/// One focus-time range as a calm champagne block naming its hours.
+/// One focus-time range as a calm champagne block naming its hours; the
+/// running one glows a little stronger (#363).
 class _WeekEntry extends StatelessWidget {
-  const _WeekEntry({super.key, required this.entry, this.onOpen});
+  const _WeekEntry({
+    super.key,
+    required this.entry,
+    this.active = false,
+    this.onOpen,
+  });
 
   final FocusWeekEntry entry;
+  final bool active;
   final ValueChanged<FocusWeekEntry>? onOpen;
 
   @override
@@ -205,12 +245,14 @@ class _WeekEntry extends StatelessWidget {
     final theme = Theme.of(context);
     final locale = Localizations.localeOf(context).toLanguageTag();
     return Material(
-      color: theme.colorScheme.primary.withValues(alpha: 0.16),
+      color: theme.colorScheme.primary.withValues(alpha: active ? 0.38 : 0.16),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(6),
         side: BorderSide(
-          color: theme.colorScheme.primary.withValues(alpha: 0.6),
-          width: 0.8,
+          color: theme.colorScheme.primary.withValues(
+            alpha: active ? 1 : 0.6,
+          ),
+          width: active ? 1.2 : 0.8,
         ),
       ),
       child: InkWell(
