@@ -878,6 +878,14 @@
   "@showOnLockScreenDetails": {
     "description": "Subtitle of the lock screen switch."
   },
+  "viewWeek": "Week",
+  "viewList": "List",
+  "@viewWeek": {
+    "description": "Segment label: the focus times page shows the week calendar."
+  },
+  "@viewList": {
+    "description": "Segment label: the focus times page shows the plain list."
+  },
   "weekCalendar": "Week calendar",
   "weekEmpty": "The week is still free.",
   "@weekCalendar": {

@@ -8,8 +8,9 @@ import '../l10n/app_localizations.dart';
 import 'focus_time_label.dart';
 import 'focus_week_screen.dart';
 
-/// Lets the user plan recurring focus times.
-class FocusTimesScreen extends StatelessWidget {
+/// Lets the user plan recurring focus times; the week greets first, the
+/// list sits behind a switch (#386).
+class FocusTimesScreen extends StatefulWidget {
   const FocusTimesScreen({
     super.key,
     required this.focusTimes,
@@ -25,6 +26,14 @@ class FocusTimesScreen extends StatelessWidget {
 
   /// Decides which focus time is running and therefore locked.
   final Clock clock;
+
+  @override
+  State<FocusTimesScreen> createState() => _FocusTimesScreenState();
+}
+
+class _FocusTimesScreenState extends State<FocusTimesScreen> {
+  /// The week is the page (user decision 2026-10-28).
+  var _week = true;
 
   Future<void> _edit(
     BuildContext context,
@@ -63,12 +72,12 @@ class FocusTimesScreen extends StatelessWidget {
         blockListId: result.blockListId,
       );
       if (time == null) {
-        await focusTimes.addFocusTime(
+        await widget.focusTimes.addFocusTime(
           ranges: candidate.ranges,
           blockListId: candidate.blockListId,
         );
       } else {
-        await focusTimes.updateFocusTime(candidate);
+        await widget.focusTimes.updateFocusTime(candidate);
       }
     } on ArgumentError catch (error) {
       final overlap = '${error.message}'.contains('overlaps');
@@ -82,50 +91,16 @@ class FocusTimesScreen extends StatelessWidget {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-    final locale = Localizations.localeOf(context).toLanguageTag();
 
-    return StreamBuilder<List<NamedBlockList>>(
-      stream: namedLists?.watchLists() ?? Stream.value(const []),
-      builder: (context, listSnapshot) {
-        final lists = listSnapshot.data ?? const <NamedBlockList>[];
-        String? listName(String? id) => [
-          for (final list in lists)
-            if (list.id == id) list.name,
-        ].firstOrNull;
-        return Scaffold(
-          appBar: AppBar(
-            title: Text(l10n.focusTimes),
-            actions: [
-              IconButton(
-                tooltip: l10n.weekCalendar,
-                icon: const Icon(Icons.calendar_view_week_outlined),
-                onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder: (_) => FocusWeekScreen(
-                      focusTimes: focusTimes,
-                      onOpenFocusTime: (time) {
-                        if (canChangeFocusTime(time, clock())) {
-                          _edit(context, lists, time: time);
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(l10n.focusTimeRunning)),
-                          );
-                        }
-                      },
-                      onPlanGap: (range) =>
-                          _edit(context, lists, prefill: range),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          body: StreamBuilder<List<FocusTime>>(
-            stream: focusTimes.watchFocusTimes(),
+  Widget _list(
+    BuildContext context,
+    List<NamedBlockList> lists,
+    AppLocalizations l10n,
+    ThemeData theme,
+    String locale,
+  ) => StreamBuilder<List<FocusTime>>(
+    stream: widget.focusTimes.watchFocusTimes(),
+
             builder: (context, snapshot) {
               final times = snapshot.data ?? const <FocusTime>[];
               if (times.isEmpty) {
@@ -143,7 +118,7 @@ class FocusTimesScreen extends StatelessWidget {
                 itemCount: times.length,
                 itemBuilder: (context, index) {
                   final time = times[index];
-                  final changeable = canChangeFocusTime(time, clock());
+                  final changeable = canChangeFocusTime(time, widget.clock());
                   final details = [
                     ?listName(time.blockListId),
                     if (!changeable) l10n.focusTimeRunning,
@@ -164,13 +139,75 @@ class FocusTimesScreen extends StatelessWidget {
                       tooltip: l10n.deleteFocusTime,
                       icon: const Icon(Icons.delete_outline),
                       onPressed: changeable
-                          ? () => focusTimes.deleteFocusTime(time.id)
+                          ? () => widget.focusTimes.deleteFocusTime(time.id)
                           : null,
                     ),
                   );
                 },
               );
             },
+          
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final locale = Localizations.localeOf(context).toLanguageTag();
+
+    return StreamBuilder<List<NamedBlockList>>(
+      stream: widget.namedLists?.watchLists() ?? Stream.value(const []),
+      builder: (context, listSnapshot) {
+        final lists = listSnapshot.data ?? const <NamedBlockList>[];
+        String? listName(String? id) => [
+          for (final list in lists)
+            if (list.id == id) list.name,
+        ].firstOrNull;
+        return Scaffold(
+          appBar: AppBar(title: Text(l10n.focusTimes)),
+          body: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(28, 4, 28, 8),
+                child: SegmentedButton<bool>(
+                  segments: [
+                    ButtonSegment(
+                      value: true,
+                      label: Text(l10n.viewWeek),
+                      icon: const Icon(Icons.calendar_view_week_outlined),
+                    ),
+                    ButtonSegment(
+                      value: false,
+                      label: Text(l10n.viewList),
+                      icon: const Icon(Icons.list_outlined),
+                    ),
+                  ],
+                  selected: {_week},
+                  onSelectionChanged: (choice) =>
+                      setState(() => _week = choice.single),
+                  showSelectedIcon: false,
+                ),
+              ),
+              Expanded(
+                child: _week
+                    ? FocusWeekView(
+                        focusTimes: widget.focusTimes,
+                        clock: widget.clock,
+                        onOpenFocusTime: (time) {
+                          if (canChangeFocusTime(time, widget.clock())) {
+                            _edit(context, lists, time: time);
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(l10n.focusTimeRunning)),
+                            );
+                          }
+                        },
+                        onPlanGap: (range) =>
+                            _edit(context, lists, prefill: range),
+                      )
+                    : _list(context, lists, l10n, theme, locale),
+              ),
+            ],
           ),
           bottomNavigationBar: SafeArea(
             child: Padding(
