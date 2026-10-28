@@ -59,7 +59,7 @@ void main() {
       tester,
     ) async {
       var opened = 0;
-      await pumpHome(tester, onOpenWeek: () => opened++);
+      await pumpHome(tester, now: DateTime(2026, 10, 28, 10), onOpenWeek: () => opened++);
 
       await tester.tap(find.byTooltip('Week calendar'));
       await tester.pump();
