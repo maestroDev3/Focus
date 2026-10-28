@@ -98,8 +98,13 @@ class _FocusTimesScreenState extends State<FocusTimesScreen> {
     AppLocalizations l10n,
     ThemeData theme,
     String locale,
-  ) => StreamBuilder<List<FocusTime>>(
-    stream: widget.focusTimes.watchFocusTimes(),
+  ) {
+    String? listName(String? id) => [
+      for (final list in lists)
+        if (list.id == id) list.name,
+    ].firstOrNull;
+    return StreamBuilder<List<FocusTime>>(
+      stream: widget.focusTimes.watchFocusTimes(),
 
             builder: (context, snapshot) {
               final times = snapshot.data ?? const <FocusTime>[];
@@ -148,6 +153,7 @@ class _FocusTimesScreenState extends State<FocusTimesScreen> {
             },
           
   );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -159,10 +165,6 @@ class _FocusTimesScreenState extends State<FocusTimesScreen> {
       stream: widget.namedLists?.watchLists() ?? Stream.value(const []),
       builder: (context, listSnapshot) {
         final lists = listSnapshot.data ?? const <NamedBlockList>[];
-        String? listName(String? id) => [
-          for (final list in lists)
-            if (list.id == id) list.name,
-        ].firstOrNull;
         return Scaffold(
           appBar: AppBar(title: Text(l10n.focusTimes)),
           body: Column(
