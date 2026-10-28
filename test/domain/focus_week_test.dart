@@ -140,4 +140,48 @@ void main() {
       expect(week.lastHour, 18);
     });
   });
+
+  group('FocusWeekNow', () {
+    test('knows today and the minute of the day', () {
+      // 2026-10-28 is a Wednesday.
+      final now = FocusWeekNow.at(DateTime(2026, 10, 28, 9, 30));
+
+      expect(now.weekday, DateTime.wednesday);
+      expect(now.minuteOfDay, 9 * 60 + 30);
+    });
+
+    test('covers the edges of the day', () {
+      expect(FocusWeekNow.at(DateTime(2026, 10, 28)).minuteOfDay, 0);
+      expect(
+        FocusWeekNow.at(DateTime(2026, 10, 28, 23, 59)).minuteOfDay,
+        23 * 60 + 59,
+      );
+    });
+
+    test('reports only the running entry active', () {
+      final week = FocusWeek.from([
+        FocusTime(
+          id: 'morning',
+          weekdays: {DateTime.wednesday},
+          startMinute: 9 * 60,
+          endMinute: 12 * 60,
+        ),
+      ]);
+      final entry = week.entriesOn(DateTime.wednesday).single;
+
+      expect(
+        FocusWeekNow.at(DateTime(2026, 10, 28, 10)).isActive(entry),
+        isTrue,
+      );
+      expect(
+        FocusWeekNow.at(DateTime(2026, 10, 28, 12)).isActive(entry),
+        isFalse,
+      );
+      // Same minutes, but a Tuesday.
+      expect(
+        FocusWeekNow.at(DateTime(2026, 10, 27, 10)).isActive(entry),
+        isFalse,
+      );
+    });
+  });
 }

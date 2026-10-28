@@ -8,21 +8,35 @@ import '../support/pump_app.dart';
 
 void main() {
   group('FocusWeekScreen', () {
+    // 2026-10-28 is a Wednesday; outside every seeded range by default.
+    final quietNow = DateTime(2026, 10, 28, 20);
+
     Future<FakeFocusTimeRepository> pumpWeek(
       WidgetTester tester, {
       List<FocusTime> times = const [],
       ValueChanged<FocusTime>? onOpenFocusTime,
+      DateTime? now,
     }) async {
       final repository = FakeFocusTimeRepository(times);
       await tester.pumpApp(
         FocusWeekScreen(
           focusTimes: repository,
           onOpenFocusTime: onOpenFocusTime,
+          clock: () => now ?? quietNow,
         ),
       );
       await tester.pump();
       return repository;
     }
+
+    Color? entryColor(WidgetTester tester, String key) => tester
+        .widget<Material>(
+          find.descendant(
+            of: find.byKey(Key(key)),
+            matching: find.byType(Material),
+          ),
+        )
+        .color;
 
     testWidgets('shows every range on its weekdays', (tester) async {
       await pumpWeek(
@@ -91,6 +105,62 @@ void main() {
       await tester.pump();
 
       expect(opened.map((time) => time.id), ['morning']);
+    });
+
+    testWidgets('marks today, the current time and the running entry', (
+      tester,
+    ) async {
+      await pumpWeek(
+        tester,
+        times: [
+          FocusTime(
+            id: 'running',
+            weekdays: {DateTime.wednesday},
+            startMinute: 9 * 60,
+            endMinute: 12 * 60,
+          ),
+          FocusTime(
+            id: 'other',
+            weekdays: {DateTime.monday},
+            startMinute: 9 * 60,
+            endMinute: 12 * 60,
+          ),
+        ],
+        now: DateTime(2026, 10, 28, 10),
+      );
+
+      expect(find.byKey(const Key('week-today-3')), findsOneWidget);
+      expect(find.byKey(const Key('week-now-line')), findsOneWidget);
+      expect(
+        entryColor(tester, 'week-entry-3-running-540'),
+        isNot(entryColor(tester, 'week-entry-1-other-540')),
+      );
+    });
+
+    testWidgets('highlights no entry while nothing runs', (tester) async {
+      await pumpWeek(
+        tester,
+        times: [
+          FocusTime(
+            id: 'morning',
+            weekdays: {DateTime.wednesday},
+            startMinute: 9 * 60,
+            endMinute: 12 * 60,
+          ),
+          FocusTime(
+            id: 'other',
+            weekdays: {DateTime.monday},
+            startMinute: 9 * 60,
+            endMinute: 12 * 60,
+          ),
+        ],
+      );
+
+      expect(find.byKey(const Key('week-today-3')), findsOneWidget);
+      expect(
+        entryColor(tester, 'week-entry-3-morning-540'),
+        entryColor(tester, 'week-entry-1-other-540'),
+      );
     });
 
     testWidgets('says the week is still free without focus times', (
