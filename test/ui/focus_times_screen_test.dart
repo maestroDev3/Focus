@@ -4,6 +4,7 @@ import 'package:focus_timer/domain/blocking.dart';
 import 'package:focus_timer/domain/focus_time.dart';
 import 'package:focus_timer/domain/named_block_list.dart';
 import 'package:focus_timer/ui/focus_times_screen.dart';
+import 'package:focus_timer/ui/focus_week_screen.dart';
 
 import '../support/fake_focus_time_repository.dart';
 import '../support/fake_named_block_list_repository.dart';
@@ -40,6 +41,24 @@ void main() {
   });
 
   group('FocusTimesScreen', () {
+    testWidgets('opens the week calendar from the app bar', (tester) async {
+      await repository.addFocusTime(
+        ranges: [
+          FocusTimeRange(
+            weekdays: {DateTime.monday},
+            startMinute: 9 * 60,
+            endMinute: 12 * 60,
+          ),
+        ],
+      );
+      await pumpScreen(tester);
+
+      await tester.tap(find.byTooltip('Week calendar'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(FocusWeekScreen), findsOneWidget);
+    });
+
     testWidgets('lists focus times with weekdays and times', (tester) async {
       repository.times.addAll([
         FocusTime(

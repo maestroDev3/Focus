@@ -162,6 +162,8 @@
   "languageRussian": "Русский",
   "showOnLockScreen": "Auf dem Sperrbildschirm anzeigen",
   "showOnLockScreenDetails": "Label und Restzeit, solange eine Session läuft",
+  "weekCalendar": "Wochenkalender",
+  "weekEmpty": "Die Woche ist noch frei.",
   "statusBarCountdown": "Countdown in der Statusleiste",
   "statusBarCountdownDetails": "Live Update neben der Uhr; die Restzeit in der Benachrichtigung bleibt klein",
   "takeABreath": "Atme kurz durch.",
