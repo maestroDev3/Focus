@@ -23,7 +23,7 @@ The GitHub issues are authoritative; this file is the summary.
 | Epic | State | Stories (in order) |
 |---|---|---|
 | #123 Session ritual | 3 of 4 closed | #269 Spotify playlist, personal mode (`backlog`, needs your Spotify developer app) |
-| #361 See your planned focus in a calendar | 0 of 5 closed | #362 → #363 → #364 (built) → #386 The focus times page opens as the week (`in-progress`) → #387 Open the week from home (`ready`) |
+| #361 See your planned focus in a calendar | 0 of 5 closed | #362 → #363 → #364 → #386 → #387 (all built – phone test via PR #385) |
 | #379 Choose how a goal resets | 0 of 2 closed | #380 Choose whether a weekly goal resets → #381 See how a label's weeks went (both `backlog`) |
 
 **#139 Distraction blocking**
