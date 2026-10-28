@@ -30,6 +30,7 @@ import 'block_lists_screen.dart';
 import 'breath_screen.dart';
 import 'blocked_screen.dart';
 import 'break_screen.dart';
+import 'focus_times_screen.dart';
 import 'home_screen.dart';
 import 'intro_screen.dart';
 import 'label_sheet.dart';
@@ -406,6 +407,7 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
                   focusedToday: _focusedToday,
                   dailyGoal: _dailyGoal,
                   onOpenStatistics: _openStatistics,
+                  onOpenWeek: _openFocusTimes,
                   activeFocusTime: activeFocusTime(_focusTimes, widget.clock()),
                   nextFocusTimeStart: nextFocusTimeStart(
                     _focusTimes,
@@ -443,6 +445,19 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
             : activeFocusTime(_focusTimes, widget.clock()) != null
             ? RestoreLock.focusTime
             : RestoreLock.none,
+      ),
+    );
+    await _loadState();
+  }
+
+  /// One tap from home to the planned week (#387); the page opens as the
+  /// week (#386). Focus times may change there, so home reloads afterwards.
+  Future<void> _openFocusTimes() async {
+    await _push(
+      (context) => FocusTimesScreen(
+        focusTimes: widget.focusTimes,
+        namedLists: widget.namedBlockLists,
+        clock: widget.clock,
       ),
     );
     await _loadState();

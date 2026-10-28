@@ -33,6 +33,7 @@ class HomeScreen extends StatelessWidget {
     required this.focusedToday,
     required this.dailyGoal,
     required this.onOpenStatistics,
+    required this.onOpenWeek,
     this.intention,
     this.soundName,
     this.onChooseSound,
@@ -85,6 +86,9 @@ class HomeScreen extends StatelessWidget {
   /// Opens the wheel for the daily goal when the ring is held (#288, #303).
   final VoidCallback? onChooseDailyGoal;
   final VoidCallback onOpenStatistics;
+
+  /// Opens the planned week (the focus times page, #387).
+  final VoidCallback onOpenWeek;
 
   /// The focus time running now, if any.
   final FocusTime? activeFocusTime;
@@ -143,6 +147,14 @@ class HomeScreen extends StatelessWidget {
                                   color: theme.colorScheme.onSurfaceVariant,
                                   letterSpacing: 2,
                                 ),
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: onOpenWeek,
+                              tooltip: l10n.weekCalendar,
+                              color: theme.colorScheme.onSurfaceVariant,
+                              icon: const Icon(
+                                Icons.calendar_view_week_outlined,
                               ),
                             ),
                             IconButton(

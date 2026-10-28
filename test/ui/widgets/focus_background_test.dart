@@ -63,6 +63,7 @@ void main() {
           focusedToday: Duration.zero,
           dailyGoal: const DailyGoal(),
           onOpenStatistics: () {},
+          onOpenWeek: () {},
           blockedAppCount: 0,
           onOpenBlockedApps: () {},
           blockerNeedsPermission: false,
