@@ -184,4 +184,31 @@ void main() {
       );
     });
   });
+
+  group('suggestedFocusTimeRange', () {
+    test('suggests the pressed full hour on that weekday', () {
+      final range = suggestedFocusTimeRange(
+        weekday: DateTime.tuesday,
+        minuteOfDay: 9 * 60 + 25,
+      );
+
+      expect(range.weekdays, {DateTime.tuesday});
+      expect(range.startMinute, 9 * 60);
+      expect(range.endMinute, 10 * 60);
+    });
+
+    test('stays within the day near midnight', () {
+      final range = suggestedFocusTimeRange(
+        weekday: DateTime.sunday,
+        minuteOfDay: 23 * 60 + 40,
+      );
+
+      expect(range.startMinute, 23 * 60);
+      expect(range.endMinute, FocusTime.minutesPerDay);
+      expect(
+        range.endMinute - range.startMinute,
+        greaterThanOrEqualTo(FocusTime.minLengthMinutes),
+      );
+    });
+  });
 }

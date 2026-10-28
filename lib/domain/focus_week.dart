@@ -183,3 +183,22 @@ class FocusWeekNow {
       minuteOfDay >= entry.startMinute &&
       minuteOfDay < entry.endMinute;
 }
+
+
+/// Suggests a new focus time for a long-pressed free slot: that weekday and
+/// the pressed full hour, clamped to the day – always at least the minimum
+/// length, so the editor opens with something valid (#364).
+FocusTimeRange suggestedFocusTimeRange({
+  required int weekday,
+  required int minuteOfDay,
+}) {
+  final start = ((minuteOfDay ~/ 60) * 60).clamp(
+    0,
+    FocusTime.minutesPerDay - 60,
+  );
+  return FocusTimeRange(
+    weekdays: {weekday},
+    startMinute: start,
+    endMinute: start + 60,
+  );
+}

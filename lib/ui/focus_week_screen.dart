@@ -14,6 +14,7 @@ class FocusWeekScreen extends StatelessWidget {
     super.key,
     required this.focusTimes,
     this.onOpenFocusTime,
+    this.onPlanGap,
     this.clock = DateTime.now,
   });
 
@@ -25,6 +26,10 @@ class FocusWeekScreen extends StatelessWidget {
 
   /// Called when an entry is tapped, with its focus time.
   final ValueChanged<FocusTime>? onOpenFocusTime;
+
+  /// Called when a free slot is long-pressed, with a suggested range for a
+  /// new focus time (#364).
+  final ValueChanged<FocusTimeRange>? onPlanGap;
 
   static const _hourHeight = 56.0;
   static const _gutterWidth = 44.0;
@@ -123,10 +128,12 @@ class FocusWeekScreen extends StatelessWidget {
                             day++)
                           Expanded(
                             child: _DayColumn(
+                              key: Key('week-day-$day'),
                               weekday: day,
                               week: week,
                               now: now,
                               hourHeight: _hourHeight,
+                              onPlanGap: onPlanGap,
                               onOpen: onOpenFocusTime == null
                                   ? null
                                   : (entry) {
@@ -153,11 +160,13 @@ class FocusWeekScreen extends StatelessWidget {
 /// One weekday as a stack: quiet hour lines behind the day's entries.
 class _DayColumn extends StatelessWidget {
   const _DayColumn({
+    super.key,
     required this.weekday,
     required this.week,
     required this.now,
     required this.hourHeight,
     this.onOpen,
+    this.onPlanGap,
   });
 
   final int weekday;
@@ -165,6 +174,7 @@ class _DayColumn extends StatelessWidget {
   final FocusWeekNow now;
   final double hourHeight;
   final ValueChanged<FocusWeekEntry>? onOpen;
+  final ValueChanged<FocusTimeRange>? onPlanGap;
 
   @override
   Widget build(BuildContext context) {
@@ -174,6 +184,21 @@ class _DayColumn extends StatelessWidget {
         final width = constraints.maxWidth;
         return Stack(
           children: [
+            if (onPlanGap != null)
+              Positioned.fill(
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onLongPressStart: (details) => onPlanGap!(
+                    suggestedFocusTimeRange(
+                      weekday: weekday,
+                      minuteOfDay:
+                          week.firstHour * 60 +
+                          (details.localPosition.dy / hourHeight * 60)
+                              .round(),
+                    ),
+                  ),
+                ),
+              ),
             for (var hour = week.firstHour; hour < week.lastHour; hour++)
               Positioned(
                 top: (hour - week.firstHour) * hourHeight,
@@ -258,6 +283,9 @@ class _WeekEntry extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(6),
         onTap: onOpen == null ? null : () => onOpen!(entry),
+        // Owns the long press too, so a press on an entry never plans a new
+        // focus time underneath it (#364).
+        onLongPress: onOpen == null ? () {} : () => onOpen!(entry),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 4),
           child: Text(

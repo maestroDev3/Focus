@@ -15,6 +15,7 @@ void main() {
       WidgetTester tester, {
       List<FocusTime> times = const [],
       ValueChanged<FocusTime>? onOpenFocusTime,
+      ValueChanged<FocusTimeRange>? onPlanGap,
       DateTime? now,
     }) async {
       final repository = FakeFocusTimeRepository(times);
@@ -22,6 +23,7 @@ void main() {
         FocusWeekScreen(
           focusTimes: repository,
           onOpenFocusTime: onOpenFocusTime,
+          onPlanGap: onPlanGap,
           clock: () => now ?? quietNow,
         ),
       );
@@ -161,6 +163,58 @@ void main() {
         entryColor(tester, 'week-entry-3-morning-540'),
         entryColor(tester, 'week-entry-1-other-540'),
       );
+    });
+
+    testWidgets('plans a focus time from a long-pressed gap', (tester) async {
+      final planned = <FocusTimeRange>[];
+      await pumpWeek(
+        tester,
+        times: [
+          FocusTime(
+            id: 'morning',
+            weekdays: {DateTime.wednesday},
+            startMinute: 9 * 60,
+            endMinute: 12 * 60,
+          ),
+        ],
+        onPlanGap: planned.add,
+      );
+
+      // Hours 8-13 are visible; press Wednesday at 12:30 (56 px per hour).
+      final day = tester.getTopLeft(find.byKey(const Key('week-day-3')));
+      final width = tester
+          .getSize(find.byKey(const Key('week-day-3')))
+          .width;
+      await tester.longPressAt(day + Offset(width / 2, 4.5 * 56));
+      await tester.pump();
+
+      expect(planned, hasLength(1));
+      expect(planned.single.weekdays, {DateTime.wednesday});
+      expect(planned.single.startMinute, 12 * 60);
+      expect(planned.single.endMinute, 13 * 60);
+    });
+
+    testWidgets('does not plan from a long-pressed entry', (tester) async {
+      final planned = <FocusTimeRange>[];
+      await pumpWeek(
+        tester,
+        times: [
+          FocusTime(
+            id: 'morning',
+            weekdays: {DateTime.wednesday},
+            startMinute: 9 * 60,
+            endMinute: 12 * 60,
+          ),
+        ],
+        onPlanGap: planned.add,
+      );
+
+      await tester.longPress(
+        find.byKey(const Key('week-entry-3-morning-540')),
+      );
+      await tester.pump();
+
+      expect(planned, isEmpty);
     });
 
     testWidgets('says the week is still free without focus times', (

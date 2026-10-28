@@ -30,6 +30,7 @@ class FocusTimesScreen extends StatelessWidget {
     BuildContext context,
     List<NamedBlockList> lists, {
     FocusTime? time,
+    FocusTimeRange? prefill,
   }) async {
     final messenger = ScaffoldMessenger.of(context);
     final l10n = AppLocalizations.of(context);
@@ -37,7 +38,14 @@ class FocusTimesScreen extends StatelessWidget {
       context: context,
       showDragHandle: true,
       isScrollControlled: true,
-      builder: (context) => _FocusTimeEditor(initial: time, lists: lists),
+      builder: (context) => _FocusTimeEditor(
+        // A prefill drafts a new focus time; only [time] means editing.
+        initial: time ??
+            (prefill == null
+                ? null
+                : FocusTime.withRanges(id: 'suggested', ranges: [prefill])),
+        lists: lists,
+      ),
     );
     if (result == null) return;
     try {
@@ -108,6 +116,8 @@ class FocusTimesScreen extends StatelessWidget {
                           );
                         }
                       },
+                      onPlanGap: (range) =>
+                          _edit(context, lists, prefill: range),
                     ),
                   ),
                 ),
