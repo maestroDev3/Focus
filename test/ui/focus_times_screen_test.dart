@@ -24,8 +24,10 @@ void main() {
   }
 
   /// The page opens as the week (#386); the list sits behind the switch.
+  /// Two pumps: one for the switch, one for the list's stream to deliver.
   Future<void> showList(WidgetTester tester) async {
     await tester.tap(find.text('List'));
+    await tester.pump();
     await tester.pump();
   }
 
@@ -80,6 +82,7 @@ void main() {
       expect(find.byType(ListTile), findsWidgets);
 
       await tester.tap(find.text('Week'));
+      await tester.pump();
       await tester.pump();
       expect(find.byType(FocusWeekView), findsOneWidget);
     });
