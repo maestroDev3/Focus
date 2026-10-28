@@ -878,6 +878,14 @@
   "@showOnLockScreenDetails": {
     "description": "Subtitle of the lock screen switch."
   },
+  "weekCalendar": "Week calendar",
+  "weekEmpty": "The week is still free.",
+  "@weekCalendar": {
+    "description": "Title of the planned-week calendar and tooltip of its action on the focus times screen."
+  },
+  "@weekEmpty": {
+    "description": "Empty state of the week calendar, shown without any focus time."
+  },
   "statusBarCountdown": "Status bar countdown",
   "statusBarCountdownDetails": "Live Update next to the clock; the remaining time in the notification stays small",
   "@statusBarCountdown": {

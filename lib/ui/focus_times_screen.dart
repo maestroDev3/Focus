@@ -6,6 +6,7 @@ import '../domain/focus_time_repository.dart';
 import '../domain/named_block_list.dart';
 import '../l10n/app_localizations.dart';
 import 'focus_time_label.dart';
+import 'focus_week_screen.dart';
 
 /// Lets the user plan recurring focus times.
 class FocusTimesScreen extends StatelessWidget {
@@ -88,7 +89,31 @@ class FocusTimesScreen extends StatelessWidget {
             if (list.id == id) list.name,
         ].firstOrNull;
         return Scaffold(
-          appBar: AppBar(title: Text(l10n.focusTimes)),
+          appBar: AppBar(
+            title: Text(l10n.focusTimes),
+            actions: [
+              IconButton(
+                tooltip: l10n.weekCalendar,
+                icon: const Icon(Icons.calendar_view_week_outlined),
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => FocusWeekScreen(
+                      focusTimes: focusTimes,
+                      onOpenFocusTime: (time) {
+                        if (canChangeFocusTime(time, clock())) {
+                          _edit(context, lists, time: time);
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(l10n.focusTimeRunning)),
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
           body: StreamBuilder<List<FocusTime>>(
             stream: focusTimes.watchFocusTimes(),
             builder: (context, snapshot) {
