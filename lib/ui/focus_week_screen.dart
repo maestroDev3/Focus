@@ -7,10 +7,11 @@ import '../domain/focus_week.dart';
 import '../l10n/app_localizations.dart';
 import 'focus_time_label.dart';
 
-/// The planned week as a calendar: every focus-time range at its day and
-/// hours, so overlaps and free gaps become visible (#362).
-class FocusWeekScreen extends StatelessWidget {
-  const FocusWeekScreen({
+/// The week calendar body: every focus-time range at its day and hours, so
+/// overlaps and free gaps become visible (#362). The focus times page embeds
+/// it; [FocusWeekScreen] wraps it as its own page (#386).
+class FocusWeekView extends StatelessWidget {
+  const FocusWeekView({
     super.key,
     required this.focusTimes,
     this.onOpenFocusTime,
@@ -40,9 +41,7 @@ class FocusWeekScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final locale = Localizations.localeOf(context).toLanguageTag();
 
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.weekCalendar)),
-      body: StreamBuilder<List<FocusTime>>(
+    return StreamBuilder<List<FocusTime>>(
         stream: focusTimes.watchFocusTimes(),
         builder: (context, snapshot) {
           final times = snapshot.data ?? const <FocusTime>[];
@@ -151,10 +150,36 @@ class FocusWeekScreen extends StatelessWidget {
               ),
             ],
           );
-        },
-      ),
+      },
     );
   }
+}
+
+/// The planned week as its own page, wrapping [FocusWeekView].
+class FocusWeekScreen extends StatelessWidget {
+  const FocusWeekScreen({
+    super.key,
+    required this.focusTimes,
+    this.onOpenFocusTime,
+    this.onPlanGap,
+    this.clock = DateTime.now,
+  });
+
+  final FocusTimeRepository focusTimes;
+  final ValueChanged<FocusTime>? onOpenFocusTime;
+  final ValueChanged<FocusTimeRange>? onPlanGap;
+  final Clock clock;
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(title: Text(AppLocalizations.of(context).weekCalendar)),
+    body: FocusWeekView(
+      focusTimes: focusTimes,
+      onOpenFocusTime: onOpenFocusTime,
+      onPlanGap: onPlanGap,
+      clock: clock,
+    ),
+  );
 }
 
 /// One weekday as a stack: quiet hour lines behind the day's entries.

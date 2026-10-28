@@ -23,6 +23,14 @@ void main() {
     await tester.pump();
   }
 
+  /// The page opens as the week (#386); the list sits behind the switch.
+  /// Two pumps: one for the switch, one for the list's stream to deliver.
+  Future<void> showList(WidgetTester tester) async {
+    await tester.tap(find.text('List'));
+    await tester.pump();
+    await tester.pump();
+  }
+
   Future<void> openEditor(WidgetTester tester) async {
     await tester.tap(find.widgetWithText(FilledButton, 'Add focus time'));
     await tester.pump();
@@ -41,7 +49,7 @@ void main() {
   });
 
   group('FocusTimesScreen', () {
-    testWidgets('opens the week calendar from the app bar', (tester) async {
+    testWidgets('opens as the week', (tester) async {
       await repository.addFocusTime(
         ranges: [
           FocusTimeRange(
@@ -53,11 +61,53 @@ void main() {
       );
       await pumpScreen(tester);
 
-      await tester.tap(find.byTooltip('Week calendar'));
-      await tester.pumpAndSettle();
-
-      expect(find.byType(FocusWeekScreen), findsOneWidget);
+      expect(find.byType(FocusWeekView), findsOneWidget);
+      expect(find.byKey(const Key('week-day-1')), findsOneWidget);
     });
+
+    testWidgets('switches to the list and back', (tester) async {
+      await repository.addFocusTime(
+        ranges: [
+          FocusTimeRange(
+            weekdays: {DateTime.monday},
+            startMinute: 9 * 60,
+            endMinute: 12 * 60,
+          ),
+        ],
+      );
+      await pumpScreen(tester);
+
+      await showList(tester);
+      expect(find.byType(FocusWeekView), findsNothing);
+      expect(find.byType(ListTile), findsWidgets);
+
+      await tester.tap(find.text('Week'));
+      await tester.pump();
+      await tester.pump();
+      expect(find.byType(FocusWeekView), findsOneWidget);
+    });
+
+    testWidgets('opens the editor from a week entry', (tester) async {
+      final time = await repository.addFocusTime(
+        ranges: [
+          FocusTimeRange(
+            weekdays: {DateTime.monday},
+            startMinute: 9 * 60,
+            endMinute: 12 * 60,
+          ),
+        ],
+      );
+      await pumpScreen(tester);
+
+      await tester.tap(
+        find.byKey(Key('week-entry-1-${time.id}-540')),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(find.text('Save'), findsOneWidget);
+    });
+
 
     testWidgets('lists focus times with weekdays and times', (tester) async {
       repository.times.addAll([
@@ -75,6 +125,7 @@ void main() {
         ),
       ]);
       await pumpScreen(tester);
+      await showList(tester);
 
       expect(find.text('Mon–Fri · 09:00–12:00'), findsOneWidget);
       expect(find.text('Sat, Sun · 10:00–11:30'), findsOneWidget);
@@ -94,6 +145,7 @@ void main() {
         (added.ranges.single.startMinute, added.ranges.single.endMinute),
         (540, 720),
       );
+      await showList(tester);
       expect(find.text('Mon–Sat · 09:00–12:00'), findsOneWidget);
     });
 
@@ -107,6 +159,7 @@ void main() {
         ),
       );
       await pumpScreen(tester);
+      await showList(tester);
 
       await tester.tap(find.byTooltip('Delete focus time'));
       await tester.pump();
@@ -151,6 +204,7 @@ void main() {
         ),
       ]);
       await pumpScreen(tester);
+      await showList(tester);
 
       expect(
         find.text("Running focus times can't be changed."),
@@ -213,6 +267,7 @@ void main() {
       await save(tester);
 
       expect(repository.times.single.blockListId, 'list-1');
+      await showList(tester);
       expect(find.text('Morning'), findsOneWidget);
     });
 
@@ -236,6 +291,7 @@ void main() {
           ),
         );
         await pumpScreen(tester);
+        await showList(tester);
 
         expect(
           find.text('Mon–Wed, Fri 07:00–10:00 · Sat 07:00–12:00'),
@@ -270,6 +326,7 @@ void main() {
           ),
         );
         await pumpScreen(tester);
+        await showList(tester);
         await tester.tap(find.text('Mon 07:00–10:00 · Sat 07:00–12:00'));
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 500));
