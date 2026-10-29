@@ -161,6 +161,10 @@ class MainActivity : FlutterActivity() {
                         openNotificationGateSettings()
                         result.success(null)
                     }
+                    "refreshHeldNotifications" -> {
+                        FocusNotificationGate.refreshHeld()
+                        result.success(null)
+                    }
                     "openAppInfo" -> {
                         openSettingsPage(
                             Intent(
