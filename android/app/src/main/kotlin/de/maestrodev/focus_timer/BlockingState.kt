@@ -88,16 +88,18 @@ data class BlockingState(
      * time ends.
      */
     fun snoozeMillis(packageName: String, nowMillis: Long): Long? {
+        // A known end is snoozed in one go; ending early is handled by the
+        // gate's re-check (#373). Only a paused session keeps short rounds.
         if (active && packageName in packages) {
             val end = plannedEndMillis ?: return SNOOZE_STEP_MILLIS
             val left = end - nowMillis
-            if (left > 0) return minOf(left, SNOOZE_STEP_MILLIS)
+            if (left > 0) return left
         }
         val focusTime = activeFocusTime(nowMillis) ?: return null
         if (packageName !in packagesDuring(focusTime)) return null
         val left = focusTime.millisUntilEnd(nowMillis)
         if (left <= 0) return null
-        return minOf(left, SNOOZE_STEP_MILLIS)
+        return left
     }
 
     /** Milliseconds until the planned end, or null while paused / inactive. */
