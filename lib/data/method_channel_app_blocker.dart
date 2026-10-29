@@ -52,6 +52,10 @@ class MethodChannelAppBlocker implements AppBlocker {
   Future<void> openAppInfo() => channel.invokeMethod<void>('openAppInfo');
 
   @override
+  Future<void> refreshHeldNotifications() =>
+      channel.invokeMethod<void>('refreshHeldNotifications');
+
+  @override
   Future<String?> initialBlockedPackage() =>
       channel.invokeMethod<String>('initialBlockedPackage');
 

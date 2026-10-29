@@ -56,6 +56,7 @@ Future<void> main() async {
   // Texts for native notifications and the widget, looked up when they are
   // sent, so a language chosen in the settings applies right away.
   AppLocalizations l10n() => localizationsFor(language);
+  final appBlocker = MethodChannelAppBlocker();
   final timer = FocusTimer(
     repository: sessions,
     clock: DateTime.now,
@@ -67,6 +68,7 @@ Future<void> main() async {
       namedLists: namedBlockLists,
       settings: settings,
       mindfulApps: mindfulApps,
+      appBlocker: appBlocker,
     ),
     sessionEndAlarm: MethodChannelSessionEndAlarm(
       texts: () => (
@@ -117,7 +119,7 @@ Future<void> main() async {
       blockList: blockList,
       namedBlockLists: namedBlockLists,
       installedApps: const MethodChannelInstalledAppsSource(),
-      appBlocker: MethodChannelAppBlocker(),
+      appBlocker: appBlocker,
       focusTimes: focusTimes,
       reminders: MethodChannelFocusTimeReminders(),
       homeWidget: MethodChannelHomeWidgetBridge(

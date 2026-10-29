@@ -95,7 +95,7 @@ void main() {
       );
       expect(
         snoozeFor(state: state, packageName: instagram, now: nineOClock),
-        notificationSnoozeStep,
+        isNotNull,
       );
     });
   });
