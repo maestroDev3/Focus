@@ -20,7 +20,6 @@ class HomeScreen extends StatelessWidget {
     required this.clock,
     required this.focusDuration,
     required this.onStart,
-    required this.onOpenSettings,
     required this.blockedAppCount,
     required this.onOpenBlockedApps,
     required this.blockerNeedsPermission,
@@ -32,8 +31,6 @@ class HomeScreen extends StatelessWidget {
     required this.onChooseLabel,
     required this.focusedToday,
     required this.dailyGoal,
-    required this.onOpenStatistics,
-    required this.onOpenWeek,
     this.intention,
     this.soundName,
     this.onChooseSound,
@@ -58,8 +55,6 @@ class HomeScreen extends StatelessWidget {
 
   /// The optional sentence about the next session; no field without it.
   final TextEditingController? intention;
-  final VoidCallback onOpenSettings;
-
   /// Number of apps paused during sessions.
   final int blockedAppCount;
   final VoidCallback onOpenBlockedApps;
@@ -85,11 +80,6 @@ class HomeScreen extends StatelessWidget {
 
   /// Opens the wheel for the daily goal when the ring is held (#288, #303).
   final VoidCallback? onChooseDailyGoal;
-  final VoidCallback onOpenStatistics;
-
-  /// Opens the planned week (the focus times page, #387).
-  final VoidCallback onOpenWeek;
-
   /// The focus time running now, if any.
   final FocusTime? activeFocusTime;
 
@@ -138,38 +128,14 @@ class HomeScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                DateFormat.MMMMEEEEd(locale).format(now),
-                                style: theme.textTheme.labelLarge?.copyWith(
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                  letterSpacing: 2,
-                                ),
-                              ),
-                            ),
-                            IconButton(
-                              onPressed: onOpenWeek,
-                              tooltip: l10n.weekCalendar,
-                              color: theme.colorScheme.onSurfaceVariant,
-                              icon: const Icon(
-                                Icons.calendar_view_week_outlined,
-                              ),
-                            ),
-                            IconButton(
-                              onPressed: onOpenStatistics,
-                              tooltip: l10n.statistics,
-                              color: theme.colorScheme.onSurfaceVariant,
-                              icon: const Icon(Icons.insights_outlined),
-                            ),
-                            IconButton(
-                              onPressed: onOpenSettings,
-                              tooltip: l10n.settings,
-                              color: theme.colorScheme.onSurfaceVariant,
-                              icon: const Icon(Icons.tune),
-                            ),
-                          ],
+                        // The places live in the bottom bar now (#393);
+                        // the header keeps only the date and the greeting.
+                        Text(
+                          DateFormat.MMMMEEEEd(locale).format(now),
+                          style: theme.textTheme.labelLarge?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                            letterSpacing: 2,
+                          ),
                         ),
                         const SizedBox(height: 24),
                         Text(greeting, style: theme.textTheme.displaySmall),

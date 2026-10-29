@@ -886,6 +886,10 @@
   "@viewList": {
     "description": "Segment label: the focus times page shows the plain list."
   },
+  "tabHome": "Home",
+  "@tabHome": {
+    "description": "Label of the Home destination in the bottom navigation bar."
+  },
   "weekCalendar": "Week calendar",
   "weekEmpty": "The week is still free.",
   "@weekCalendar": {
