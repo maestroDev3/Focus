@@ -368,3 +368,6 @@ commit comment).
   switch, #386) and home gets a calendar icon straight to it (#387) – built
   on `epic/focus-calendar` before the phone test, so one preview covers the
   whole calendar.
+- 2026-10-29 – New idea: a bottom navigation bar with the app's four places
+  (epic #392, story #393); open whether it acts as true tabs or a home
+  launcher, and whether the home calendar icon (#387) stays.
