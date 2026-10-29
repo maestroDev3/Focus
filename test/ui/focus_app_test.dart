@@ -933,6 +933,8 @@ void main() {
       await tester.pumpWidget(buildApp());
       await tester.pump();
 
+      await tester.ensureVisible(find.text('Allow app blocking'));
+      await tester.pump();
       await tester.tap(find.text('Allow app blocking'));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
@@ -957,6 +959,8 @@ void main() {
       await tester.pumpWidget(buildApp());
       await tester.pump();
 
+      await tester.ensureVisible(find.text('Allow app blocking'));
+      await tester.pump();
       await tester.tap(find.text('Allow app blocking'));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
@@ -995,6 +999,8 @@ void main() {
       await tester.pumpWidget(buildApp());
       await tester.pump();
 
+      await tester.ensureVisible(find.text('Allow app blocking'));
+      await tester.pump();
       await tester.tap(find.text('Allow app blocking'));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
