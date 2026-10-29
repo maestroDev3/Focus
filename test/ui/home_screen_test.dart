@@ -20,6 +20,7 @@ void main() {
       Duration focusedToday = Duration.zero,
       DailyGoal dailyGoal = const DailyGoal(),
       VoidCallback? onOpenStatistics,
+      VoidCallback? onOpenWeek,
       int blockedAppCount = 0,
       VoidCallback? onOpenBlockedApps,
       bool blockerNeedsPermission = false,
@@ -41,6 +42,7 @@ void main() {
           focusedToday: focusedToday,
           dailyGoal: dailyGoal,
           onOpenStatistics: onOpenStatistics ?? () {},
+          onOpenWeek: onOpenWeek ?? () {},
           blockedAppCount: blockedAppCount,
           onOpenBlockedApps: onOpenBlockedApps ?? () {},
           blockerNeedsPermission: blockerNeedsPermission,
@@ -52,6 +54,18 @@ void main() {
         ),
       );
     }
+
+    testWidgets('opens the planned week from the calendar icon', (
+      tester,
+    ) async {
+      var opened = 0;
+      await pumpHome(tester, now: DateTime(2026, 10, 28, 10), onOpenWeek: () => opened++);
+
+      await tester.tap(find.byTooltip('Week calendar'));
+      await tester.pump();
+
+      expect(opened, 1);
+    });
 
     testWidgets('shows the date and an evening greeting at 20:00', (
       tester,
