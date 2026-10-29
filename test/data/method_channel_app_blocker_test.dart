@@ -29,6 +29,12 @@ void main() {
   tearDown(() => messenger.setMockMethodCallHandler(channel, null));
 
   group('MethodChannelAppBlocker', () {
+    test('asks the gate to re-check held notifications', () async {
+      await MethodChannelAppBlocker().refreshHeldNotifications();
+
+      expect(calls.single.method, 'refreshHeldNotifications');
+    });
+
     test('reports whether the blocker service is enabled', () async {
       expect(await MethodChannelAppBlocker().isBlockerEnabled(), isTrue);
     });

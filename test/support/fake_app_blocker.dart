@@ -25,6 +25,9 @@ class FakeAppBlocker implements AppBlocker {
   /// Apps opened after the breathing pause.
   final openedMindfully = <String>[];
   var wentHome = 0;
+  var refreshedHeldNotifications = 0;
+
+  Future<void> refreshHeldNotifications() async => refreshedHeldNotifications++;
 
   /// Simulates opening a paused app with mindful opening on.
   void emitMindful(MindfulRequest request) => _mindful.add(request);

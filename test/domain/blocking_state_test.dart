@@ -135,10 +135,23 @@ void main() {
       );
     });
 
-    test('is at most one minute while the session runs', () {
+    test('holds for the whole remaining session in one go', () {
       expect(
         snoozeFor(state: running, packageName: telegram, now: now),
-        const Duration(minutes: 1),
+        const Duration(minutes: 20),
+      );
+    });
+
+    test('keeps short rounds only while the session is paused', () {
+      const paused = BlockingState(
+        active: true,
+        packageNames: {telegram},
+        plannedEnd: null,
+      );
+
+      expect(
+        snoozeFor(state: paused, packageName: telegram, now: now),
+        notificationSnoozeStep,
       );
     });
 
