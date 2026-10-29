@@ -25,7 +25,7 @@ The GitHub issues are authoritative; this file is the summary.
 | #123 Session ritual | 3 of 4 closed | #269 Spotify playlist, personal mode (`backlog`, needs your Spotify developer app) |
 | #361 See your planned focus in a calendar | 0 of 5 closed | #362 → #363 → #364 → #386 → #387 (all built – phone test via PR #385) |
 | #379 Choose how a goal resets | 0 of 2 closed | #380 Choose whether a weekly goal resets → #381 See how a label's weeks went (both `backlog`) |
-| #392 The app's places one tap apart | 0 of 1 closed | #393 Switch places from the bottom bar (`backlog`) |
+| #392 The app's places one tap apart | 0 of 1 closed | #393 Switch places from the bottom bar (`ready`, after the #361 merge) |
 
 **#139 Distraction blocking**
 
@@ -50,8 +50,6 @@ The GitHub issues are authoritative; this file is the summary.
 - #358 Info page and user guide (README, guide en/de)
 
 ## Open decisions (user only)
-
-- Epic #392 The app's places one tap apart (bottom navigation bar; Focus experience) – created, please confirm or re-sort; open questions in the epic: bar as true tabs or only on home, and whether the home calendar icon (#387) stays.
 
 - Epic #372 Held-back notifications stay quiet (Distraction blocking) – created, please confirm or re-sort; suggested right after the calendar.
 - Epic #379 Choose how a goal resets (Focus experience, #380 → #381) – created and reviewed, please confirm or re-sort; open questions in the epic: carry shortfall and/or surplus (suggestion: both), cap the debt (suggestion: one week's goal), monthly goals as own story?
