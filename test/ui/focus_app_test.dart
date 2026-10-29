@@ -549,14 +549,24 @@ void main() {
       await tester.pumpWidget(buildApp());
       await tester.pump();
 
-      await tester.tap(find.byTooltip('Settings'));
+      await tester.tap(
+        find.descendant(
+          of: find.byType(NavigationBar),
+          matching: find.text('Settings'),
+        ),
+      );
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
       expect(find.text('Long break after'), findsOneWidget);
 
       await tester.tap(find.byKey(const Key('focus-increase')));
       await tester.pump();
-      await tester.pageBack();
+      await tester.tap(
+        find.descendant(
+          of: find.byType(NavigationBar),
+          matching: find.text('Home'),
+        ),
+      );
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
 
@@ -981,6 +991,8 @@ void main() {
       await tester.pumpWidget(buildApp());
       await tester.pump();
 
+      await tester.ensureVisible(find.text('Allow holding notifications'));
+      await tester.pump();
       await tester.tap(find.text('Allow holding notifications'));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
@@ -1018,6 +1030,8 @@ void main() {
       await tester.pumpWidget(buildApp());
       await tester.pump();
 
+      await tester.ensureVisible(find.text('Allow holding notifications'));
+      await tester.pump();
       await tester.tap(find.text('Allow holding notifications'));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
@@ -1190,7 +1204,12 @@ void main() {
           ),
         );
         await tester.pump();
-        await tester.tap(find.byTooltip('Settings'));
+        await tester.tap(
+        find.descendant(
+          of: find.byType(NavigationBar),
+          matching: find.text('Settings'),
+        ),
+      );
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 500));
         await tester.scrollUntilVisible(find.text('Language'), 200);
@@ -1240,7 +1259,12 @@ void main() {
       await tester.pumpWidget(buildApp(focusTimes: focusTimes));
       await tester.pump();
 
-      await tester.tap(find.byTooltip('Settings'));
+      await tester.tap(
+        find.descendant(
+          of: find.byType(NavigationBar),
+          matching: find.text('Settings'),
+        ),
+      );
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
       await tester.scrollUntilVisible(find.text('Restore backup'), 200);
@@ -1393,7 +1417,12 @@ void main() {
         );
         await tester.pumpWidget(buildApp(timer: timer));
         await tester.pump();
-        await tester.tap(find.byTooltip('Settings'));
+        await tester.tap(
+        find.descendant(
+          of: find.byType(NavigationBar),
+          matching: find.text('Settings'),
+        ),
+      );
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 500));
         final mindful = find.byKey(const Key('mindful-opening'));
