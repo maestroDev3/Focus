@@ -867,13 +867,11 @@ class _StatisticsTabState extends State<_StatisticsTab> {
   @override
   Widget build(BuildContext context) => FutureBuilder(
     future: _lookups,
-    builder: (context, snapshot) => switch (snapshot.data) {
-      final (defaultApps, listApps, appNames)? => widget.builder(
-        defaultApps,
-        listApps,
-        appNames,
-      ),
-      null => const SizedBox.shrink(),
+    builder: (context, snapshot) {
+      final data = snapshot.data;
+      if (data == null) return const SizedBox.shrink();
+      final (defaultApps, listApps, appNames) = data;
+      return widget.builder(defaultApps, listApps, appNames);
     },
   );
 }
