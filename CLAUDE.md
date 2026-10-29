@@ -383,3 +383,6 @@ commit comment).
   shows a design mockup as an image in the chat and waits for the user's
   look; small textual tweaks and bug fixes are exempt. (The bottom bar
   #393 was built without this and sits unseen on `epic/places-bar`.)
+- 2026-10-29 – Bar mockup reviewed in chat: the four bottom tabs stand; the
+  statistics tab wears `show_chart` (chosen from four icon candidates,
+  #401).
