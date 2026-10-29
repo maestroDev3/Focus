@@ -13,14 +13,11 @@ void main() {
       WidgetTester tester, {
       required DateTime now,
       VoidCallback? onStart,
-      VoidCallback? onOpenSettings,
       String? labelName,
       bool hasLabels = false,
       VoidCallback? onChooseLabel,
       Duration focusedToday = Duration.zero,
       DailyGoal dailyGoal = const DailyGoal(),
-      VoidCallback? onOpenStatistics,
-      VoidCallback? onOpenWeek,
       int blockedAppCount = 0,
       VoidCallback? onOpenBlockedApps,
       bool blockerNeedsPermission = false,
@@ -35,14 +32,11 @@ void main() {
           clock: () => now,
           focusDuration: const Duration(minutes: 25),
           onStart: onStart ?? () {},
-          onOpenSettings: onOpenSettings ?? () {},
           labelName: labelName,
           hasLabels: hasLabels,
           onChooseLabel: onChooseLabel ?? () {},
           focusedToday: focusedToday,
           dailyGoal: dailyGoal,
-          onOpenStatistics: onOpenStatistics ?? () {},
-          onOpenWeek: onOpenWeek ?? () {},
           blockedAppCount: blockedAppCount,
           onOpenBlockedApps: onOpenBlockedApps ?? () {},
           blockerNeedsPermission: blockerNeedsPermission,
@@ -55,16 +49,15 @@ void main() {
       );
     }
 
-    testWidgets('opens the planned week from the calendar icon', (
+    testWidgets('keeps only date and greeting in the header', (
       tester,
     ) async {
-      var opened = 0;
-      await pumpHome(tester, now: DateTime(2026, 10, 28, 10), onOpenWeek: () => opened++);
+      await pumpHome(tester, now: DateTime(2026, 10, 28, 10));
 
-      await tester.tap(find.byTooltip('Week calendar'));
-      await tester.pump();
-
-      expect(opened, 1);
+      // The places live in the navigation bar now (#393).
+      expect(find.byTooltip('Week calendar'), findsNothing);
+      expect(find.byTooltip('Statistics'), findsNothing);
+      expect(find.byTooltip('Settings'), findsNothing);
     });
 
     testWidgets('shows the date and an evening greeting at 20:00', (
@@ -123,22 +116,6 @@ void main() {
       expect(find.byType(FilledButton), findsNothing);
     });
 
-    testWidgets('opens the settings from a button with a tooltip', (
-      tester,
-    ) async {
-      var opened = 0;
-      await pumpHome(
-        tester,
-        now: DateTime(2026, 9, 29, 20),
-        onOpenSettings: () => opened++,
-      );
-
-      await tester.tap(find.byTooltip('Settings'));
-      await tester.pump();
-
-      expect(opened, 1);
-    });
-
     testWidgets('invites to add a label when there are none', (tester) async {
       await pumpHome(tester, now: DateTime(2026, 9, 29, 20));
 
@@ -187,22 +164,6 @@ void main() {
           tester.widget<CustomPaint>(find.byKey(BreathingRing.paintKey)).painter
               as GoalRingPainter;
       expect(ring.progress, closeTo(100 / 180, 0.001));
-    });
-
-    testWidgets('opens the statistics from a button with a tooltip', (
-      tester,
-    ) async {
-      var opened = 0;
-      await pumpHome(
-        tester,
-        now: DateTime(2026, 9, 29, 20),
-        onOpenStatistics: () => opened++,
-      );
-
-      await tester.tap(find.byTooltip('Statistics'));
-      await tester.pump();
-
-      expect(opened, 1);
     });
 
     testWidgets('invites to choose apps when none are paused', (tester) async {

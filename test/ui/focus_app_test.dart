@@ -14,6 +14,7 @@ import 'package:focus_timer/domain/home_widget.dart';
 import 'package:focus_timer/domain/pomodoro.dart';
 import 'package:focus_timer/l10n/app_localizations.dart';
 import 'package:focus_timer/ui/focus_app.dart';
+import 'package:focus_timer/ui/focus_week_screen.dart';
 import 'package:focus_timer/ui/theme.dart';
 import 'package:focus_timer/ui/widgets/dendrite_background.dart';
 
@@ -191,6 +192,66 @@ void main() {
 
       expect(find.byIcon(Icons.add), findsNothing);
       expect(find.byType(FloatingActionButton), findsNothing);
+    });
+  });
+
+  group('FocusApp places bar', () {
+    Future<void> openTab(WidgetTester tester, String label) async {
+      await tester.tap(
+        find.descendant(
+          of: find.byType(NavigationBar),
+          matching: find.text(label),
+        ),
+      );
+      await tester.pump();
+      await tester.pump();
+    }
+
+    testWidgets('shows the four places', (tester) async {
+      await tester.pumpWidget(buildApp());
+
+      for (final label in ['Home', 'Week', 'Statistics', 'Settings']) {
+        expect(
+          find.descendant(
+            of: find.byType(NavigationBar),
+            matching: find.text(label),
+          ),
+          findsOneWidget,
+        );
+      }
+    });
+
+    testWidgets('keeps the week tab as I left it', (tester) async {
+      await tester.pumpWidget(buildApp());
+
+      await openTab(tester, 'Week');
+      expect(find.byType(FocusWeekView), findsOneWidget);
+      await tester.tap(find.text('List'));
+      await tester.pump();
+      await tester.pump();
+      await openTab(tester, 'Home');
+      await openTab(tester, 'Week');
+
+      expect(find.byType(FocusWeekView), findsNothing);
+    });
+
+    testWidgets('system back returns to home first', (tester) async {
+      await tester.pumpWidget(buildApp());
+      await openTab(tester, 'Week');
+
+      final handled = await tester.binding.handlePopRoute();
+      await tester.pump();
+
+      expect(handled, isTrue);
+      expect(find.text('Good evening.'), findsOneWidget);
+    });
+
+    testWidgets('a running session shows no bar', (tester) async {
+      await tester.pumpWidget(buildApp());
+
+      await beginFocus(tester);
+
+      expect(find.byType(NavigationBar), findsNothing);
     });
   });
 
