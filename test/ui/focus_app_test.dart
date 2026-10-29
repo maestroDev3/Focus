@@ -14,6 +14,7 @@ import 'package:focus_timer/domain/home_widget.dart';
 import 'package:focus_timer/domain/pomodoro.dart';
 import 'package:focus_timer/l10n/app_localizations.dart';
 import 'package:focus_timer/ui/focus_app.dart';
+import 'package:focus_timer/ui/focus_week_screen.dart';
 import 'package:focus_timer/ui/theme.dart';
 import 'package:focus_timer/ui/widgets/dendrite_background.dart';
 
@@ -191,6 +192,66 @@ void main() {
 
       expect(find.byIcon(Icons.add), findsNothing);
       expect(find.byType(FloatingActionButton), findsNothing);
+    });
+  });
+
+  group('FocusApp places bar', () {
+    Future<void> openTab(WidgetTester tester, String label) async {
+      await tester.tap(
+        find.descendant(
+          of: find.byType(NavigationBar),
+          matching: find.text(label),
+        ),
+      );
+      await tester.pump();
+      await tester.pump();
+    }
+
+    testWidgets('shows the four places', (tester) async {
+      await tester.pumpWidget(buildApp());
+
+      for (final label in ['Home', 'Week', 'Statistics', 'Settings']) {
+        expect(
+          find.descendant(
+            of: find.byType(NavigationBar),
+            matching: find.text(label),
+          ),
+          findsOneWidget,
+        );
+      }
+    });
+
+    testWidgets('keeps the week tab as I left it', (tester) async {
+      await tester.pumpWidget(buildApp());
+
+      await openTab(tester, 'Week');
+      expect(find.byType(FocusWeekView), findsOneWidget);
+      await tester.tap(find.text('List'));
+      await tester.pump();
+      await tester.pump();
+      await openTab(tester, 'Home');
+      await openTab(tester, 'Week');
+
+      expect(find.byType(FocusWeekView), findsNothing);
+    });
+
+    testWidgets('system back returns to home first', (tester) async {
+      await tester.pumpWidget(buildApp());
+      await openTab(tester, 'Week');
+
+      final handled = await tester.binding.handlePopRoute();
+      await tester.pump();
+
+      expect(handled, isTrue);
+      expect(find.text('Good evening.'), findsOneWidget);
+    });
+
+    testWidgets('a running session shows no bar', (tester) async {
+      await tester.pumpWidget(buildApp());
+
+      await beginFocus(tester);
+
+      expect(find.byType(NavigationBar), findsNothing);
     });
   });
 
@@ -488,14 +549,24 @@ void main() {
       await tester.pumpWidget(buildApp());
       await tester.pump();
 
-      await tester.tap(find.byTooltip('Settings'));
+      await tester.tap(
+        find.descendant(
+          of: find.byType(NavigationBar),
+          matching: find.text('Settings'),
+        ),
+      );
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
       expect(find.text('Long break after'), findsOneWidget);
 
       await tester.tap(find.byKey(const Key('focus-increase')));
       await tester.pump();
-      await tester.pageBack();
+      await tester.tap(
+        find.descendant(
+          of: find.byType(NavigationBar),
+          matching: find.text('Home'),
+        ),
+      );
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
 
@@ -872,6 +943,8 @@ void main() {
       await tester.pumpWidget(buildApp());
       await tester.pump();
 
+      await tester.ensureVisible(find.text('Allow app blocking'));
+      await tester.pump();
       await tester.tap(find.text('Allow app blocking'));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
@@ -896,6 +969,8 @@ void main() {
       await tester.pumpWidget(buildApp());
       await tester.pump();
 
+      await tester.ensureVisible(find.text('Allow app blocking'));
+      await tester.pump();
       await tester.tap(find.text('Allow app blocking'));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
@@ -916,6 +991,8 @@ void main() {
       await tester.pumpWidget(buildApp());
       await tester.pump();
 
+      await tester.ensureVisible(find.text('Allow holding notifications'));
+      await tester.pump();
       await tester.tap(find.text('Allow holding notifications'));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
@@ -934,6 +1011,8 @@ void main() {
       await tester.pumpWidget(buildApp());
       await tester.pump();
 
+      await tester.ensureVisible(find.text('Allow app blocking'));
+      await tester.pump();
       await tester.tap(find.text('Allow app blocking'));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
@@ -951,6 +1030,8 @@ void main() {
       await tester.pumpWidget(buildApp());
       await tester.pump();
 
+      await tester.ensureVisible(find.text('Allow holding notifications'));
+      await tester.pump();
       await tester.tap(find.text('Allow holding notifications'));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
@@ -1123,7 +1204,12 @@ void main() {
           ),
         );
         await tester.pump();
-        await tester.tap(find.byTooltip('Settings'));
+        await tester.tap(
+        find.descendant(
+          of: find.byType(NavigationBar),
+          matching: find.text('Settings'),
+        ),
+      );
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 500));
         await tester.scrollUntilVisible(find.text('Language'), 200);
@@ -1137,7 +1223,8 @@ void main() {
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 500));
 
-        expect(find.text('Einstellungen'), findsOneWidget);
+        // Page title and the bar label both switch (#393).
+        expect(find.text('Einstellungen'), findsNWidgets(2));
         expect(changes, [AppLanguage.german]);
       });
 
@@ -1173,7 +1260,12 @@ void main() {
       await tester.pumpWidget(buildApp(focusTimes: focusTimes));
       await tester.pump();
 
-      await tester.tap(find.byTooltip('Settings'));
+      await tester.tap(
+        find.descendant(
+          of: find.byType(NavigationBar),
+          matching: find.text('Settings'),
+        ),
+      );
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
       await tester.scrollUntilVisible(find.text('Restore backup'), 200);
@@ -1326,7 +1418,12 @@ void main() {
         );
         await tester.pumpWidget(buildApp(timer: timer));
         await tester.pump();
-        await tester.tap(find.byTooltip('Settings'));
+        await tester.tap(
+        find.descendant(
+          of: find.byType(NavigationBar),
+          matching: find.text('Settings'),
+        ),
+      );
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 500));
         final mindful = find.byKey(const Key('mindful-opening'));

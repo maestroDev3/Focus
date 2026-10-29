@@ -131,6 +131,10 @@ class FocusApp extends StatefulWidget {
 
 class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
   final _navigator = GlobalKey<NavigatorState>();
+
+  /// Selected place in the bottom bar: Home, Week, Statistics, Settings
+  /// (#393). Tabs keep their state in an IndexedStack.
+  var _tab = 0;
   var _pomodoro = const PomodoroSettings();
   late var _introDone = !widget.showIntro;
   var _dailyGoal = const DailyGoal();
@@ -379,8 +383,102 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
       home: AnimatedSwitcher(
         duration: const Duration(milliseconds: 600),
         child: _introDone
-            ? Builder(
-                builder: (homeContext) => HomeScreen(
+            ? Builder(builder: (context) => _places(context))
+            : IntroScreen(onDone: () => setState(() => _introDone = true)),
+      ),
+    );
+  }
+
+  /// The four places under one bar (#393): system back returns to Home
+  /// first; focused screens are pushed routes and never show the bar.
+  Widget _places(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return PopScope(
+      canPop: _tab == 0,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) setState(() => _tab = 0);
+      },
+      child: Scaffold(
+        body: IndexedStack(
+          index: _tab,
+          children: [
+            Builder(builder: _home),
+            FocusTimesScreen(
+              focusTimes: widget.focusTimes,
+              namedLists: widget.namedBlockLists,
+              clock: widget.clock,
+            ),
+            _StatisticsTab(
+              blockList: widget.blockList,
+              namedBlockLists: widget.namedBlockLists,
+              installedApps: widget.installedApps,
+              builder: (defaultApps, listApps, appNames) => StatisticsScreen(
+                finishedSessions: widget.timer.watchFinished(),
+                labels: widget.labels.watchLabels(),
+                dailyGoal: _dailyGoal,
+                clock: widget.clock,
+                focusTimes: widget.focusTimes.watchFocusTimes(),
+                pausedAppCount: _blockedAppCount,
+                defaultApps: defaultApps,
+                listApps: listApps,
+                appNames: appNames,
+              ),
+            ),
+            SettingsScreen(
+              settings: widget.settings,
+              focusTimes: widget.focusTimes,
+              backupFiles: widget.backupFiles,
+              namedBlockLists: widget.namedBlockLists,
+              language: widget.language,
+              onLanguageChanged: _onLanguageChanged,
+              onLockScreenChanged: widget.timer.refreshCountdown,
+              onBackgroundChanged: (style) =>
+                  setState(() => _background = style),
+              onMindfulChanged: widget.timer.refreshBlocking,
+              installedApps: widget.installedApps,
+              mindfulApps: widget.mindfulApps,
+              restoreLock: () => widget.timer.current != null
+                  ? RestoreLock.session
+                  : activeFocusTime(_focusTimes, widget.clock()) != null
+                  ? RestoreLock.focusTime
+                  : RestoreLock.none,
+            ),
+          ],
+        ),
+        bottomNavigationBar: NavigationBar(
+          selectedIndex: _tab,
+          onDestinationSelected: (index) {
+            setState(() => _tab = index);
+            // Settings and focus times may have changed what home shows.
+            _loadState();
+          },
+          destinations: [
+            NavigationDestination(
+              icon: const Icon(Icons.home_outlined),
+              selectedIcon: const Icon(Icons.home),
+              label: l10n.tabHome,
+            ),
+            NavigationDestination(
+              icon: const Icon(Icons.calendar_view_week_outlined),
+              selectedIcon: const Icon(Icons.calendar_view_week),
+              label: l10n.viewWeek,
+            ),
+            NavigationDestination(
+              icon: const Icon(Icons.insights_outlined),
+              selectedIcon: const Icon(Icons.insights),
+              label: l10n.statistics,
+            ),
+            NavigationDestination(
+              icon: const Icon(Icons.tune),
+              label: l10n.settings,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _home(BuildContext homeContext) => HomeScreen(
                   clock: widget.clock,
                   focusDuration: _pomodoro.focus,
                   onStart: _startSession,
@@ -392,7 +490,6 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
                     _ambient.sound,
                   ),
                   onChooseSound: () => _chooseSound(homeContext),
-                  onOpenSettings: _openSettings,
                   blockedAppCount: _blockedAppCount,
                   onOpenBlockedApps: _openBlockedApps,
                   blockerNeedsPermission:
@@ -406,19 +503,12 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
                   onChooseLabel: () => _chooseLabel(homeContext),
                   focusedToday: _focusedToday,
                   dailyGoal: _dailyGoal,
-                  onOpenStatistics: _openStatistics,
-                  onOpenWeek: _openFocusTimes,
                   activeFocusTime: activeFocusTime(_focusTimes, widget.clock()),
                   nextFocusTimeStart: nextFocusTimeStart(
                     _focusTimes,
                     widget.clock(),
                   ),
-                ),
-              )
-            : IntroScreen(onDone: () => setState(() => _introDone = true)),
-      ),
-    );
-  }
+                );
 
   Future<void> _push(WidgetBuilder builder) async {
     await _navigator.currentState?.push(
@@ -426,62 +516,8 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
     );
   }
 
-  Future<void> _openSettings() async {
-    await _push(
-      (context) => SettingsScreen(
-        settings: widget.settings,
-        focusTimes: widget.focusTimes,
-        backupFiles: widget.backupFiles,
-        namedBlockLists: widget.namedBlockLists,
-        language: widget.language,
-        onLanguageChanged: _onLanguageChanged,
-        onLockScreenChanged: widget.timer.refreshCountdown,
-        onBackgroundChanged: (style) => setState(() => _background = style),
-        onMindfulChanged: widget.timer.refreshBlocking,
-        installedApps: widget.installedApps,
-        mindfulApps: widget.mindfulApps,
-        restoreLock: () => widget.timer.current != null
-            ? RestoreLock.session
-            : activeFocusTime(_focusTimes, widget.clock()) != null
-            ? RestoreLock.focusTime
-            : RestoreLock.none,
-      ),
-    );
-    await _loadState();
-  }
 
-  /// One tap from home to the planned week (#387); the page opens as the
-  /// week (#386). Focus times may change there, so home reloads afterwards.
-  Future<void> _openFocusTimes() async {
-    await _push(
-      (context) => FocusTimesScreen(
-        focusTimes: widget.focusTimes,
-        namedLists: widget.namedBlockLists,
-        clock: widget.clock,
-      ),
-    );
-    await _loadState();
-  }
 
-  Future<void> _openStatistics() async {
-    final defaultList = await widget.blockList.loadBlockList();
-    final lists = await widget.namedBlockLists.watchLists().first;
-    final apps = await widget.installedApps.installedApps();
-    if (!mounted) return;
-    await _push(
-      (context) => StatisticsScreen(
-        finishedSessions: widget.timer.watchFinished(),
-        labels: widget.labels.watchLabels(),
-        dailyGoal: _dailyGoal,
-        clock: widget.clock,
-        focusTimes: widget.focusTimes.watchFocusTimes(),
-        pausedAppCount: _blockedAppCount,
-        defaultApps: defaultList.packageNames,
-        listApps: {for (final list in lists) list.id: list.apps.packageNames},
-        appNames: {for (final app in apps) app.packageName: app.label},
-      ),
-    );
-  }
 
   Future<void> _openBlockedApps() async {
     await _push(
@@ -783,4 +819,59 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
         );
     }
   }
+}
+
+/// Statistics as a tab: loads the app names and block lists it needs once,
+/// instead of the old load-then-push route (#393). The live parts come in
+/// through streams.
+class _StatisticsTab extends StatefulWidget {
+  const _StatisticsTab({
+    required this.blockList,
+    required this.namedBlockLists,
+    required this.installedApps,
+    required this.builder,
+  });
+
+  final BlockListRepository blockList;
+  final NamedBlockListRepository namedBlockLists;
+  final InstalledAppsSource installedApps;
+  final Widget Function(
+    Set<String> defaultApps,
+    Map<String, Set<String>> listApps,
+    Map<String, String> appNames,
+  )
+  builder;
+
+  @override
+  State<_StatisticsTab> createState() => _StatisticsTabState();
+}
+
+class _StatisticsTabState extends State<_StatisticsTab> {
+  late final Future<
+    (Set<String>, Map<String, Set<String>>, Map<String, String>)
+  >
+  _lookups = _load();
+
+  Future<(Set<String>, Map<String, Set<String>>, Map<String, String>)>
+  _load() async {
+    final defaultList = await widget.blockList.loadBlockList();
+    final lists = await widget.namedBlockLists.watchLists().first;
+    final apps = await widget.installedApps.installedApps();
+    return (
+      defaultList.packageNames,
+      {for (final list in lists) list.id: list.apps.packageNames},
+      {for (final app in apps) app.packageName: app.label},
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) => FutureBuilder(
+    future: _lookups,
+    builder: (context, snapshot) {
+      final data = snapshot.data;
+      if (data == null) return const SizedBox.shrink();
+      final (defaultApps, listApps, appNames) = data;
+      return widget.builder(defaultApps, listApps, appNames);
+    },
+  );
 }

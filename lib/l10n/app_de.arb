@@ -164,6 +164,7 @@
   "showOnLockScreenDetails": "Label und Restzeit, solange eine Session läuft",
   "viewWeek": "Woche",
   "viewList": "Liste",
+  "tabHome": "Start",
   "weekCalendar": "Wochenkalender",
   "weekEmpty": "Die Woche ist noch frei.",
   "statusBarCountdown": "Countdown in der Statusleiste",
