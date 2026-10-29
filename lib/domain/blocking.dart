@@ -1,3 +1,4 @@
+import 'app_blocker.dart';
 import 'block_list_repository.dart';
 import 'clock.dart';
 import 'focus_session.dart';
