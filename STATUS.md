@@ -9,7 +9,7 @@ The GitHub issues are authoritative; this file is the summary.
 ## In progress
 
 - #373 Held-back notifications stay quiet (`in-progress`, built): snooze to the block's end, precise release on early end; preview APK from PR #399 – waiting for your test on the phone.
-- #393 Switch places from the bottom bar (`in-progress`, task #394) on `epic/places-bar`: four true tabs; its preview APK follows after the #373 test, so the previews don't overwrite each other.
+- #393 Switch places from the bottom bar (`in-progress`, built) on `epic/places-bar`: four true tabs; its preview APK follows right after your #373 test (build 564), so the previews don't overwrite each other.
 
 ## Up next
 
