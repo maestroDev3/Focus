@@ -464,8 +464,8 @@ class _FocusAppState extends State<FocusApp> with WidgetsBindingObserver {
               label: l10n.viewWeek,
             ),
             NavigationDestination(
-              icon: const Icon(Icons.insights_outlined),
-              selectedIcon: const Icon(Icons.insights),
+              // The rising line, chosen from the icon mockup (2026-10-29).
+              icon: const Icon(Icons.show_chart),
               label: l10n.statistics,
             ),
             NavigationDestination(

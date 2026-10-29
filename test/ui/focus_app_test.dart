@@ -221,6 +221,18 @@ void main() {
       }
     });
 
+    testWidgets('the statistics place wears the chart line', (tester) async {
+      await tester.pumpWidget(buildApp());
+
+      expect(
+        find.descendant(
+          of: find.byType(NavigationBar),
+          matching: find.byIcon(Icons.show_chart),
+        ),
+        findsOneWidget,
+      );
+    });
+
     testWidgets('keeps the week tab as I left it', (tester) async {
       await tester.pumpWidget(buildApp());
 
