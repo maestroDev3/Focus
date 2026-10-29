@@ -23,16 +23,15 @@ The GitHub issues are authoritative; this file is the summary.
 | Epic | State | Stories (in order) |
 |---|---|---|
 | #123 Session ritual | 3 of 4 closed | #269 Spotify playlist, personal mode (`backlog`, needs your Spotify developer app) |
-| #361 See your planned focus in a calendar | 0 of 5 closed | #362 → #363 → #364 → #386 → #387 (all built – phone test via PR #385) |
 | #379 Choose how a goal resets | 0 of 2 closed | #380 Choose whether a weekly goal resets → #381 See how a label's weeks went (both `backlog`) |
-| #392 The app's places one tap apart | 0 of 1 closed | #393 Switch places from the bottom bar (`ready`, after the #361 merge) |
+| #392 The app's places one tap apart | 0 of 1 closed | #393 Switch places from the bottom bar (`ready`) |
 
 **#139 Distraction blocking**
 
 | Epic | State | Stories (in order) |
 |---|---|---|
 | #187 Block list per session | 0 of 1 closed | #188 Choose a block list when starting a session (`backlog`, parked – only on real need) |
-| #372 Held-back notifications stay quiet | 0 of 1 closed | #373 Held-back notifications stay quiet (`backlog`) |
+| #372 Held-back notifications stay quiet | 0 of 1 closed | #373 Held-back notifications stay quiet (`in-progress`) |
 
 
 **#140 Release & platform**
@@ -43,14 +42,13 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## Recently done
 
+- Epic #361 closed: the planned week as a calendar – today/now markers, planning from a gap, the focus times page opens as the week, one tap from home (#362-#364, #386, #387)
 - #370 Read the session at arm's length: end time, champagne accent, large time right; "Status bar countdown" opts into the Live Update (epic #369 closed)
 - #337 Weekly label goals: Mon–Sun hours next to the total goal (epic #336 closed)
 - #196 Quick settings tile: tap starts a session, long press opens Focus (epic #195 closed)
 - #351 Play Store preparation: app bundle in CI, store texts, accessibility consent
-- #358 Info page and user guide (README, guide en/de)
 
 ## Open decisions (user only)
 
-- Epic #372 Held-back notifications stay quiet (Distraction blocking) – created, please confirm or re-sort; suggested right after the calendar.
 - Epic #379 Choose how a goal resets (Focus experience, #380 → #381) – created and reviewed, please confirm or re-sort; open questions in the epic: carry shortfall and/or surplus (suggestion: both), cap the debt (suggestion: one week's goal), monthly goals as own story?
 - #269 Spotify personal mode: waiting for your Spotify developer app (Client ID).

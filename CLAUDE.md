@@ -374,3 +374,8 @@ commit comment).
   keeps only date and greeting – its calendar (#387), statistics and settings
   icons move into the bar. Built after the #361 merge; order: #373, then
   #393.
+- 2026-10-29 – Calendar epic #361 tested on the phone (build 556) and merged
+  (#385); epic closed. #372 confirmed and refined (#373, tasks #395/#396):
+  snooze to the block's end (paused sessions keep short rounds), and on every
+  state change the gate re-checks snoozed notifications and frees only what
+  no block holds any more.
