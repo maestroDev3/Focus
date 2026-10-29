@@ -1223,7 +1223,8 @@ void main() {
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 500));
 
-        expect(find.text('Einstellungen'), findsOneWidget);
+        // Page title and the bar label both switch (#393).
+        expect(find.text('Einstellungen'), findsNWidgets(2));
         expect(changes, [AppLanguage.german]);
       });
 
