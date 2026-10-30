@@ -386,3 +386,5 @@ commit comment).
 - 2026-10-29 – Bar mockup reviewed in chat: the four bottom tabs stand; the
   statistics tab wears `show_chart` (chosen from four icon candidates,
   #401).
+- 2026-10-30 – Quiet notifications tested on the phone (build 564) and merged
+  (#399); epic #372 closed. Next preview: the bottom bar (PR #403).

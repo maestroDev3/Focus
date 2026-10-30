@@ -4,12 +4,11 @@ Current project state for planning and Claude projects. Maintained by Claude
 after every status change (see CLAUDE.md, “Keeping the status”).
 The GitHub issues are authoritative; this file is the summary.
 
-**Last updated:** 2026-10-29
+**Last updated:** 2026-10-30
 
 ## In progress
 
-- #373 Held-back notifications stay quiet (`in-progress`, built): snooze to the block's end, precise release on early end; preview APK from PR #399 – waiting for your test on the phone.
-- #393 Switch places from the bottom bar (`in-progress`, built) on `epic/places-bar`: four true tabs; its preview APK follows right after your #373 test (build 564), so the previews don't overwrite each other.
+- #393 Switch places from the bottom bar (`in-progress`, built, show_chart icon confirmed): preview APK from PR #403 – waiting for your test on the phone.
 
 ## Up next
 
@@ -30,7 +29,6 @@ The GitHub issues are authoritative; this file is the summary.
 | Epic | State | Stories (in order) |
 |---|---|---|
 | #187 Block list per session | 0 of 1 closed | #188 Choose a block list when starting a session (`backlog`, parked – only on real need) |
-| #372 Held-back notifications stay quiet | 0 of 1 closed | #373 Held-back notifications stay quiet (`in-progress`, built) |
 
 **#140 Release & platform**
 
@@ -40,11 +38,11 @@ The GitHub issues are authoritative; this file is the summary.
 
 ## Recently done
 
+- #373 Held-back notifications stay quiet: one ping on arrival, silence to the block's end, precise release on early end (epic #372 closed; build 564)
 - Epic #361 closed: the planned week as a calendar – today/now markers, planning from a gap, the focus times page opens as the week, one tap from home (#362–#364, #386, #387; build 556)
 - #370 Read the session at arm's length: end time, champagne accent, large time right; "Status bar countdown" opts into the Live Update (epic #369 closed)
 - #337 Weekly label goals: Mon–Sun hours next to the total goal (epic #336 closed)
 - #196 Quick settings tile: tap starts a session, long press opens Focus (epic #195 closed)
-- #351 Play Store preparation: app bundle in CI, store texts, accessibility consent
 
 ## Open decisions (user only)
 
