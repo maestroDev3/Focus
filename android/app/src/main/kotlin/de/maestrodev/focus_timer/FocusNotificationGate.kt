@@ -13,18 +13,32 @@ import android.service.notification.StatusBarNotification
 class FocusNotificationGate : NotificationListenerService() {
     override fun onListenerConnected() {
         super.onListenerConnected()
+        connected = this
         TamperWarning.dismiss(this, TamperWarning.Kind.GATE)
         activeNotifications?.forEach(::holdIfPaused)
     }
 
     /** Access revoked (or unbound): warn if focus is running. */
     override fun onListenerDisconnected() {
+        if (connected === this) connected = null
         TamperWarning.showIfSwitchedOff(this, TamperWarning.Kind.GATE)
         super.onListenerDisconnected()
     }
 
     override fun onNotificationPosted(notification: StatusBarNotification?) {
         notification?.let(::holdIfPaused)
+    }
+
+    /** Frees every snoozed notification that no block holds any more. */
+    private fun refreshHeldNow() {
+        val state = BlockingState.read(this)
+        val now = System.currentTimeMillis()
+        getSnoozedNotifications()?.forEach { notification ->
+            if (state.snoozeMillis(notification.packageName, now) == null) {
+                // A ~0 snooze hands it back to the shade right away.
+                snoozeNotification(notification.key, 1)
+            }
+        }
     }
 
     private fun holdIfPaused(notification: StatusBarNotification) {
@@ -34,5 +48,19 @@ class FocusNotificationGate : NotificationListenerService() {
             .snoozeMillis(notification.packageName, System.currentTimeMillis())
             ?: return
         snoozeNotification(notification.key, millis)
+    }
+
+    companion object {
+        /** The connected service, so the app can ask for a re-check. */
+        @Volatile private var connected: FocusNotificationGate? = null
+
+        /**
+         * Re-checks held notifications against the current blocking state
+         * (#373); called after every state write. Without notification
+         * access there is nothing to free.
+         */
+        fun refreshHeld() {
+            connected?.refreshHeldNow()
+        }
     }
 }

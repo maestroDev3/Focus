@@ -4,6 +4,7 @@ import 'package:focus_timer/domain/focus_session.dart';
 import 'package:focus_timer/domain/focus_time.dart';
 
 import '../support/fake_block_list_repository.dart';
+import '../support/fake_app_blocker.dart';
 import '../support/fake_blocking_state_writer.dart';
 import '../support/fake_focus_time_repository.dart';
 
@@ -100,14 +101,15 @@ void main() {
   });
 
   group('snoozeFor during focus times', () {
-    test('holds back for at most a minute per round', () {
+    test('holds for the rest of the focus time in one go', () {
+      // The morning range ends at 12:00; it is 10:00.
       expect(
         snoozeFor(
           state: stateWithFocusTimes(inside),
           packageName: telegram,
           now: inside,
         ),
-        notificationSnoozeStep,
+        const Duration(hours: 2),
       );
     });
 
@@ -150,6 +152,22 @@ void main() {
 
       expect(writer.last?.focusTimes, [mornings]);
       expect(writer.last?.packageNames, {telegram});
+    });
+
+    test('asks the gate to re-check held notifications after writing', () async {
+      final writer = FakeBlockingStateWriter();
+      final appBlocker = FakeAppBlocker();
+      final sync = BlockingSync(
+        blockList: FakeBlockListRepository(blockList),
+        writer: writer,
+        clock: () => outside,
+        focusTimes: FakeFocusTimeRepository([mornings]),
+        appBlocker: appBlocker,
+      );
+
+      await sync.update(null);
+
+      expect(appBlocker.refreshedHeldNotifications, 1);
     });
   });
 }
