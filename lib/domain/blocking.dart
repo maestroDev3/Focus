@@ -1,3 +1,4 @@
+import 'app_blocker.dart';
 import 'block_list_repository.dart';
 import 'clock.dart';
 import 'focus_session.dart';
@@ -297,6 +298,7 @@ class BlockingSync {
     this._namedLists,
     this._settings,
     this._mindfulApps,
+    this._appBlocker,
   });
 
   final BlockListRepository _blockList;
@@ -313,6 +315,10 @@ class BlockingSync {
 
   /// The apps that get the breathing pause; the default list without it.
   final BlockListRepository? _mindfulApps;
+
+  /// Re-checks held notifications after every state change, so an early end
+  /// frees them promptly (#373).
+  final AppBlocker? _appBlocker;
 
   Future<void> update(FocusSession? session) async {
     final mindfulOpening = await _settings?.loadMindfulOpening() ?? false;
@@ -337,12 +343,13 @@ class BlockingSync {
             : const {},
       ),
     );
+    await _appBlocker?.refreshHeldNotifications();
   }
 }
 
-/// Longest snooze per round: notifications of paused apps are snoozed in
-/// short rounds, so they reappear within a minute once the session ends –
-/// also when it ends early.
+/// Snooze round while a session is paused (no known end). Blocks with a
+/// known end snooze in one go; ending early is handled by the gate's
+/// re-check (`refreshHeldNotifications`), so nothing pings in between.
 const notificationSnoozeStep = Duration(minutes: 1);
 
 /// How long to hold back a notification of [packageName] at [now] (during a
@@ -357,9 +364,7 @@ Duration? snoozeFor({
     final end = state.plannedEnd;
     if (end == null) return notificationSnoozeStep;
     final left = end.difference(now);
-    if (left > Duration.zero) {
-      return left < notificationSnoozeStep ? left : notificationSnoozeStep;
-    }
+    if (left > Duration.zero) return left;
   }
   final focusTime = activeFocusTime(state.focusTimes, now);
   final range = focusTime?.activeRange(now);
@@ -369,5 +374,5 @@ Duration? snoozeFor({
     return null;
   }
   final left = range.endOn(now).difference(now);
-  return left < notificationSnoozeStep ? left : notificationSnoozeStep;
+  return left > Duration.zero ? left : null;
 }

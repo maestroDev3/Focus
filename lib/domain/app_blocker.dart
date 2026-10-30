@@ -29,6 +29,11 @@ abstract interface class AppBlocker {
   /// Whether the user granted notification access (holding notifications).
   Future<bool> isNotificationGateEnabled();
 
+  /// Asks the notification gate to re-check every held notification against
+  /// the current blocking state and promptly free the ones no block holds
+  /// any more (#373).
+  Future<void> refreshHeldNotifications();
+
   /// Opens the system settings for notification access.
   Future<void> openNotificationGateSettings();
 
